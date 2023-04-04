@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-ft^^8vx@n(z=5%8-70p51beg=!=*!u^$ie4)^hkar@7a98=gf$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -113,8 +113,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = 'statics_files'
+STATIC_ROOT = 'static_files/'
 DOCUMENT_PATH = 'upload_documents'
+MEDIA_URL = 'media/'
+MEDIA_ROOT = 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
