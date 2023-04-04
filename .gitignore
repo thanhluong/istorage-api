@@ -1,0 +1,8 @@
+.idea
+.vscode
+.sass-cache
+*.sqlite3
+*.py[co]
+*.mo
+*~
+[a-z0-9]{40,}
