@@ -113,7 +113,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = 'statics_files'
+STATIC_ROOT = 'static_files'
 DOCUMENT_PATH = 'upload_documents'
 
 # Default primary key field type
