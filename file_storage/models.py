@@ -47,3 +47,4 @@ class Document(models.Model):
     autograph = models.CharField(max_length=2000)
     format = models.CharField(max_length=50)
     document_path = models.CharField(max_length=1000)
+    file_name = models.CharField(max_length=256)

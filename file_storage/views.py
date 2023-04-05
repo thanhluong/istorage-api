@@ -26,11 +26,11 @@ class DocumentUploadView(APIView):
             return Response({"file": ["No file was submitted."]}, status=status.HTTP_400_BAD_REQUEST)
 
         file = request.FILES['file']
-        folder_path = os.path.join(settings.BASE_DIR, settings.STATIC_ROOT,
+        folder_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT,
                                    settings.DOCUMENT_PATH, request.data['file_id'])
         if not os.path.isdir(folder_path):
             os.system('mkdir ' + folder_path)
-        file_path = os.path.join(settings.BASE_DIR, settings.STATIC_ROOT,
+        file_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT,
                                  settings.DOCUMENT_PATH, request.data['file_id'],
                                  file.name)
 
@@ -39,7 +39,8 @@ class DocumentUploadView(APIView):
             'issued_date': request.data.get('issued_date', ''),
             'autograph': request.data.get('autograph', ''),
             'code_number': request.data.get('code_number', ''),
-            'document_path': file_path
+            'document_path': file_path,
+            'file_name': file.name,
         }
         serializer = DocumentUploadSerializer(data=doc_table_data)
         serializer.save_file(file, file_path)
@@ -59,6 +60,13 @@ class GetDocumentByFileId(APIView):
         if file_id:
             docs = Document.objects.filter(file_id=file_id)
             serializer = DocumentUploadSerializer(docs, many=True)
+            serialization_result = serializer.data
+            result = []
+            for doc in serialization_result:
+                doc['url'] = "http://" + request.get_host()  \
+                            + "/" + settings.MEDIA_ROOT + "/" + settings.DOCUMENT_PATH \
+                            + "/" + doc['file_id'] + "/" + doc['file_name']
+                result.append(doc)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Missing file_storage_id parameter'}, status=status.HTTP_400_BAD_REQUEST)
