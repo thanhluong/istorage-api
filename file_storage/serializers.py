@@ -3,7 +3,7 @@ from abc import ABC
 from rest_framework import serializers
 import os
 from django.conf import settings
-from file_storage.models import Document
+from file_storage.models import Document, GovFile
 
 
 class DocumentUploadSerializer(serializers.ModelSerializer):
@@ -24,5 +24,5 @@ class DocumentUploadSerializer(serializers.ModelSerializer):
 
 class GovFileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Document
-        fields = ('file_id',)
+        model = GovFile
+        fields = ('id', 'file_id', 'title', 'organ_id', 'digital_doc', 'physical_num', 'total_doc', 'start_date', 'maintenance', 'rights', 'status')

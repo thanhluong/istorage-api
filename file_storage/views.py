@@ -76,6 +76,26 @@ class GetFiles(APIView):
     parser_classes = [JSONParser]
 
     def get(self, request, *args, **kwargs):
-        docs = GovFile.objects.all()
-        serializer = GovFileSerializer(docs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if not bool(request.GET):
+            file = GovFile.objects.all()
+            serializer = GovFileSerializer(file, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        organ_id = request.GET.get('organ_id')
+        if organ_id: 
+            file = GovFile.objects.filter(organ_id=str(organ_id))
+            
+            if file:
+                serializer = GovFileSerializer(file, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else: 
+                return Response(file, status=status.HTTP_200_OK)
+
+        else:
+            return Response({'error': 'Missing organ_id parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+        # docs = GovFile.objects.all()
+        # serializer = GovFileSerializer(docs, many=True)
+        # return Response(serializer.data, status=status.HTTP_200_OK)

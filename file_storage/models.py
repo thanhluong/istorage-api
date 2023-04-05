@@ -13,14 +13,16 @@ class GovFile(models.Model):
     language = models.CharField(max_length=100, null=True)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
+    digital_doc = models.CharField(max_length=1000, null=True)
     total_doc = models.IntegerField(null=True)
     description = models.CharField(max_length=2000, null=True)
     infor_sign = models.CharField(max_length=30, null=True)
     keyword = models.CharField(max_length=100, null=True)
-    sheet_number = models.IntegerField(null=True)
+    physical_num = models.IntegerField(null=True)
     page_number = models.IntegerField(null=True)
     format = models.CharField(max_length=50, null=True)
     extra_info = models.TextField(null=True)
+    status = models.CharField(max_length=100)
 
 
 class Document(models.Model):
