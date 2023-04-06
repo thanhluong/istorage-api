@@ -1,6 +1,6 @@
 from django.urls import path
-from views.document import DocumentUploadView, GetDocumentByGovFileId, DeleteDocumentById, UpdateDocumentById
-from views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, DeleteGovFileById
+from .views.document import DocumentUploadView, GetDocumentByGovFileId, DeleteDocumentById, UpdateDocumentById
+from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, DeleteGovFileById
 
 urlpatterns = [
     path('upload_document/', DocumentUploadView.as_view(), name='upload_document'),
