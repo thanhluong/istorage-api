@@ -2,7 +2,8 @@ from django.db import models
 
 
 class GovFile(models.Model):
-    file_id = models.CharField(max_length=13)
+    gov_file_id = models.CharField(max_length=13)
+    gov_file_code = models.CharField(max_length=100)
     identifier = models.CharField(max_length=13, null=True)
     organ_id = models.CharField(max_length=13, null=True)
     file_catalog = models.IntegerField(null=True)
@@ -25,7 +26,7 @@ class GovFile(models.Model):
 
 class Document(models.Model):
     doc_code = models.CharField(max_length=13)
-    file_id = models.CharField(max_length=13)
+    gov_file_id = models.CharField(max_length=13)
     identifier = models.CharField(max_length=13)
     organ_id = models.CharField(max_length=13)
     file_catalog = models.IntegerField(null=True)
@@ -47,4 +48,4 @@ class Document(models.Model):
     autograph = models.CharField(max_length=2000)
     format = models.CharField(max_length=50)
     document_path = models.CharField(max_length=1000)
-    file_name = models.CharField(max_length=256)
+    doc_name = models.CharField(max_length=256)

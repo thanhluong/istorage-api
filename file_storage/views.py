@@ -2,20 +2,14 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+
 from .models import Document, GovFile
 from .serializers import DocumentUploadSerializer, GovFileSerializer
 
 import os
-import hashlib
-
-
-def md5_file(file_path):
-    hash_md5 = hashlib.md5()
-    with open(file_path, 'rb') as f:
-        for chunk in iter(lambda: f.read(4096), b''):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
 
 
 class DocumentUploadView(APIView):
@@ -27,21 +21,17 @@ class DocumentUploadView(APIView):
 
         file = request.FILES['file']
         folder_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT,
-                                   settings.DOCUMENT_PATH, request.data['file_id'])
+                                   settings.DOCUMENT_PATH, request.data['gov_file_id'])
+
         if not os.path.isdir(folder_path):
-            os.system('mkdir ' + folder_path)
-        file_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT,
-                                 settings.DOCUMENT_PATH, request.data['file_id'],
-                                 file.name)
+            os.system('mkdir -p ' + folder_path)
+        file_path = os.path.join(folder_path, file.name)
 
         doc_table_data = {
-            'file_id': request.data.get('file_id', ''),
-            'issued_date': request.data.get('issued_date', ''),
-            'autograph': request.data.get('autograph', ''),
-            'code_number': request.data.get('code_number', ''),
-            'document_path': file_path,
-            'file_name': file.name,
+            'doc_name': file.name,
         }
+        doc_table_data.update(dict(request.data.items()))
+
         serializer = DocumentUploadSerializer(data=doc_table_data)
         serializer.save_file(file, file_path)
 
@@ -52,24 +42,31 @@ class DocumentUploadView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetDocumentByFileId(APIView):
+class GetDocumentByGovFileId(APIView):
     parser_classes = [JSONParser]
 
     def get(self, request, *args, **kwargs):
-        file_id = request.GET.get('file_id')
-        if file_id:
-            docs = Document.objects.filter(file_id=file_id)
+        gov_file_id = request.GET.get('gov_file_id')
+        if gov_file_id:
+            docs = Document.objects.filter(gov_file_id=gov_file_id)
             serializer = DocumentUploadSerializer(docs, many=True)
             serialization_result = serializer.data
             result = []
             for doc in serialization_result:
-                doc['url'] = "http://" + request.get_host()  \
-                            + "/" + settings.MEDIA_ROOT + "/" + settings.DOCUMENT_PATH \
-                            + "/" + doc['file_id'] + "/" + doc['file_name']
+                doc['url'] = os.path.join("http://", request.get_host(),
+                                          settings.MEDIA_ROOT, settings.DOCUMENT_PATH,
+                                          doc['gov_file_id'], doc['doc_name'])
                 result.append(doc)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Missing file_storage_id parameter'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Missing file_id parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteDocumentById(APIView):
+    def delete(self, request, document_id):
+        document = get_object_or_404(Document, id=document_id)
+        document.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 class GetFiles(APIView):
