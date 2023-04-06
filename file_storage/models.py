@@ -49,3 +49,7 @@ class Document(models.Model):
     format = models.CharField(max_length=50)
     document_path = models.CharField(max_length=1000)
     doc_name = models.CharField(max_length=256)
+
+
+class SubmitDocument(models.Model):
+    document_id = models.IntegerField()

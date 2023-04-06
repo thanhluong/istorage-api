@@ -6,8 +6,8 @@ from rest_framework import status
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
-from file_storage.models import Document, GovFile
-from file_storage.serializers import DocumentUploadSerializer, GovFileSerializer
+from file_storage.models import Document
+from file_storage.serializers import DocumentSerializer
 
 import os
 
@@ -32,7 +32,7 @@ class DocumentUploadView(APIView):
         }
         doc_table_data.update(dict(request.data.items()))
 
-        serializer = DocumentUploadSerializer(data=doc_table_data)
+        serializer = DocumentSerializer(data=doc_table_data)
         serializer.save_file(file, file_path)
 
         if serializer.is_valid():
@@ -49,7 +49,7 @@ class GetDocumentByGovFileId(APIView):
         gov_file_id = request.GET.get('gov_file_id')
         if gov_file_id:
             docs = Document.objects.filter(gov_file_id=gov_file_id)
-            serializer = DocumentUploadSerializer(docs, many=True)
+            serializer = DocumentSerializer(docs, many=True)
             serialization_result = serializer.data
             result = []
             for doc in serialization_result:
@@ -72,7 +72,7 @@ class DeleteDocumentById(APIView):
 class UpdateDocumentById(APIView):
     def patch(self, request, document_id):
         document = get_object_or_404(Document, id=document_id)
-        serializer = DocumentUploadSerializer(instance=document, data=dict(request.data.items()), partial=True)
+        serializer = DocumentSerializer(instance=document, data=dict(request.data.items()), partial=True)
 
         if serializer.is_valid():
             serializer.save()
