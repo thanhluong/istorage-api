@@ -1,4 +1,5 @@
 from django.db import models
+from enum import Enum
 
 
 class GovFile(models.Model):
@@ -49,5 +50,19 @@ class Document(models.Model):
     doc_name = models.CharField(max_length=256, null=True)
 
 
-class SubmitDocument(models.Model):
-    document_id = models.IntegerField()
+class StateEnum(Enum):
+    VALUE_1 = 1
+    VALUE_2 = 2
+    VALUE_3 = 3
+    VALUE_4 = 4
+    VALUE_5 = 5
+    VALUE_6 = 6
+
+    @classmethod
+    def choices(cls):
+        return [(member.value, name) for name, member in cls.__members__.items()]
+
+
+class GovFileProfile(models.Model):
+    gov_file_id = models.IntegerField()
+    state = models.IntegerField(choices=StateEnum.choices())
