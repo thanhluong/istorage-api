@@ -11,19 +11,23 @@ from file_storage.serializers import GovFileSerializer
 
 class GetGovFiles(APIView):
     def get(self, request, *args, **kwargs):
-        gov_file_id = request.query_params.get('gov_file_id')
+        # gov_file_id = request.query_params.get('gov_file_id')
+        #
+        # if gov_file_id:
+        #     try:
+        #         gov_file = GovFile.objects.get(gov_file_id=gov_file_id)
+        #         serializer = GovFileSerializer(gov_file)
+        #         return Response(serializer.data, status=status.HTTP_200_OK)
+        #     except GovFile.DoesNotExist:
+        #         return Response({"detail": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+        # else:
+        #     files = GovFile.objects.all()
+        #     serializer = GovFileSerializer(files, many=True)
+        #     return Response(serializer.data, status=status.HTTP_200_OK)
 
-        if gov_file_id:
-            try:
-                gov_file = GovFile.objects.get(gov_file_id=gov_file_id)
-                serializer = GovFileSerializer(gov_file)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            except GovFile.DoesNotExist:
-                return Response({"detail": "File not found."}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            files = GovFile.objects.all()
-            serializer = GovFileSerializer(files, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        files = GovFile.objects.all()
+        serializer = GovFileSerializer(files, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CreateGovFile(APIView):
