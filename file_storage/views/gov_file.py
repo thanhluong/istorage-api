@@ -108,6 +108,21 @@ class UpdateGovFileStateById(APIView):
             "5": [4, 6],
             "6": [4]
         }
+
+        perm_dict = {
+            "1": [[1, 2], [2, 1], [2, 3]],
+            "2": [[3, 4], [3, 1], [4, 5]],
+            "3": [[5, 6], [5, 4]],
+        }
+
+        data_dict = dict(request.data.items())
+        if "perm_token" not in data_dict:
+            return Response("Don't have permission!", status=status.HTTP_401_UNAUTHORIZED)
+        perm_token = str(data_dict["perm_token"])
+        if perm_token not in perm_dict or \
+                [data_dict["current_state"], data_dict["new_state"]] not in perm_dict[perm_token]:
+            return Response("Don't have permission!", status=status.HTTP_401_UNAUTHORIZED)
+
         gov_file_id = request.GET.get('gov_file_id')
         profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
         profile_serialized = GovFileProfileSerializer(profile)
@@ -117,7 +132,7 @@ class UpdateGovFileStateById(APIView):
                             status=status.HTTP_404_NOT_FOUND)
 
         current_state = profile_data['state']
-        data_dict = dict(request.data.items())
+
         if data_dict['current_state'] != current_state:
             return Response('Conflict in current state!', status=status.HTTP_409_CONFLICT)
 
@@ -127,6 +142,9 @@ class UpdateGovFileStateById(APIView):
         new_serializer = GovFileProfileSerializer(profile, data={'state': data_dict['new_state']}, partial=True)
         if new_serializer.is_valid():
             new_serializer.save()
-            return Response(new_serializer.data, status=status.HTTP_200_OK)
+
+            dict_serializer = (dict(new_serializer.data.items()))
+            response_data = {'id': dict_serializer['gov_file_id'], 'state': dict_serializer['state']}
+            return Response(response_data, status=status.HTTP_200_OK)
         else:
             return Response(new_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
