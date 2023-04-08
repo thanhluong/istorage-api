@@ -115,36 +115,53 @@ class UpdateGovFileStateById(APIView):
             "3": [[5, 6], [5, 4]],
         }
 
-        data_dict = dict(request.data.items())
-        if "perm_token" not in data_dict:
-            return Response("Don't have permission!", status=status.HTTP_401_UNAUTHORIZED)
-        perm_token = str(data_dict["perm_token"])
-        if perm_token not in perm_dict or \
-                [data_dict["current_state"], data_dict["new_state"]] not in perm_dict[perm_token]:
-            return Response("Don't have permission!", status=status.HTTP_401_UNAUTHORIZED)
+        response_data = []
+        serializer_list = []
+        print(isinstance(request.data, list))
+        if isinstance(request.data, list):
+            for json_object in request.data:
+                gov_file_id = str(json_object['gov_file_id'])
+                print(json_object)
+                print(type(json_object))
+                print(gov_file_id)
 
-        gov_file_id = request.GET.get('gov_file_id')
-        profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
-        profile_serialized = GovFileProfileSerializer(profile)
-        profile_data = json.loads(JSONRenderer().render(profile_serialized.data).decode('utf-8'))
-        if not profile_data or not profile_data['state']:
-            return Response("Don't have any state for the gov_file correspond to id " + str(gov_file_id),
-                            status=status.HTTP_404_NOT_FOUND)
+                if "perm_token" not in json_object:
+                    return Response("Don't have permission for file with id " + gov_file_id,
+                                    status=status.HTTP_401_UNAUTHORIZED)
+                perm_token = str(json_object["perm_token"])
+                if perm_token not in perm_dict or \
+                        [json_object["current_state"], json_object["new_state"]] not in perm_dict[perm_token]:
+                    return Response("Don't have permission for file with id " + gov_file_id,
+                                    status=status.HTTP_401_UNAUTHORIZED)
 
-        current_state = profile_data['state']
+                profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
+                profile_serialized = GovFileProfileSerializer(profile)
+                profile_data = json.loads(JSONRenderer().render(profile_serialized.data).decode('utf-8'))
+                if not profile_data or not profile_data['state']:
+                    return Response("Don't have any state for the gov_file correspond to id " + gov_file_id,
+                                    status=status.HTTP_404_NOT_FOUND)
 
-        if data_dict['current_state'] != current_state:
-            return Response('Conflict in current state!', status=status.HTTP_409_CONFLICT)
+                current_state = profile_data['state']
 
-        if data_dict['new_state'] not in state_machine[str(current_state)]:
-            return Response('Not allow for that transfer state!', status=status.HTTP_406_NOT_ACCEPTABLE)
+                if json_object['current_state'] != current_state:
+                    return Response('Conflict in current state for file with id ' + gov_file_id,
+                                    status=status.HTTP_409_CONFLICT)
 
-        new_serializer = GovFileProfileSerializer(profile, data={'state': data_dict['new_state']}, partial=True)
-        if new_serializer.is_valid():
-            new_serializer.save()
+                if json_object['new_state'] not in state_machine[str(current_state)]:
+                    return Response('Not allow for that transfer state for file with id ' + gov_file_id,
+                                    status=status.HTTP_406_NOT_ACCEPTABLE)
 
-            dict_serializer = (dict(new_serializer.data.items()))
-            response_data = {'id': dict_serializer['gov_file_id'], 'state': dict_serializer['state']}
+                new_serializer = GovFileProfileSerializer(profile, data={'state': json_object['new_state']}, partial=True)
+                if new_serializer.is_valid():
+                    serializer_list.append(new_serializer)
+
+                    response_data.append({'id': gov_file_id, 'state': json_object['new_state']})
+                else:
+                    return Response(new_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            for serializer in serializer_list:
+                serializer.save()
+
             return Response(response_data, status=status.HTTP_200_OK)
         else:
-            return Response(new_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response("Request body must list of json object!", status=status.HTTP_400_BAD_REQUEST)
