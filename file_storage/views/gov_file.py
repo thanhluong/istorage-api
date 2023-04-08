@@ -21,8 +21,9 @@ class GetGovFiles(APIView):
             "4": [1, 2, 3, 4, 5, 6]
         }
 
-        request_data = dict(request.data.items())
-        perm_token = str(request_data["perm_token"])
+        # request_data = dict(request.data.items())
+        # perm_token = str(request_data["perm_token"])
+        perm_token = request.GET.get('perm_token')
         if perm_token not in perm_read_dict:
             return Response("Unauthorized!", status=status.HTTP_401_UNAUTHORIZED)
 
