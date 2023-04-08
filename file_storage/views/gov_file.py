@@ -14,19 +14,17 @@ import json
 
 class GetGovFiles(APIView):
     def get(self, request, *args, **kwargs):
-        # gov_file_id = request.query_params.get('gov_file_id')
-        #
-        # if gov_file_id:
-        #     try:
-        #         gov_file = GovFile.objects.get(gov_file_id=gov_file_id)
-        #         serializer = GovFileSerializer(gov_file)
-        #         return Response(serializer.data, status=status.HTTP_200_OK)
-        #     except GovFile.DoesNotExist:
-        #         return Response({"detail": "File not found."}, status=status.HTTP_404_NOT_FOUND)
-        # else:
-        #     files = GovFile.objects.all()
-        #     serializer = GovFileSerializer(files, many=True)
-        #     return Response(serializer.data, status=status.HTTP_200_OK)
+        perm_read_dict = {
+            "1": [1, 2, 3],
+            "2": [3, 4, 5],
+            "3": [5, 6],
+            "4": [1, 2, 3, 4, 5, 6]
+        }
+
+        request_data = dict(request.data.items())
+        perm_token = str(request_data["perm_token"])
+        if perm_token not in perm_read_dict:
+            return Response("Unauthorized!", status=status.HTTP_401_UNAUTHORIZED)
 
         files = GovFile.objects.all()
         serializer = GovFileSerializer(files, many=True)
@@ -35,15 +33,20 @@ class GetGovFiles(APIView):
         for file_info_od in serializer.data:
             file_info_dic = dict(file_info_od)
             gov_file_id = file_info_dic['id']
-            profile_queryset = GovFileProfile.objects.filter(gov_file_id=gov_file_id)
-            profile_serialized = GovFileProfileSerializer(profile_queryset, many=True)
 
-            profile_data_list = json.loads(JSONRenderer().render(profile_serialized.data).decode('utf-8'))
-            if not profile_data_list or len(profile_data_list) == 0:
-                response_data.append(file_info_dic)
+            profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
+            profile_serialized = GovFileProfileSerializer(profile)
+
+            profile_data = json.loads(JSONRenderer().render(profile_serialized.data).decode('utf-8'))
+            if not profile_data or not profile_data['state']:
                 continue
 
-            file_info_dic['state'] = profile_data_list[0]['state']
+            state = profile_data['state']
+
+            if state not in perm_read_dict[perm_token]:
+                continue
+
+            file_info_dic['state'] = state
             response_data.append(file_info_dic)
 
         return Response(response_data, status=status.HTTP_200_OK)
@@ -96,6 +99,7 @@ class UpdateGovFileById(APIView):
 
 
 class UpdateGovFileStateById(APIView):
+
     def patch(self, request):
         """
             1: mo, 2: dong, 3: nop luu co quan, 4: luu tru co quan, 5: nop luu lich su, 6: luu tru lich su
@@ -109,28 +113,25 @@ class UpdateGovFileStateById(APIView):
             "6": [4]
         }
 
-        perm_dict = {
+        perm_transfer_dict = {
             "1": [[1, 2], [2, 1], [2, 3]],
             "2": [[3, 4], [3, 1], [4, 5]],
             "3": [[5, 6], [5, 4]],
+            "4": [[1, 2], [2, 1], [2, 3], [3, 4], [3, 1], [4, 5], [5, 6], [5, 4]],
         }
 
         response_data = []
         serializer_list = []
-        print(isinstance(request.data, list))
         if isinstance(request.data, list):
             for json_object in request.data:
                 gov_file_id = str(json_object['gov_file_id'])
-                print(json_object)
-                print(type(json_object))
-                print(gov_file_id)
 
                 if "perm_token" not in json_object:
                     return Response("Don't have permission for file with id " + gov_file_id,
                                     status=status.HTTP_401_UNAUTHORIZED)
                 perm_token = str(json_object["perm_token"])
-                if perm_token not in perm_dict or \
-                        [json_object["current_state"], json_object["new_state"]] not in perm_dict[perm_token]:
+                if perm_token not in perm_transfer_dict or \
+                        [json_object["current_state"], json_object["new_state"]] not in perm_transfer_dict[perm_token]:
                     return Response("Don't have permission for file with id " + gov_file_id,
                                     status=status.HTTP_401_UNAUTHORIZED)
 
