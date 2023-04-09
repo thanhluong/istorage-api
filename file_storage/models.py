@@ -51,12 +51,12 @@ class Document(models.Model):
 
 
 class StateEnum(Enum):
-    VALUE_1 = 1
-    VALUE_2 = 2
-    VALUE_3 = 3
-    VALUE_4 = 4
-    VALUE_5 = 5
-    VALUE_6 = 6
+    OPEN = 1
+    CLOSE = 2
+    SUBMIT_ORGAN = 3
+    STORE_ORGAN = 4
+    SUBMIT_ARCHIVE = 5
+    STORE_ARCHIVE = 6
 
     @classmethod
     def choices(cls):

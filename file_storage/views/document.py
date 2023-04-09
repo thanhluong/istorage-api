@@ -17,7 +17,11 @@ class DocumentUploadView(APIView):
 
     def post(self, request, *args, **kwargs):
         if 'file' not in request.FILES:
-            return Response({"file": ["No file was submitted."]}, status=status.HTTP_400_BAD_REQUEST)
+            response_msg = {
+                "error_code": status.HTTP_400_BAD_REQUEST,
+                "description": "No file was submitted"
+            }
+            return Response(response_msg, status=status.HTTP_200_OK)
 
         file = request.FILES['file']
         folder_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT,
@@ -39,7 +43,11 @@ class DocumentUploadView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        response_msg = {
+            "error_code": status.HTTP_400_BAD_REQUEST,
+            "description": "Invalid data"
+        }
+        return Response(response_msg, status=status.HTTP_200_OK)
 
 
 class GetDocumentByGovFileId(APIView):
@@ -57,9 +65,15 @@ class GetDocumentByGovFileId(APIView):
                                           settings.MEDIA_ROOT, settings.DOCUMENT_PATH,
                                           doc['gov_file_id'], doc['doc_name'])
                 result.append(doc)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+
+            sorted_data = sorted(result, key=lambda x: x["doc_ordinal"])
+            return Response(sorted_data, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Missing file_id parameter'}, status=status.HTTP_400_BAD_REQUEST)
+            response_msg = {
+                "error_code": status.HTTP_400_BAD_REQUEST,
+                "description": "Missing file_id parameter"
+            }
+            return Response(response_msg, status=status.HTTP_200_OK)
 
 
 class DeleteDocumentById(APIView):
@@ -80,4 +94,8 @@ class UpdateDocumentById(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            response_msg = {
+                "error_code": status.HTTP_400_BAD_REQUEST,
+                "description": "Invalid data"
+            }
+            return Response(response_msg, status=status.HTTP_200_OK)

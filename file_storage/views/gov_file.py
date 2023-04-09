@@ -10,6 +10,7 @@ from file_storage.models import GovFile, GovFileProfile
 from file_storage.serializers import GovFileSerializer, GovFileProfileSerializer
 
 import json
+from datetime import datetime
 
 
 class GetGovFiles(APIView):
@@ -21,11 +22,14 @@ class GetGovFiles(APIView):
             "4": [1, 2, 3, 4, 5, 6]
         }
 
-        # request_data = dict(request.data.items())
-        # perm_token = str(request_data["perm_token"])
         perm_token = request.GET.get('perm_token')
+        filter_state = request.GET.get('state') if 'state' in request.GET else None
         if perm_token not in perm_read_dict:
-            return Response("Unauthorized!", status=status.HTTP_401_UNAUTHORIZED)
+            response_msg = {
+                "error_code": status.HTTP_401_UNAUTHORIZED,
+                "description": "Unauthorized"
+            }
+            return Response(response_msg, status=status.HTTP_200_OK)
 
         files = GovFile.objects.all()
         serializer = GovFileSerializer(files, many=True)
@@ -44,7 +48,8 @@ class GetGovFiles(APIView):
 
             state = profile_data['state']
 
-            if state not in perm_read_dict[perm_token]:
+            # if state not in perm_read_dict[perm_token] or str(state) != str(filter_state):
+            if str(state) != str(filter_state):
                 continue
 
             file_info_dic['state'] = state
@@ -56,7 +61,27 @@ class GetGovFiles(APIView):
 class CreateGovFile(APIView):
     parser_classes = [JSONParser]
 
+    def convert_date(self, date_str):
+        return datetime.strptime(date_str, "%Y-%m-%d")
+
     def post(self, request, *args, **kwargs):
+        date_error_msg = {
+            "error_code": status.HTTP_400_BAD_REQUEST,
+            "description": "Invalid start date or end date"
+        }
+        resp_date_error = Response(date_error_msg, status=status.HTTP_200_OK)
+
+        if "start_date" not in request.data or "end_date" not in request.data:
+            return resp_date_error
+        try:
+            start_date = self.convert_date(request.data.get('start_date'))
+            end_date = self.convert_date(request.data.get('end_date'))
+
+            if start_date > end_date:
+                return resp_date_error
+        except ValueError:
+            return resp_date_error
+
         serializer = GovFileSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -64,17 +89,27 @@ class CreateGovFile(APIView):
 
             gov_file_profile = {
                 "gov_file_id": serializer.data['id'],
-                "state": 1
+                "state": 10
             }
             profile_serializer = GovFileProfileSerializer(data=gov_file_profile)
             if profile_serializer.is_valid():
                 profile_serializer.save()
+            else:
+                response_msg = {
+                    "error_code": status.HTTP_400_BAD_REQUEST,
+                    "description": "Request data not valid"
+                }
+                Response(response_msg, status=status.HTTP_200_OK)
 
             response_data = serializer.data
             response_data['state'] = 1
             return Response(response_data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        response_msg = {
+            "error_code": status.HTTP_400_BAD_REQUEST,
+            "description": "Invalid serialize data"
+        }
+        return Response(response_msg, status=status.HTTP_200_OK)
 
 
 class DeleteGovFileById(APIView):
@@ -96,7 +131,11 @@ class UpdateGovFileById(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            response_msg = {
+                "error_code": status.HTTP_400_BAD_REQUEST,
+                "description": "Invalid serialize data"
+            }
+            return Response(response_msg, status=status.HTTP_200_OK)
 
 
 class UpdateGovFileStateById(APIView):
@@ -128,42 +167,67 @@ class UpdateGovFileStateById(APIView):
                 gov_file_id = str(json_object['gov_file_id'])
 
                 if "perm_token" not in json_object:
-                    return Response("Don't have permission for file with id " + gov_file_id,
-                                    status=status.HTTP_401_UNAUTHORIZED)
+                    response_msg = {
+                        "error_code": status.HTTP_401_UNAUTHORIZED,
+                        "description": "Don't have permission for file with id " + gov_file_id
+                    }
+                    return Response(response_msg, status=status.HTTP_200_OK)
                 perm_token = str(json_object["perm_token"])
                 if perm_token not in perm_transfer_dict or \
                         [json_object["current_state"], json_object["new_state"]] not in perm_transfer_dict[perm_token]:
-                    return Response("Don't have permission for file with id " + gov_file_id,
-                                    status=status.HTTP_401_UNAUTHORIZED)
+                    response_msg = {
+                        "error_code": status.HTTP_401_UNAUTHORIZED,
+                        "description": "Don't have permission for file with id " + gov_file_id
+                    }
+                    return Response(response_msg, status=status.HTTP_200_OK)
 
                 profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
                 profile_serialized = GovFileProfileSerializer(profile)
                 profile_data = json.loads(JSONRenderer().render(profile_serialized.data).decode('utf-8'))
                 if not profile_data or not profile_data['state']:
-                    return Response("Don't have any state for the gov_file correspond to id " + gov_file_id,
-                                    status=status.HTTP_404_NOT_FOUND)
+                    response_msg = {
+                        "error_code": status.HTTP_404_NOT_FOUND,
+                        "description": "Don't have any state for the gov_file correspond to id " + gov_file_id
+                    }
+                    return Response(response_msg, status=status.HTTP_200_OK)
 
                 current_state = profile_data['state']
 
                 if json_object['current_state'] != current_state:
-                    return Response('Conflict in current state for file with id ' + gov_file_id,
-                                    status=status.HTTP_409_CONFLICT)
+                    response_msg = {
+                        "error_code": status.HTTP_409_CONFLICT,
+                        "description": "Conflict in current state for file with id " + gov_file_id
+                    }
+                    return Response(response_msg, status=status.HTTP_200_OK)
 
                 if json_object['new_state'] not in state_machine[str(current_state)]:
-                    return Response('Not allow for that transfer state for file with id ' + gov_file_id,
-                                    status=status.HTTP_406_NOT_ACCEPTABLE)
+                    response_msg = {
+                        "error_code": status.HTTP_406_NOT_ACCEPTABLE,
+                        "description": "Not allow for that transfer state for file with id " + gov_file_id
+                    }
+                    return Response(response_msg, status=status.HTTP_200_OK)
 
-                new_serializer = GovFileProfileSerializer(profile, data={'state': json_object['new_state']}, partial=True)
+                new_serializer = GovFileProfileSerializer(profile,
+                                                          data={'state': json_object['new_state']},
+                                                          partial=True)
                 if new_serializer.is_valid():
                     serializer_list.append(new_serializer)
 
                     response_data.append({'id': gov_file_id, 'state': json_object['new_state']})
                 else:
-                    return Response(new_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    response_msg = {
+                        "error_code": status.HTTP_400_BAD_REQUEST,
+                        "description": "Invalid serialize data"
+                    }
+                    return Response(response_msg, status=status.HTTP_200_OK)
 
             for serializer in serializer_list:
                 serializer.save()
 
             return Response(response_data, status=status.HTTP_200_OK)
         else:
-            return Response("Request body must list of json object!", status=status.HTTP_400_BAD_REQUEST)
+            response_msg = {
+                "error_code": status.HTTP_400_BAD_REQUEST,
+                "description": "Request body must list of json object"
+            }
+            return Response(response_msg, status=status.HTTP_200_OK)
