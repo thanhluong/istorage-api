@@ -6,7 +6,6 @@ from rest_framework.renderers import JSONRenderer
 
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
-from django.http import JsonResponse
 
 from file_storage.models import GovFile, GovFileProfile
 from file_storage.serializers import GovFileSerializer, GovFileProfileSerializer
@@ -169,22 +168,37 @@ class UpdateGovFileStateById(APIView):
             return Response(response_data, status=status.HTTP_200_OK)
         else:
             return Response("Request body must list of json object!", status=status.HTTP_400_BAD_REQUEST)
+        
 
+class ShowGovFileByPagination(APIView):
+    
+    def get(self, request, *args, **kwargs):
+        gov_file_list = GovFile.objects.all()
+        page_size = request.GET.get('page_size')
+        if page_size is not None:
+            paginator = Paginator(gov_file_list, page_size)
+            page_id = request.GET.get('page_id')
+            if page_id is not None:
+                page_obj = paginator.get_page(page_id)
+                serializer = GovFileSerializer(page_obj.object_list, many = True)
+                data = {
+                    'count': paginator.count,
+                    'num_page': paginator.num_pages,
+                    'current_page': page_obj.number,
+                    'previous_page': page_obj.previous_page_number() if page_obj.has_previous() else None,
+                    'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
+                    'results': serializer.data, 
+                }
 
-
-def get_gov_file_pagination(request):
-    gov_file_list = GovFile.objects.all()
-    page_size = request.GET.get('page_size') # number gov_file per page
-    paginator = Paginator(gov_file_list, page_size)  
-    page_id = request.GET.get('page_id')
-    page_obj = paginator.get_page(page_id)
-    serializer = GovFileSerializer(page_obj.object_list, many=True)
-    data = {
-        'count': paginator.count,
-        'num_pages': paginator.num_pages,
-        'current_page': page_obj.number,
-        'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
-        'previous_page': page_obj.previous_page_number() if page_obj.has_previous() else None,
-        'results': serializer.data,
-    }
-    return JsonResponse(data)
+                if int(page_id) > paginator.num_pages: 
+                    data['warning'] =  'page_id is greater than total page!'
+                
+                if page_id < '1':
+                   data['warning'] = 'page_id must start from 1!'
+                
+                return Response(data, status=status.HTTP_200_OK)
+            else: 
+                 return Response("Missing page_id in request!", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("Missing page_size in request!", status=status.HTTP_400_BAD_REQUEST)       
+        
