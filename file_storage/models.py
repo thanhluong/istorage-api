@@ -3,7 +3,7 @@ from enum import Enum
 
 
 class GovFile(models.Model):
-    gov_file_code = models.CharField(max_length=100)
+    gov_file_code = models.CharField(max_length=100, null=True)
     identifier = models.CharField(max_length=13, null=True)
     organ_id = models.CharField(max_length=13, null=True)
     file_catalog = models.IntegerField(null=True)
