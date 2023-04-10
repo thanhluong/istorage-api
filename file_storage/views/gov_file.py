@@ -47,9 +47,8 @@ class GetGovFiles(APIView):
                 continue
 
             state = profile_data['state']
-
             # if state not in perm_read_dict[perm_token] or str(state) != str(filter_state):
-            if str(state) != str(filter_state):
+            if filter_state and str(state) != str(filter_state):
                 continue
 
             file_info_dic['state'] = state
