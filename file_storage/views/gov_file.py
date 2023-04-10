@@ -88,7 +88,7 @@ class CreateGovFile(APIView):
 
             gov_file_profile = {
                 "gov_file_id": serializer.data['id'],
-                "state": 10
+                "state": 1
             }
             profile_serializer = GovFileProfileSerializer(data=gov_file_profile)
             if profile_serializer.is_valid():
