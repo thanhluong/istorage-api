@@ -97,7 +97,8 @@ class GetGovFiles(APIView):
                     break
             if not is_selected:
                 continue
-
+            
+            print(filter_title, title)
             if filter_title:
                 if not title:
                     continue
@@ -127,7 +128,7 @@ class CreateGovFile(APIView):
             return resp_date_error
         try:
             start_date = convert_date(request.data.get('start_date'))
-            if "end_date" in request.data:
+            if "end_date" in request.data and request.data.get('end_date'):
                 end_date = convert_date(request.data.get('end_date'))
 
                 if start_date > end_date:
