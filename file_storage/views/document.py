@@ -88,6 +88,7 @@ class UpdateDocumentById(APIView):
     def patch(self, request):
         document_id = request.GET.get('document_id')
         document = get_object_or_404(Document, id=document_id)
+        print(type(document))
         serializer = DocumentSerializer(instance=document, data=dict(request.data.items()), partial=True)
 
         if serializer.is_valid():
