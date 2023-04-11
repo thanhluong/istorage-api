@@ -11,6 +11,7 @@ from file_storage.serializers import GovFileSerializer, GovFileProfileSerializer
 
 import json
 from datetime import datetime
+from unidecode import unidecode
 
 
 def convert_date(date_str):
@@ -23,6 +24,25 @@ class GetGovFiles(APIView):
             return False
         return True
 
+    def format_string(self, text):
+        words = text.split()
+        trimmed_text = " ".join(words)
+        format_text = unidecode(trimmed_text.lower())
+        return format_text
+
+    def check_title(self, title, search):
+        title = self.format_string(title)
+        search = self.format_string(search)
+
+        search_idx = title.find(search)
+        if search_idx == -1:
+            return False
+        if search_idx > 0 and title[search_idx-1] != ' ':
+            return False
+        if search_idx + len(search) < len(title) and title[search_idx + len(search)] != ' ':
+            return False
+
+        return True
 
     def get(self, request, *args, **kwargs):
         perm_read_dict = {
@@ -68,7 +88,7 @@ class GetGovFiles(APIView):
             end_date = convert_date(file_info_od['end_date']) if file_info_od['end_date'] else None
             title = file_info_od['title'] if 'title' in file_info_od else None
 
-            filter_fields = ['id', 'state', 'start_date', 'end_date', 'title']
+            filter_fields = ['id', 'state', 'start_date', 'end_date']
             is_selected = True
             for field in filter_fields:
                 check_str = "self.filter_by_fields(" + field + ", filter_" + field + ")"
@@ -77,6 +97,12 @@ class GetGovFiles(APIView):
                     break
             if not is_selected:
                 continue
+
+            if filter_title:
+                if not title:
+                    continue
+                if not self.check_title(title, filter_title):
+                    continue
 
             file_info_dic['state'] = state
             response_data.append(file_info_dic)
