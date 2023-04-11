@@ -175,7 +175,7 @@ class DeleteGovFileById(APIView):
 
 class UpdateGovFileById(APIView):
     def patch(self, request):
-        gov_file_id = request.GET.get('id')
+        gov_file_id = request.data.get('id')
         gov_file = GovFile.objects.filter(id=gov_file_id)
         if gov_file:
             gov_file = gov_file.first()
