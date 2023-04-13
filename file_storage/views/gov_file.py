@@ -193,7 +193,7 @@ class UpdateGovFileById(APIView):
                 }
                 return Response(response_msg, status=status.HTTP_200_OK)
 
-            if "end_date" in request.data:
+            if "end_date" in request.data and request.data.get('end_date'):
                 date_error_msg = {
                     "error_code": status.HTTP_400_BAD_REQUEST,
                     "description": "Invalid start date or end date"
