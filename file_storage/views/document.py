@@ -19,7 +19,7 @@ class DocumentUploadView(APIView):
         if 'file' not in request.FILES:
             response_msg = {
                 "error_code": status.HTTP_400_BAD_REQUEST,
-                "description": "No file was submitted"
+                "description": "Không có văn bản nào được đính kèm"
             }
             return Response(response_msg, status=status.HTTP_200_OK)
 
@@ -61,9 +61,8 @@ class GetDocumentByGovFileId(APIView):
             serialization_result = serializer.data
             result = []
             for doc in serialization_result:
-                doc['url'] = os.path.join("http://", request.get_host(),
-                                          settings.MEDIA_ROOT, settings.DOCUMENT_PATH,
-                                          doc['gov_file_id'], doc['doc_name'])
+                doc['url'] = "http://" + request.get_host() + settings.MEDIA_URL + settings.DOCUMENT_PATH \
+                             + '/' + doc['gov_file_id'] + '/' + doc['doc_name']
                 result.append(doc)
 
             sorted_data = sorted(result, key=lambda x: x["doc_ordinal"])
@@ -71,7 +70,7 @@ class GetDocumentByGovFileId(APIView):
         else:
             response_msg = {
                 "error_code": status.HTTP_400_BAD_REQUEST,
-                "description": "Missing file_id parameter"
+                "description": "Thiếu thông tin hồ sơ"
             }
             return Response(response_msg, status=status.HTTP_200_OK)
 
