@@ -113,10 +113,6 @@ class GetGovFiles(APIView):
 
 class CreateGovFile(APIView):
     parser_classes = [JSONParser]
-
-    def generate_gov_file_code(self, identifier, organ_id):
-        return identifier + '_' + organ_id
-
     def post(self, request, *args, **kwargs):
         date_error_msg = {
             "error_code": status.HTTP_400_BAD_REQUEST,
@@ -167,15 +163,18 @@ class CreateGovFile(APIView):
 
 
 class DeleteGovFileById(APIView):
-    def delete(self, request):
-        gov_file_id = request.GET.get('id')
+    def post(self, request):
+        gov_file_id = request.data.get('id')
         gov_file = get_object_or_404(GovFile, id=gov_file_id)
+        gov_file_profile = get_object_or_404(GovFileProfile, gov_file_id=gov_file_id)
+
         gov_file.delete()
+        gov_file_profile.delete()
         return Response(status=status.HTTP_200_OK)
 
 
 class UpdateGovFileById(APIView):
-    def patch(self, request):
+    def post(self, request):
         gov_file_id = request.data.get('id')
         gov_file = GovFile.objects.filter(id=gov_file_id)
         if gov_file:
@@ -227,7 +226,7 @@ class UpdateGovFileById(APIView):
 
 class UpdateGovFileStateById(APIView):
 
-    def patch(self, request):
+    def post(self, request):
         """
             1: mo, 2: dong, 3: nop luu co quan, 4: luu tru co quan, 5: nop luu lich su, 6: luu tru lich su
         """
