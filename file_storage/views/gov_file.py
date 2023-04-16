@@ -145,6 +145,7 @@ class CreateGovFile(APIView):
             return resp_date_error
 
         serializer = GovFileSerializer(data=request.data)
+        print(serializer)
 
         if serializer.is_valid():
             serializer.save()
