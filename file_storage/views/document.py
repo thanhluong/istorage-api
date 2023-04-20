@@ -11,9 +11,32 @@ from file_storage.serializers import DocumentSerializer
 
 import os
 
+from pymongo import MongoClient
+from pypdf import PdfReader 
 
 class DocumentUploadView(APIView):
     parser_classes = [MultiPartParser, FormParser]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mongo_client = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
+        self.mongo_collection = self.mongo_client[settings.MONGO_DB_NAME][settings.MONGO_FTS_COLLECTION_NAME]
+
+    def insert_to_fts_db(self, file_path, gov_file_id, doc_id):
+        reader = PdfReader(file_path)
+        text = ""
+        for page in reader.pages:
+            page_text = page.extract_text()
+            page_text = page_text.replace("\n", " ")
+            text += page_text
+        new_doc = {
+            "gov_file_id": gov_file_id,
+            "doc_id": doc_id,
+            "text": text
+        }
+        self.mongo_collection.insert_one(new_doc)
+        return 0
+
 
     def post(self, request, *args, **kwargs):
         if 'file' not in request.FILES:
@@ -41,6 +64,11 @@ class DocumentUploadView(APIView):
 
         if serializer.is_valid():
             serializer.save()
+            self.insert_to_fts_db(
+                file_path=file_path, 
+                gov_file_id=serializer.data["gov_file_id"],
+                doc_id=serializer.data["id"]
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         response_msg = {

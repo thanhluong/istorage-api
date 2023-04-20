@@ -126,3 +126,9 @@ MEDIA_ROOT = 'media'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Mongodb settings
+MONGO_HOST = "localhost"
+MONGO_PORT = 27017
+MONGO_DB_NAME = "test"
+MONGO_FTS_COLLECTION_NAME = "docs"
