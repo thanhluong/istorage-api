@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Document, GovFile
+from .models import Document, GovFile, GovFileProfile
 
 
 class DocumentAdmin(admin.ModelAdmin):
@@ -12,3 +12,4 @@ class GovFileAdmin(admin.ModelAdmin):
 
 admin.site.register(Document)
 admin.site.register(GovFile)
+admin.site.register(GovFileProfile)
