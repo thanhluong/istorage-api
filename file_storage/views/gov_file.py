@@ -29,6 +29,7 @@ NOP_LUU_CQ = 3
 LUU_TRU_CQ = 4
 NOP_LUU_LS = 5
 LUU_TRU_LS = 6
+TRA_VE = 7
 
 perm_read_dict = {
     NHAP_LIEU: [MO, DONG, NOP_LUU_CQ],
@@ -273,8 +274,8 @@ class UpdateGovFileStateById(APIView):
         state_machine = {
             MO: [DONG],
             DONG: [MO, NOP_LUU_CQ],
-            NOP_LUU_CQ: [MO, LUU_TRU_CQ],
-            LUU_TRU_CQ: [DONG, NOP_LUU_LS],
+            NOP_LUU_CQ: [TRA_VE, LUU_TRU_CQ],
+            LUU_TRU_CQ: [NOP_LUU_CQ, NOP_LUU_LS],
             NOP_LUU_LS: [LUU_TRU_CQ, LUU_TRU_LS],
             LUU_TRU_LS: [LUU_TRU_CQ]
         }
@@ -301,22 +302,22 @@ class UpdateGovFileStateById(APIView):
             gov_file_id = str(json_data['id'])
 
             # Check if request data has permission token
-            if "perm_token" not in json_data:
-                response_msg = {
-                    "error_code": status.HTTP_401_UNAUTHORIZED,
-                    "description": "Không có quyền với hồ sơ với id " + gov_file_id
-                }
-                return Response(response_msg, status=status.HTTP_200_OK)
+            # if "perm_token" not in json_data:
+            #     response_msg = {
+            #         "error_code": status.HTTP_401_UNAUTHORIZED,
+            #         "description": "Không có quyền với hồ sơ với id " + gov_file_id
+            #     }
+            #     return Response(response_msg, status=status.HTTP_200_OK)
 
             # Check if the permission token is valid
-            perm_token = int(json_data["perm_token"])
-            if perm_token not in perm_transfer_dict or \
-                    [json_data["current_state"], json_data["new_state"]] not in perm_transfer_dict[perm_token]:
-                response_msg = {
-                    "error_code": status.HTTP_401_UNAUTHORIZED,
-                    "description": "Không có quyền với hồ sơ với id " + gov_file_id
-                }
-                return Response(response_msg, status=status.HTTP_200_OK)
+            # perm_token = int(json_data["perm_token"])
+            # if perm_token not in perm_transfer_dict or \
+            #         [json_data["current_state"], json_data["new_state"]] not in perm_transfer_dict[perm_token]:
+            #     response_msg = {
+            #         "error_code": status.HTTP_401_UNAUTHORIZED,
+            #         "description": "Không có quyền với hồ sơ với id " + gov_file_id
+            #     }
+            #     return Response(response_msg, status=status.HTTP_200_OK)
 
             gov_file = GovFile.objects.filter(id=gov_file_id).first()
             profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
@@ -361,7 +362,7 @@ class UpdateGovFileStateById(APIView):
                 return Response(response_msg, status=status.HTTP_200_OK)
 
             # Check when close gov_file, the required fields is not empty
-            if current_state == 1 and new_state == 2 and not gov_file_data['end_date']:
+            if current_state == MO and new_state == DONG and not gov_file_data['end_date']:
                 response_msg = {
                     'error_code': status.HTTP_400_BAD_REQUEST,
                     'description': "Hồ sơ chưa có ngày kết thúc"
