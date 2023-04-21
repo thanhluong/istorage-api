@@ -21,6 +21,7 @@ def refine_query(query):
 
 def post_process(item):
     item.pop('_id', None) # Remove key '_id' in MongoDB item
+    item.pop('text', None)
     return item
 
 

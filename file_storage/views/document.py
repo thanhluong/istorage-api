@@ -22,7 +22,14 @@ class DocumentUploadView(APIView):
         self.mongo_client = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
         self.mongo_collection = self.mongo_client[settings.MONGO_DB_NAME][settings.MONGO_FTS_COLLECTION_NAME]
 
-    def insert_to_fts_db(self, file_path, gov_file_id, doc_id):
+    def insert_to_fts_db(
+            self,
+            file_path,
+            gov_file_id, 
+            doc_id,
+            doc_code,
+            doc_name
+            ):
         reader = PdfReader(file_path)
         text = ""
         for page in reader.pages:
@@ -32,7 +39,9 @@ class DocumentUploadView(APIView):
         new_doc = {
             "gov_file_id": gov_file_id,
             "doc_id": doc_id,
-            "text": text
+            "text": text,
+            "doc_code": doc_code,
+            "doc_name": doc_name
         }
         self.mongo_collection.insert_one(new_doc)
         return 0
@@ -67,7 +76,9 @@ class DocumentUploadView(APIView):
             self.insert_to_fts_db(
                 file_path=file_path, 
                 gov_file_id=serializer.data["gov_file_id"],
-                doc_id=serializer.data["id"]
+                doc_id=serializer.data["id"],
+                doc_code=serializer.data["doc_code"],
+                doc_name=file.name
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
