@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 from file_storage.models import GovFile, GovFileProfile
 from file_storage.serializers import GovFileSerializer, GovFileProfileSerializer
@@ -13,6 +14,7 @@ import json
 from datetime import datetime
 from unidecode import unidecode
 from enum import Enum
+from pymongo import MongoClient
 
 
 def convert_date(date_str):
@@ -177,18 +179,29 @@ class CreateGovFile(APIView):
 
 
 class DeleteGovFileById(APIView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mongo_client = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
+        self.mongo_collection = self.mongo_client[settings.MONGO_DB_NAME][settings.MONGO_FTS_COLLECTION_NAME]
+
+    def delete_fts_db(self, gov_file_id):
+        self.mongo_collection.delete_many({"gov_file_id": int(gov_file_id)})
+        self.mongo_collection.delete_many({"gov_file_id": str(gov_file_id)})
+        return 0
+
     def post(self, request):
         gov_file_id = request.data.get('id')
+        print(type(gov_file_id))
 
         perm_response_msg = {
             "error_code": status.HTTP_401_UNAUTHORIZED,
             "description": "Bạn không có quyền xóa hồ sơ này!",
 
         }
-        if 'perm_token' in request.data:
-            perm_token = int(request.data.get('perm_token'))
-        else:
-            return Response(perm_response_msg, status.HTTP_200_OK)
+        # if 'perm_token' in request.data:
+        #     perm_token = int(request.data.get('perm_token'))
+        # else:
+        #     return Response(perm_response_msg, status.HTTP_200_OK)
 
         gov_file = GovFile.objects.filter(id=gov_file_id)
         gov_file_profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
@@ -202,11 +215,12 @@ class DeleteGovFileById(APIView):
             }
             return Response(response_msg, status=status.HTTP_200_OK)
 
-        if profile_json['state'] and profile_json['state'] not in perm_read_dict[perm_token]:
-            return Response(perm_response_msg, status.HTTP_200_OK)
+        # if profile_json['state'] and profile_json['state'] not in perm_read_dict[perm_token]:
+        #     return Response(perm_response_msg, status.HTTP_200_OK)
 
         gov_file.delete()
         gov_file_profile.delete()
+        self.delete_fts_db(gov_file_id)
         response_msg = {
             "description": "Đã xóa hồ sơ thành công!",
 

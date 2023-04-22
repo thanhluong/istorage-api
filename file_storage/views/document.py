@@ -115,10 +115,21 @@ class GetDocumentByGovFileId(APIView):
 
 
 class DeleteDocumentById(APIView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mongo_client = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
+        self.mongo_collection = self.mongo_client[settings.MONGO_DB_NAME][settings.MONGO_FTS_COLLECTION_NAME]
+
+    def delete_fts_db(self, document_id):
+        self.mongo_collection.delete_many({"doc_id": int(document_id)})
+        self.mongo_collection.delete_many({"doc_id": str(document_id)})
+        return 0
+
     def post(self, request):
         document_id = request.data.get('id')
         document = get_object_or_404(Document, id=document_id)
         document.delete()
+        self.delete_fts_db(document_id)
         return Response(status=status.HTTP_200_OK)
 
 
