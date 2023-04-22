@@ -270,12 +270,13 @@ class UpdateGovFileStateById(APIView):
     def post(self, request):
         """
             1: mo, 2: dong, 3: nop luu co quan, 4: luu tru co quan, 5: nop luu lich su, 6: luu tru lich su
+            7: tra ve
         """
         state_machine = {
             MO: [DONG],
             DONG: [MO, NOP_LUU_CQ],
             NOP_LUU_CQ: [TRA_VE, LUU_TRU_CQ],
-            LUU_TRU_CQ: [NOP_LUU_CQ, NOP_LUU_LS],
+            LUU_TRU_CQ: [TRA_VE, NOP_LUU_CQ, NOP_LUU_LS],
             NOP_LUU_LS: [LUU_TRU_CQ, LUU_TRU_LS],
             LUU_TRU_LS: [LUU_TRU_CQ]
         }
