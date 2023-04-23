@@ -32,6 +32,7 @@ LUU_TRU_CQ = 4
 NOP_LUU_LS = 5
 LUU_TRU_LS = 6
 TRA_VE = 7
+TRA_VE_LS = 8
 
 perm_read_dict = {
     NHAP_LIEU: [MO, DONG, NOP_LUU_CQ],
@@ -284,15 +285,17 @@ class UpdateGovFileStateById(APIView):
     def post(self, request):
         """
             1: mo, 2: dong, 3: nop luu co quan, 4: luu tru co quan, 5: nop luu lich su, 6: luu tru lich su
-            7: tra ve
+            7: tra ve, 8: tra ve lich su
         """
         state_machine = {
             MO: [DONG],
             DONG: [MO, NOP_LUU_CQ],
             NOP_LUU_CQ: [TRA_VE, LUU_TRU_CQ],
             LUU_TRU_CQ: [TRA_VE, NOP_LUU_CQ, NOP_LUU_LS],
-            NOP_LUU_LS: [LUU_TRU_CQ, LUU_TRU_LS],
-            LUU_TRU_LS: [LUU_TRU_CQ]
+            NOP_LUU_LS: [TRA_VE_LS, LUU_TRU_CQ, LUU_TRU_LS],
+            LUU_TRU_LS: [TRA_VE_LS, LUU_TRU_CQ],
+            TRA_VE: [NOP_LUU_CQ, LUU_TRU_CQ],
+            TRA_VE_LS: [NOP_LUU_LS, LUU_TRU_LS]
         }
 
         perm_transfer_dict = {

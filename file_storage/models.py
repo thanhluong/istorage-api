@@ -58,6 +58,7 @@ class StateEnum(Enum):
     SUBMIT_ARCHIVE = 5
     STORE_ARCHIVE = 6
     RETURN = 7
+    RETURN_ARCHIVE = 8
 
     @classmethod
     def choices(cls):
