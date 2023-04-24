@@ -363,12 +363,12 @@ class UpdateGovFileStateById(APIView):
 
             current_state = int(profile_data['state'])
             # Check if the current state of request data exactly
-            if json_data['current_state'] != current_state:
-                response_msg = {
-                    "error_code": status.HTTP_409_CONFLICT,
-                    "description": "Trạng thái hiện tại không hợp lệ với hồ sơ có id " + gov_file_id
-                }
-                return Response(response_msg, status=status.HTTP_200_OK)
+            # if json_data['current_state'] != current_state:
+            #    response_msg = {
+            #        "error_code": status.HTTP_409_CONFLICT,
+            #        "description": "Trạng thái hiện tại không hợp lệ với hồ sơ có id " + gov_file_id
+            #    }
+            #    return Response(response_msg, status=status.HTTP_200_OK)
 
             # Check if the transfer state process is valid
             new_state = int(json_data['new_state'])
