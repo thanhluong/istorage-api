@@ -305,8 +305,8 @@ class UpdateGovFileStateById(CsrfExemptMixin, APIView):
             LUU_TRU_CQ: [TRA_VE, NOP_LUU_CQ, NOP_LUU_LS],
             NOP_LUU_LS: [TRA_VE_LS, LUU_TRU_CQ, LUU_TRU_LS],
             LUU_TRU_LS: [TRA_VE_LS, LUU_TRU_CQ],
-            TRA_VE: [NOP_LUU_CQ, LUU_TRU_CQ],
-            TRA_VE_LS: [NOP_LUU_LS, LUU_TRU_LS]
+            TRA_VE: [MO, NOP_LUU_CQ, LUU_TRU_CQ],
+            TRA_VE_LS: [MO, NOP_LUU_CQ, LUU_TRU_CQ, NOP_LUU_LS, LUU_TRU_LS]
         }
 
         perm_transfer_dict = {
