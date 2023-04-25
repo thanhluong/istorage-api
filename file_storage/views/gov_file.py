@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 
+from braces.views import CsrfExemptMixin
+
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
@@ -42,7 +44,9 @@ perm_read_dict = {
 }
 
 
-class GetGovFiles(APIView):
+class GetGovFiles(CsrfExemptMixin, APIView):
+    authentication_classes = []
+
     def filter_by_fields(self, field, filter_field):
         if filter_field and field != filter_field:
             return False
@@ -127,8 +131,10 @@ class GetGovFiles(APIView):
         return Response(response_data, status=status.HTTP_200_OK)
 
 
-class CreateGovFile(APIView):
+class CreateGovFile(CsrfExemptMixin, APIView):
+    authentication_classes = []
     parser_classes = [JSONParser]
+
     def post(self, request, *args, **kwargs):
         date_error_msg = {
             "error_code": status.HTTP_400_BAD_REQUEST,
@@ -179,7 +185,9 @@ class CreateGovFile(APIView):
         return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class DeleteGovFileById(APIView):
+class DeleteGovFileById(CsrfExemptMixin, APIView):
+    authentication_classes = []
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mongo_client = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
@@ -229,7 +237,9 @@ class DeleteGovFileById(APIView):
         return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class UpdateGovFileById(APIView):
+class UpdateGovFileById(CsrfExemptMixin, APIView):
+    authentication_classes = []
+
     def post(self, request):
         gov_file_id = request.data.get('id')
         gov_file = GovFile.objects.filter(id=gov_file_id)
@@ -280,7 +290,8 @@ class UpdateGovFileById(APIView):
             return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class UpdateGovFileStateById(APIView):
+class UpdateGovFileStateById(CsrfExemptMixin, APIView):
+    authentication_classes = []
 
     def post(self, request):
         """

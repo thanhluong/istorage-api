@@ -6,6 +6,8 @@ from rest_framework import status
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
+from braces.views import CsrfExemptMixin
+
 from file_storage.models import Document
 from file_storage.serializers import DocumentSerializer
 
@@ -14,8 +16,9 @@ import os
 from pymongo import MongoClient
 from pypdf import PdfReader 
 
-class DocumentUploadView(APIView):
+class DocumentUploadView(CsrfExemptMixin, APIView):
     parser_classes = [MultiPartParser, FormParser]
+    authentication_classes = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -89,8 +92,9 @@ class DocumentUploadView(APIView):
         return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class GetDocumentByGovFileId(APIView):
+class GetDocumentByGovFileId(CsrfExemptMixin, APIView):
     parser_classes = [JSONParser]
+    authentication_classes = []
 
     def get(self, request, *args, **kwargs):
         gov_file_id = request.GET.get('gov_file_id')
@@ -114,7 +118,9 @@ class GetDocumentByGovFileId(APIView):
             return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class DeleteDocumentById(APIView):
+class DeleteDocumentById(CsrfExemptMixin, APIView):
+    authentication_classes = []
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mongo_client = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
@@ -133,7 +139,9 @@ class DeleteDocumentById(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class UpdateDocumentById(APIView):
+class UpdateDocumentById(CsrfExemptMixin, APIView):
+    authentication_classes = []
+
     def post(self, request):
         document_id = request.data.get('id')
         document = get_object_or_404(Document, id=document_id)
