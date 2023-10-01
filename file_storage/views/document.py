@@ -104,7 +104,7 @@ class GetDocumentByGovFileId(CsrfExemptMixin, APIView):
             serialization_result = serializer.data
             result = []
             for doc in serialization_result:
-                doc['url'] = "http://" + request.get_host() + settings.MEDIA_URL + settings.DOCUMENT_PATH \
+                doc['url'] = "https://" + request.get_host() + settings.MEDIA_URL + settings.DOCUMENT_PATH \
                              + '/' + doc['gov_file_id'] + '/' + doc['doc_name']
                 result.append(doc)
 
