@@ -23,6 +23,10 @@ class GovFile(models.Model):
     format = models.CharField(max_length=100, blank=True, null=True)
     extra_info = models.TextField(blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'Hồ sơ'
+        verbose_name_plural = 'Hồ sơ'
+
 
 class Document(models.Model):
     doc_code = models.CharField(max_length=100, blank=True, null=True)
@@ -50,7 +54,8 @@ class Document(models.Model):
     doc_name = models.CharField(max_length=256, blank=True, null=True)
 
     class Meta:
-        verbose_name = 'Hồ sơ'
+        verbose_name = 'Văn bản'
+        verbose_name_plural = 'Văn bản'
 
 
 class StateEnum(Enum):
@@ -71,3 +76,6 @@ class StateEnum(Enum):
 class GovFileProfile(models.Model):
     gov_file_id = models.IntegerField()
     state = models.IntegerField(choices=StateEnum.choices())
+
+    class Meta:
+        verbose_name = 'Trạng thái hồ sơ'
