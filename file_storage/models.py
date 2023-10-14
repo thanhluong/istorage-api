@@ -49,6 +49,9 @@ class Document(models.Model):
     format = models.CharField(max_length=100, blank=True, null=True)
     doc_name = models.CharField(max_length=256, blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'Hồ sơ'
+
 
 class StateEnum(Enum):
     OPEN = 1

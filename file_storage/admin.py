@@ -10,6 +10,6 @@ class GovFileAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(Document, verbose_name="Hồ sơ")
+admin.site.register(Document)
 admin.site.register(GovFile)
 admin.site.register(GovFileProfile)
