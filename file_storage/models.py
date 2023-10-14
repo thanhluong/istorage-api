@@ -152,3 +152,21 @@ class OrganTemplate(models.Model):
     class Meta:
         verbose_name = 'Template cơ quan'
         verbose_name_plural = 'Template cơ quan'
+
+
+class DocumentSecurityLevel(models.Model):
+    name = models.CharField(
+        max_length=64,
+        verbose_name='Tên mức độ bảo mật'
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name='Mô tả'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Cấp độ bảo mật'
+        verbose_name_plural = 'Cấp độ bảo mật'
