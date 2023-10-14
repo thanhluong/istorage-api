@@ -79,3 +79,4 @@ class GovFileProfile(models.Model):
 
     class Meta:
         verbose_name = 'Trạng thái hồ sơ'
+        verbose_name_plural = 'Trạng thái hồ sơ'
