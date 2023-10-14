@@ -11,7 +11,11 @@ class GovFileAdmin(admin.ModelAdmin):
     pass
 
 
+class SiteMenuAdmin(admin.ModelAdmin):
+    list_display = ('name', 'parent')
+
+
 admin.site.register(Document)
 admin.site.register(GovFile)
 admin.site.register(GovFileProfile)
-admin.site.register(SiteMenu)
+admin.site.register(SiteMenu, SiteMenuAdmin)
