@@ -104,7 +104,8 @@ class SiteMenu(models.Model):
     icon = models.ImageField(
         blank=True,
         null=True,
-        upload_to=menu_icon_path
+        upload_to=menu_icon_path,
+        verbose_name="Biểu tượng cho menu"
     )
 
     class Meta:
