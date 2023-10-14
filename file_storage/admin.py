@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Document, GovFile, GovFileProfile
+from .models import SiteMenu
 
 
 class DocumentAdmin(admin.ModelAdmin):
@@ -13,3 +14,4 @@ class GovFileAdmin(admin.ModelAdmin):
 admin.site.register(Document)
 admin.site.register(GovFile)
 admin.site.register(GovFileProfile)
+admin.site.register(SiteMenu)
