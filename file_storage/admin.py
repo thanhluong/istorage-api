@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import Document, GovFile, GovFileProfile
 from .models import SiteMenu
 from .models import OrganTemplate
+from .models import DocumentSecurityLevel
 
 
 class DocumentAdmin(admin.ModelAdmin):
@@ -20,8 +21,13 @@ class OrganTemplateAdmin(admin.ModelAdmin):
     list_display = ('name', 'organ_name')
 
 
+class DocumentSecurityLevelAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')
+
+
 admin.site.register(Document)
 admin.site.register(GovFile)
 admin.site.register(GovFileProfile)
 admin.site.register(SiteMenu, SiteMenuAdmin)
 admin.site.register(OrganTemplate, OrganTemplateAdmin)
+admin.site.register(DocumentSecurityLevel, DocumentSecurityLevelAdmin)
