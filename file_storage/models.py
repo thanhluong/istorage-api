@@ -120,3 +120,35 @@ class SiteMenu(models.Model):
     class Meta:
         verbose_name = 'Menu'
         verbose_name_plural = 'Menu'
+
+
+class OrganTemplate(models.Model):
+    name = models.CharField(
+        max_length=128,
+        verbose_name='Tên mẫu'
+    )
+    organ_name = models.CharField(
+        max_length=256,
+        verbose_name='Tên cơ quan'
+    )
+    param1 = models.CharField(
+        max_length=64,
+        blank=True,
+        verbose_name='Tham số 1'
+    )
+    param2 = models.CharField(
+        max_length=64,
+        blank=True,
+        verbose_name='Tham số 2'
+    )
+    content = models.TextField(
+        blank=True,
+        verbose_name='Nội dung template'
+    )
+
+    def __str__(self):
+        return "Template: " + self.name
+
+    class Meta:
+        verbose_name = 'Template cơ quan'
+        verbose_name_plural = 'Template cơ quan'
