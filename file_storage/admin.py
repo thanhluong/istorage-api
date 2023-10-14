@@ -12,7 +12,7 @@ class GovFileAdmin(admin.ModelAdmin):
 
 
 class SiteMenuAdmin(admin.ModelAdmin):
-    list_display = ('name', 'parent')
+    list_display = ('name', 'parent_id')
 
 
 admin.site.register(Document)
