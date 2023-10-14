@@ -108,6 +108,9 @@ class SiteMenu(models.Model):
         verbose_name="Biểu tượng cho menu"
     )
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = 'Menu'
         verbose_name_plural = 'Menu'
