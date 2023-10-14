@@ -12,3 +12,4 @@ static_files/
 db.sqlite3
 file_storage/migrations/
 [a-z0-9]{40,}
+venv/
