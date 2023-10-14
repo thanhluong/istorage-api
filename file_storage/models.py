@@ -2,6 +2,10 @@ from django.db import models
 from enum import Enum
 
 
+def menu_icon_path(instance, filename):
+    return 'menu_icon/{0}'.format(filename)
+
+
 class GovFile(models.Model):
     gov_file_code = models.CharField(max_length=100, blank=True, null=True)
     identifier = models.CharField(max_length=100, blank=True, null=True)
@@ -80,3 +84,29 @@ class GovFileProfile(models.Model):
     class Meta:
         verbose_name = 'Trạng thái hồ sơ'
         verbose_name_plural = 'Trạng thái hồ sơ'
+
+
+class SiteMenu(models.Model):
+    name = models.CharField(
+        max_length=128,
+        verbose_name='Tiêu đề menu'
+    )
+    url = models.CharField(
+        max_length=256,
+        blank=True,
+        verbose_name='Đường dẫn'
+    )
+    parent_id = models.CharField(
+        max_length=128,
+        blank=True,
+        verbose_name="Tên menu cha"
+    )
+    icon = models.ImageField(
+        blank=True,
+        null=True,
+        upload_to=menu_icon_path
+    )
+
+    class Meta:
+        verbose_name = 'Menu'
+        verbose_name_plural = 'Menu'
