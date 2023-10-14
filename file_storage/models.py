@@ -27,6 +27,9 @@ class GovFile(models.Model):
     format = models.CharField(max_length=100, blank=True, null=True)
     extra_info = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return 'Hồ sơ: ' + self.title
+
     class Meta:
         verbose_name = 'Hồ sơ'
         verbose_name_plural = 'Hồ sơ'
@@ -56,6 +59,9 @@ class Document(models.Model):
     autograph = models.CharField(max_length=2000, blank=True, null=True)
     format = models.CharField(max_length=100, blank=True, null=True)
     doc_name = models.CharField(max_length=256, blank=True, null=True)
+
+    def __str__(self):
+        return 'Văn bản: ' + self.doc_name
 
     class Meta:
         verbose_name = 'Văn bản'
