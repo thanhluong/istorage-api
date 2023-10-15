@@ -170,3 +170,21 @@ class DocumentSecurityLevel(models.Model):
     class Meta:
         verbose_name = 'Cấp độ bảo mật'
         verbose_name_plural = 'Cấp độ bảo mật'
+
+
+class OrganRole(models.Model):
+    name = models.CharField(
+        max_length=128,
+        verbose_name='Tên chức vụ'
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name='Mô tả'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Chức vụ trong cơ quan'
+        verbose_name_plural = 'Chức vụ trong cơ quan'
