@@ -3,6 +3,7 @@ from .views.document import DocumentUploadView, GetDocumentByGovFileId, DeleteDo
 from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, UpdateGovFileStateById, DeleteGovFileById
 from .views.search import FullTextSearchView
 from .views.organ import OrganListApiView, OrganDetailApiView
+from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
 
 urlpatterns = [
     # Doc APIs
@@ -21,7 +22,11 @@ urlpatterns = [
 
     # Organ APIs
     path('organ', OrganListApiView.as_view(), name='organ'),
-    path('organ/<int:organ_id>', OrganDetailApiView.as_view(), name='organ'),
+    path('organ/<int:organ_id>', OrganDetailApiView.as_view(), name='organ_detail'),
+    # OrganDepartment APIs
+    path('organ_department', OrganDepartmentListApiView.as_view(), name='organ_department'),
+    path('organ_department/<int:organ_department_id>', OrganDepartmentDetailApiView.as_view(), name='organ_department_detail'),
+    path('organ_department/by_organ/<int:organ_id>', OrganDepartmentByOrganIdListView.as_view(), name='organ_department_by_organ'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),
