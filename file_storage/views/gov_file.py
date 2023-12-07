@@ -22,25 +22,31 @@ from pymongo import MongoClient
 def convert_date(date_str):
     return datetime.strptime(date_str, "%Y-%m-%d")
 
+
 NHAP_LIEU = 1
 DUYET_CO_QUAN = 2
 DUYET_LICH_SU = 3
 ADMIN = 4
 
-MO = 1
-DONG = 2
-NOP_LUU_CQ = 3
-LUU_TRU_CQ = 4
-NOP_LUU_LS = 5
-LUU_TRU_LS = 6
-TRA_VE = 7
-TRA_VE_LS = 8
+STT_MO = 1
+STT_DONG = 2
+STT_NOP_LUU_CQ = 3
+STT_LUU_TRU_CQ = 4
+STT_NOP_LUU_LS = 5
+STT_LUU_TRU_LS = 6
+STT_TRA_VE = 7
+STT_TRA_VE_LS = 8
+STT_DA_NHAN_NOP_LUU = 9
+STT_CHO_XEP_KHO = 10
+STT_HSCL_TAO_MOI = 11
+STT_HSCL_GIAO_NOP = 12
+STT_HSCL_BI_TRA_VE = 13
 
 perm_read_dict = {
-    NHAP_LIEU: [MO, DONG, NOP_LUU_CQ],
-    DUYET_CO_QUAN: [NOP_LUU_CQ, LUU_TRU_CQ, NOP_LUU_LS],
-    DUYET_LICH_SU: [NOP_LUU_LS, LUU_TRU_LS],
-    ADMIN: [MO, DONG, NOP_LUU_CQ, LUU_TRU_CQ, NOP_LUU_LS, LUU_TRU_LS]
+    NHAP_LIEU: [STT_MO, STT_DONG, STT_NOP_LUU_CQ],
+    DUYET_CO_QUAN: [STT_NOP_LUU_CQ, STT_LUU_TRU_CQ, STT_NOP_LUU_LS],
+    DUYET_LICH_SU: [STT_NOP_LUU_LS, STT_LUU_TRU_LS],
+    ADMIN: [STT_MO, STT_DONG, STT_NOP_LUU_CQ, STT_LUU_TRU_CQ, STT_NOP_LUU_LS, STT_LUU_TRU_LS]
 }
 
 
@@ -65,7 +71,7 @@ class GetGovFiles(CsrfExemptMixin, APIView):
         search_idx = title.find(search)
         if search_idx == -1:
             return False
-        if search_idx > 0 and title[search_idx-1] != ' ':
+        if search_idx > 0 and title[search_idx - 1] != ' ':
             return False
         if search_idx + len(search) < len(title) and title[search_idx + len(search)] != ' ':
             return False
@@ -162,7 +168,7 @@ class CreateGovFile(CsrfExemptMixin, APIView):
 
             gov_file_profile = {
                 "gov_file_id": serializer.data['id'],
-                "state": MO
+                "state": STT_MO
             }
             profile_serializer = GovFileProfileSerializer(data=gov_file_profile)
             if profile_serializer.is_valid():
@@ -175,7 +181,7 @@ class CreateGovFile(CsrfExemptMixin, APIView):
                 Response(response_msg, status=status.HTTP_200_OK)
 
             response_data = serializer.data
-            response_data['state'] = MO
+            response_data['state'] = STT_MO
             return Response(response_data, status=status.HTTP_201_CREATED)
 
         response_msg = {
@@ -298,25 +304,21 @@ class UpdateGovFileStateById(CsrfExemptMixin, APIView):
             1: mo, 2: dong, 3: nop luu co quan, 4: luu tru co quan, 5: nop luu lich su, 6: luu tru lich su
             7: tra ve, 8: tra ve lich su
         """
-        state_machine = {
-            MO: [DONG],
-            DONG: [MO, NOP_LUU_CQ],
-            NOP_LUU_CQ: [TRA_VE, LUU_TRU_CQ],
-            LUU_TRU_CQ: [TRA_VE, NOP_LUU_CQ, NOP_LUU_LS],
-            NOP_LUU_LS: [TRA_VE_LS, LUU_TRU_CQ, LUU_TRU_LS],
-            LUU_TRU_LS: [TRA_VE_LS, LUU_TRU_CQ],
-            TRA_VE: [MO, NOP_LUU_CQ, LUU_TRU_CQ],
-            TRA_VE_LS: [MO, NOP_LUU_CQ, LUU_TRU_CQ, NOP_LUU_LS, LUU_TRU_LS]
-        }
-
-        perm_transfer_dict = {
-            NHAP_LIEU: [[MO, DONG], [DONG, MO], [DONG, NOP_LUU_CQ]],
-            DUYET_CO_QUAN: [[NOP_LUU_CQ, LUU_TRU_CQ], [NOP_LUU_CQ, MO], [LUU_TRU_CQ, MO], [LUU_TRU_CQ, NOP_LUU_LS]],
-            DUYET_LICH_SU: [[NOP_LUU_LS, LUU_TRU_LS], [NOP_LUU_LS, LUU_TRU_CQ], [LUU_TRU_LS, LUU_TRU_CQ]],
-            ADMIN: [[MO, DONG], [DONG, MO], [DONG, NOP_LUU_CQ],
-                    [NOP_LUU_CQ, LUU_TRU_CQ], [NOP_LUU_CQ, MO], [LUU_TRU_CQ, MO], [LUU_TRU_CQ, NOP_LUU_LS],
-                    [NOP_LUU_LS, LUU_TRU_LS], [NOP_LUU_LS, LUU_TRU_CQ]],
-        }
+        # state_machine = {
+        #     STT_MO: [STT_DONG],
+        #     STT_DONG: [STT_MO, STT_NOP_LUU_CQ],
+        #     STT_NOP_LUU_CQ: [STT_TRA_VE, STT_LUU_TRU_CQ],
+        #     STT_LUU_TRU_CQ: [STT_TRA_VE, STT_NOP_LUU_CQ, STT_NOP_LUU_LS],
+        #     STT_NOP_LUU_LS: [STT_TRA_VE_LS, STT_LUU_TRU_CQ, STT_LUU_TRU_LS],
+        #     STT_LUU_TRU_LS: [STT_TRA_VE_LS, STT_LUU_TRU_CQ],
+        #     STT_TRA_VE: [STT_MO, STT_NOP_LUU_CQ, STT_LUU_TRU_CQ],
+        #     STT_TRA_VE_LS: [STT_MO, STT_NOP_LUU_CQ, STT_LUU_TRU_CQ, STT_NOP_LUU_LS, STT_LUU_TRU_LS],
+        #     STT_DA_NHAN_NOP_LUU: [STT_CHO_XEP_KHO],
+        #     STT_CHO_XEP_KHO: [STT_LUU_TRU_CQ],
+        #     STT_HSCL_TAO_MOI: [STT_HSCL_GIAO_NOP],
+        #     STT_HSCL_GIAO_NOP: [STT_HSCL_BI_TRA_VE, STT_CHO_XEP_KHO],
+        #     STT_HSCL_BI_TRA_VE: [STT_HSCL_GIAO_NOP]
+        # }
 
         response_data = []
         serializer_list = []
@@ -329,24 +331,6 @@ class UpdateGovFileStateById(CsrfExemptMixin, APIView):
 
         for json_data in request.data:
             gov_file_id = str(json_data['id'])
-
-            # Check if request data has permission token
-            # if "perm_token" not in json_data:
-            #     response_msg = {
-            #         "error_code": status.HTTP_401_UNAUTHORIZED,
-            #         "description": "Không có quyền với hồ sơ với id " + gov_file_id
-            #     }
-            #     return Response(response_msg, status=status.HTTP_200_OK)
-
-            # Check if the permission token is valid
-            # perm_token = int(json_data["perm_token"])
-            # if perm_token not in perm_transfer_dict or \
-            #         [json_data["current_state"], json_data["new_state"]] not in perm_transfer_dict[perm_token]:
-            #     response_msg = {
-            #         "error_code": status.HTTP_401_UNAUTHORIZED,
-            #         "description": "Không có quyền với hồ sơ với id " + gov_file_id
-            #     }
-            #     return Response(response_msg, status=status.HTTP_200_OK)
 
             gov_file = GovFile.objects.filter(id=gov_file_id).first()
             profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
@@ -373,25 +357,18 @@ class UpdateGovFileStateById(CsrfExemptMixin, APIView):
                 return Response(response_msg, status=status.HTTP_200_OK)
 
             current_state = int(profile_data['state'])
-            # Check if the current state of request data exactly
-            # if json_data['current_state'] != current_state:
-            #    response_msg = {
-            #        "error_code": status.HTTP_409_CONFLICT,
-            #        "description": "Trạng thái hiện tại không hợp lệ với hồ sơ có id " + gov_file_id
-            #    }
-            #    return Response(response_msg, status=status.HTTP_200_OK)
 
             # Check if the transfer state process is valid
             new_state = int(json_data['new_state'])
-            if new_state not in state_machine[current_state]:
-                response_msg = {
-                    "error_code": status.HTTP_406_NOT_ACCEPTABLE,
-                    "description": "Không cho phép quá trình chuyển trạng thái này của hồ sơ với id " + gov_file_id
-                }
-                return Response(response_msg, status=status.HTTP_200_OK)
+            # if new_state not in state_machine[current_state]:
+            #     response_msg = {
+            #         "error_code": status.HTTP_406_NOT_ACCEPTABLE,
+            #         "description": "Không cho phép quá trình chuyển trạng thái này của hồ sơ với id " + gov_file_id
+            #     }
+            #     return Response(response_msg, status=status.HTTP_200_OK)
 
             # Check when close gov_file, the required fields is not empty
-            if current_state == MO and new_state == DONG and not gov_file_data['end_date']:
+            if current_state == STT_MO and new_state == STT_DONG and not gov_file_data['end_date']:
                 response_msg = {
                     'error_code': status.HTTP_400_BAD_REQUEST,
                     'description': "Hồ sơ chưa có ngày kết thúc"

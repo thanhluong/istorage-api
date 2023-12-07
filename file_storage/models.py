@@ -77,6 +77,11 @@ class StateEnum(Enum):
     STORE_ARCHIVE = 6
     RETURN = 7
     RETURN_ARCHIVE = 8
+    DA_NHAN_NOP_LUU = 9
+    CHO_XEP_KHO = 10
+    HSCL_TAO_MOI = 11
+    HSCL_GIAO_NOP = 12
+    HSCL_BI_TRA_VE = 13
 
     @classmethod
     def choices(cls):
