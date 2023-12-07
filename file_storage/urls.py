@@ -2,6 +2,7 @@ from django.urls import path
 from .views.document import DocumentUploadView, GetDocumentByGovFileId, DeleteDocumentById, UpdateDocumentById
 from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, UpdateGovFileStateById, DeleteGovFileById
 from .views.search import FullTextSearchView
+from .views.organ import OrganListApiView, OrganDetailApiView
 
 urlpatterns = [
     # Doc APIs
@@ -17,6 +18,10 @@ urlpatterns = [
     path('update_gov_file_state_by_id/', UpdateGovFileStateById.as_view(),
          name='update_gov_file_state'),
     path('delete_gov_file_by_id/', DeleteGovFileById.as_view(), name='delete_gov_file'),
+
+    # Organ APIs
+    path('organ', OrganListApiView.as_view(), name='organ'),
+    path('organ/<int:organ_id>', OrganDetailApiView.as_view(), name='organ'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),
