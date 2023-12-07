@@ -188,3 +188,99 @@ class OrganRole(models.Model):
     class Meta:
         verbose_name = 'Chức vụ trong cơ quan'
         verbose_name_plural = 'Chức vụ trong cơ quan'
+
+
+class Organ(models.Model):
+    storage = models.BooleanField(default=False, null=True, verbose_name="Lưu trữ")
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Tên cơ quan'
+    )
+    code = models.CharField(
+        max_length=64,
+        verbose_name="Mã cơ quan"
+    )
+    address = models.TextField(
+        blank=True,
+        verbose_name='Địa chỉ'
+    )
+    phone = models.CharField(
+        max_length=64,
+        blank=True,
+        verbose_name='Số điện thoại'
+    )
+    fax = models.CharField(
+        max_length=64,
+        blank=True,
+        verbose_name='Số fax'
+    )
+    provinceName = models.CharField(
+        default="Tỉnh Quảng Ngãi",
+        max_length=64,
+        blank=True,
+        verbose_name='Tỉnh thành'
+    )
+    province = models.IntegerField(
+        default=51,
+        blank=True,
+        null=True,
+        verbose_name='ID tỉnh thành'
+    )
+    districtName = models.CharField(
+        default="Thành phố Quảng Ngãi",
+        max_length=64,
+        blank=True,
+        verbose_name='Quận huyện'
+    )
+    district = models.IntegerField(
+        default=522,
+        blank=True,
+        null=True,
+        verbose_name='ID quận huyện'
+    )
+    wardName = models.CharField(
+        max_length=64,
+        blank=True,
+        verbose_name='Phường xã'
+    )
+    ward = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name='ID phường xã'
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Plan(models.Model):
+    STATE_CHOICE = (
+        ("Mới lập", "Mới lập"),
+        ("Đợi duyệt", "Đợi duyệt"),
+        ("Đã duyệt", "Đã duyệt"),
+        ("Trả về", "Trả về"),
+    )
+
+    name = models.CharField(
+        max_length=128,
+        verbose_name='Tên kế hoạch'
+    )
+    date = models.DateField(
+        verbose_name='Thời gian'
+    )
+    organ_id = models.IntegerField(
+        default=1,
+        verbose_name='ID cơ quan'
+    )
+    state = models.CharField(
+        max_length=64,
+        choices=STATE_CHOICE,
+        verbose_name='Trạng thái'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Kế hoạch'
+        verbose_name_plural = 'Kế hoạch'
