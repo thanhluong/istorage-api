@@ -249,6 +249,10 @@ class Organ(models.Model):
         verbose_name='ID phường xã'
     )
 
+    class Meta:
+        verbose_name = 'Cơ quan'
+        verbose_name_plural = 'Cơ quan'
+
     def __str__(self):
         return self.name
 
