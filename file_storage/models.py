@@ -257,6 +257,29 @@ class Organ(models.Model):
         return self.name
 
 
+class OrganDepartment(models.Model):
+    organ = models.ForeignKey(
+        Organ,
+        on_delete=models.CASCADE,
+        verbose_name='Cơ quan'
+    )
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Tên phòng ban'
+    )
+    code = models.CharField(
+        max_length=84,
+        verbose_name="Mã phòng ban"
+    )
+
+    class Meta:
+        verbose_name = 'Phòng ban'
+        verbose_name_plural = 'Phòng ban'
+
+    def __str__(self):
+        return self.name
+
+
 class Plan(models.Model):
     STATE_CHOICE = (
         ("Mới lập", "Mới lập"),

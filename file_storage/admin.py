@@ -4,7 +4,7 @@ from .models import SiteMenu
 from .models import OrganTemplate
 from .models import DocumentSecurityLevel
 from .models import OrganRole
-from .models import Organ
+from .models import Organ, OrganDepartment
 
 
 class DocumentAdmin(admin.ModelAdmin):
@@ -35,6 +35,10 @@ class OrganAdmin(admin.ModelAdmin):
     list_display = ('name', 'districtName', 'wardName')
 
 
+class OrganDepartmentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'organ')
+
+
 admin.site.register(Document)
 admin.site.register(GovFile)
 admin.site.register(GovFileProfile)
@@ -43,3 +47,4 @@ admin.site.register(OrganTemplate, OrganTemplateAdmin)
 admin.site.register(DocumentSecurityLevel, DocumentSecurityLevelAdmin)
 admin.site.register(OrganRole, OrganRoleAdmin)
 admin.site.register(Organ, OrganAdmin)
+admin.site.register(OrganDepartment, OrganDepartmentAdmin)
