@@ -84,6 +84,8 @@ WSGI_APPLICATION = 'istorage.wsgi.application'
 DATABASES = local_settings.DATABASES
 
 
+AUTH_USER_MODEL = 'file_storage.StorageUser'
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
