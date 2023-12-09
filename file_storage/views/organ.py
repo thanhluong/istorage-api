@@ -27,6 +27,8 @@ class OrganListApiView(APIView):
 
 
 class OrganDetailApiView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
     def get_object(self, organ_id, *args, **kwargs):
         try:
             return Organ.objects.get(id=organ_id)
@@ -62,6 +64,8 @@ class OrganDetailApiView(APIView):
 
 
 class OrganDepartmentListApiView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
     # 1. List all
     def get(self, request, *args, **kwargs):
         organDepartments = OrganDepartment.objects.all()
@@ -78,6 +82,8 @@ class OrganDepartmentListApiView(APIView):
 
 
 class OrganDepartmentDetailApiView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
     def get_object(self, organ_department_id, *args, **kwargs):
         try:
             return OrganDepartment.objects.get(id=organ_department_id)
@@ -113,6 +119,8 @@ class OrganDepartmentDetailApiView(APIView):
 
 
 class OrganDepartmentByOrganIdListView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
     # 1. List all
     def get(self, request, organ_id, *args, **kwargs):
         organDepartments = OrganDepartment.objects.filter(organ_id=organ_id)
