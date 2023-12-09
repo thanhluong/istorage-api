@@ -1,4 +1,5 @@
 from django.contrib.auth import login, logout
+from braces.views import CsrfExemptMixin
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -9,8 +10,8 @@ from file_storage.models import StorageUser
 from file_storage.serializers import StorageUserSerializer, StorageUserCreationSerializer
 
 
-class StorageUserListApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+class StorageUserListApiView(CsrfExemptMixin, APIView):
+    permission_classes = (permissions.IsAuthenticated,)
 
     # 1. List all
     def get(self, request, *args, **kwargs):
@@ -28,7 +29,7 @@ class StorageUserListApiView(APIView):
 
 
 class StorageUserDetailApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     def get_object(self, user_id, *args, **kwargs):
         try:
             return StorageUser.objects.get(id=user_id)
@@ -108,3 +109,23 @@ class StorageUserInfoView(APIView):
     def get(self, request):
         serializer = StorageUserSerializer(request.user)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class StorageUserSetPasswordView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+
+    def get_object(self, user_id, *args, **kwargs):
+        try:
+            return StorageUser.objects.get(id=user_id)
+        except StorageUser.DoesNotExist:
+            return None
+
+    def post(self, request, user_id, *args, **kwargs):
+        user = self.get_object(user_id)
+        if user is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        new_password = request.data.get('new_password')
+        user.set_password(new_password)
+        user.save()
+        return Response(status=status.HTTP_200_OK)

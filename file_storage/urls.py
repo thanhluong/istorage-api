@@ -5,7 +5,8 @@ from .views.search import FullTextSearchView
 from .views.organ import OrganListApiView, OrganDetailApiView
 from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
 from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView
-from .views.storage_user import StorageUserLoginView, StorageUserLogoutView, StorageUserInfoView
+from .views.storage_user import StorageUserLoginView, StorageUserLogoutView
+from .views.storage_user import StorageUserInfoView, StorageUserSetPasswordView
 
 urlpatterns = [
     # User APIs,
@@ -15,6 +16,7 @@ urlpatterns = [
     path('user/login', StorageUserLoginView.as_view(), name='user_login'),
     path('user/logout', StorageUserLogoutView.as_view(), name='user_logout'),
     path('user/info', StorageUserInfoView.as_view(), name='user_info'),
+    path('user/set_password/<int:user_id>', StorageUserSetPasswordView.as_view(), name='user_set_password'),
 
     # Doc APIs
     path('upload_document/', DocumentUploadView.as_view(), name='upload_document'),
