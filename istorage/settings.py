@@ -34,7 +34,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5174',
     'http://localhost:3000',
     'http://localhost',
-    'https://khaithacluutru.quangngai.gov.vn'
+    'https://khaithacluutru.quangngai.gov.vn',
+    'https://luutrudientu.quangngai.gov.vn'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -45,7 +46,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5174',
     'http://localhost:3000',
     'http://localhost',
-    'https://khaithacluutru.quangngai.gov.vn'
+    'https://khaithacluutru.quangngai.gov.vn',
+    'https://luutrudientu.quangngai.gov.vn'
 ]
 
 
