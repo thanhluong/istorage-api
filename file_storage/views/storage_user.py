@@ -1,3 +1,6 @@
+from django.contrib.auth import login, logout
+
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
@@ -25,6 +28,7 @@ class StorageUserListApiView(APIView):
 
 
 class StorageUserDetailApiView(APIView):
+    permission_classes = (permissions.AllowAny,)
     def get_object(self, user_id, *args, **kwargs):
         try:
             return StorageUser.objects.get(id=user_id)
@@ -60,7 +64,47 @@ class StorageUserDetailApiView(APIView):
 
 
 class StorageUserByDepartmentListView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
     def get(self, request, department_id, *args, **kwargs):
         users = StorageUser.objects.filter(department_id=department_id)
         serializer = StorageUserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class StorageUserLoginView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        user = StorageUser.objects.filter(email=email).first()
+        if user is None:
+            return Response(data={"message": "Không tồn tại người dùng"}, status=status.HTTP_404_NOT_FOUND)
+
+        if not user.check_password(password):
+            return Response(data={"message": "Sai tên đăng nhập hoặc mật khẩu"}, status=status.HTTP_400_BAD_REQUEST)
+
+        login(request, user)
+        serializer = StorageUserSerializer(user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class StorageUserLogoutView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = ()
+
+    def post(self, request, *args, **kwargs):
+        logout(request)
+        return Response(status=status.HTTP_200_OK)
+
+
+class StorageUserInfoView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request):
+        serializer = StorageUserSerializer(request.user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)

@@ -5,12 +5,16 @@ from .views.search import FullTextSearchView
 from .views.organ import OrganListApiView, OrganDetailApiView
 from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
 from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView
+from .views.storage_user import StorageUserLoginView, StorageUserLogoutView, StorageUserInfoView
 
 urlpatterns = [
     # User APIs,
     path('user', StorageUserListApiView.as_view(), name='user'),
     path('user/user_id/<int:user_id>', StorageUserDetailApiView.as_view(), name='user_detail'),
     path('user/by_department/<int:department_id>', StorageUserByDepartmentListView.as_view(), name='user_by_department'),
+    path('user/login', StorageUserLoginView.as_view(), name='user_login'),
+    path('user/logout', StorageUserLogoutView.as_view(), name='user_logout'),
+    path('user/info', StorageUserInfoView.as_view(), name='user_info'),
 
     # Doc APIs
     path('upload_document/', DocumentUploadView.as_view(), name='upload_document'),

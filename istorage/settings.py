@@ -31,6 +31,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_METHODS = ["*"]
 CORS_ALLOW_HEADERS = ["*"]
 
+CORS_ALLOW_CREDENTIALS = True
+
 
 
 # Application definition
@@ -84,6 +86,16 @@ WSGI_APPLICATION = 'istorage.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 DATABASES = local_settings.DATABASES
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}
 
 
 # Password validation
