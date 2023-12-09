@@ -1,7 +1,7 @@
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import permissions, status
 from rest_framework.renderers import JSONRenderer
 
 from braces.views import CsrfExemptMixin
@@ -51,6 +51,7 @@ perm_read_dict = {
 
 
 class GetGovFiles(CsrfExemptMixin, APIView):
+    permission_classes = (permissions.AllowAny,)
     authentication_classes = []
 
     def filter_by_fields(self, field, filter_field):
@@ -138,6 +139,7 @@ class GetGovFiles(CsrfExemptMixin, APIView):
 
 
 class CreateGovFile(CsrfExemptMixin, APIView):
+    permission_classes = (permissions.AllowAny,)
     authentication_classes = []
     parser_classes = [JSONParser]
 
