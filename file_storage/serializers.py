@@ -7,7 +7,6 @@ from file_storage.models import Phong, CategoryFile
 
 
 class StorageUserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = StorageUser
         exclude = ('password',)
@@ -95,6 +94,12 @@ class OrganSerializer(serializers.ModelSerializer):
 class OrganDepartmentSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
 
+    class Meta:
+        model = OrganDepartment
+        fields = '__all__'
+
+
+class OrganRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrganDepartment
         fields = '__all__'

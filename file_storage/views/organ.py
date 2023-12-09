@@ -4,8 +4,10 @@ from rest_framework import permissions, status
 
 from file_storage.serializers import OrganSerializer
 from file_storage.serializers import OrganDepartmentSerializer
+from file_storage.serializers import OrganRoleSerializer
 from file_storage.models import Organ
 from file_storage.models import OrganDepartment
+from file_storage.models import OrganRole
 
 
 class OrganListApiView(APIView):
@@ -126,3 +128,28 @@ class OrganDepartmentByOrganIdListView(APIView):
         organDepartments = OrganDepartment.objects.filter(organ_id=organ_id)
         serializer = OrganDepartmentSerializer(organDepartments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, organ_id, *args, **kwargs):
+        serializer = OrganDepartmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(organ_id=organ_id)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrganRoleListApiView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    # 1. List all
+    def get(self, request, *args, **kwargs):
+        organRoles = OrganRole.objects.all()
+        serializer = OrganRoleSerializer(organRoles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # 3. Create
+    def post(self, request, *args, **kwargs):
+        serializer = OrganRoleSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
