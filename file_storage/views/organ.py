@@ -264,3 +264,20 @@ class PhongDetailApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         phong_instance.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class PhongByOrganIdListApiView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    # 1. List all
+    def get(self, request, organ_id, *args, **kwargs):
+        phongs = Phong.objects.filter(organ_id=organ_id)
+        serializer = PhongSerializer(phongs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, organ_id, *args, **kwargs):
+        serializer = PhongSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(organ_id=organ_id)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
