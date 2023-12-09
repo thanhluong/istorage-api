@@ -5,9 +5,11 @@ from rest_framework import permissions, status
 from file_storage.serializers import OrganSerializer
 from file_storage.serializers import OrganDepartmentSerializer
 from file_storage.serializers import OrganRoleSerializer
+from file_storage.serializers import PhongSerializer
 from file_storage.models import Organ
 from file_storage.models import OrganDepartment
 from file_storage.models import OrganRole
+from file_storage.models import Phong
 
 
 class OrganListApiView(APIView):
@@ -207,3 +209,58 @@ class OrganRoleByOrganIdListApiView(APIView):
             serializer.save(organ_id=organ_id)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PhongListApiView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    # 1. List all
+    def get(self, request, *args, **kwargs):
+        phongs = Phong.objects.all()
+        serializer = PhongSerializer(phongs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # 3. Create
+    def post(self, request, *args, **kwargs):
+        serializer = PhongSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PhongDetailApiView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self, fond_id, *args, **kwargs):
+        try:
+            return Phong.objects.get(id=fond_id)
+        except Phong.DoesNotExist:
+            return None
+
+    # 3. Retrieve
+    def get(self, request, fond_id, *args, **kwargs):
+        phong_instance = self.get_object(fond_id)
+        if phong_instance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = PhongSerializer(phong_instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # 4. Update
+    def put(self, request, fond_id, *args, **kwargs):
+        phong_instance = self.get_object(fond_id)
+        if phong_instance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = PhongSerializer(phong_instance, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # 5. Delete
+    def delete(self, request, fond_id, *args, **kwargs):
+        phong_instance = self.get_object(fond_id)
+        if phong_instance is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        phong_instance.delete()
+        return Response(status=status.HTTP_200_OK)

@@ -5,6 +5,7 @@ from .views.search import FullTextSearchView
 from .views.organ import OrganListApiView, OrganDetailApiView
 from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
 from .views.organ import OrganRoleListApiView, OrganRoleDetailApiView, OrganRoleByOrganIdListApiView
+from .views.organ import PhongListApiView, PhongDetailApiView
 from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView
 from .views.storage_user import StorageUserLoginView, StorageUserLogoutView
 from .views.storage_user import StorageUserInfoView, StorageUserSetPasswordView
@@ -44,6 +45,9 @@ urlpatterns = [
     path('organ_role', OrganRoleListApiView.as_view(), name='organ_role'),
     path('organ_role/<int:organ_role_id>', OrganRoleDetailApiView.as_view(), name='organ_role_detail'),
     path('organ_role/by_organ/<int:organ_id>', OrganRoleByOrganIdListApiView.as_view(), name='organ_role_by_organ'),
+    # Fond APIs
+    path('fond', PhongListApiView.as_view(), name='phong'),
+    path('fond/<int:fond_id>', PhongDetailApiView.as_view(), name='phong_detail'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),
