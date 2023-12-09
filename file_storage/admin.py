@@ -8,6 +8,7 @@ from .models import OrganTemplate
 from .models import DocumentSecurityLevel
 from .models import OrganRole
 from .models import Organ, OrganDepartment
+from .models import Phong
 
 
 class StorageUserAdmin(UserAdmin):
@@ -51,6 +52,10 @@ class OrganAdmin(admin.ModelAdmin):
 
 
 class OrganDepartmentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'organ')
+
+
+class PhongAdmin(admin.ModelAdmin):
     list_display = ('name', 'organ')
 
 
