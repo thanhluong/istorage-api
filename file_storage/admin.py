@@ -56,7 +56,7 @@ class OrganDepartmentAdmin(admin.ModelAdmin):
 
 
 class PhongAdmin(admin.ModelAdmin):
-    list_display = ('name', 'organ')
+    list_display = ('fond_name', 'organ')
 
 
 admin.site.register(StorageUser, StorageUserAdmin)
@@ -69,3 +69,4 @@ admin.site.register(DocumentSecurityLevel, DocumentSecurityLevelAdmin)
 admin.site.register(OrganRole, OrganRoleAdmin)
 admin.site.register(Organ, OrganAdmin)
 admin.site.register(OrganDepartment, OrganDepartmentAdmin)
+admin.site.register(Phong, PhongAdmin)

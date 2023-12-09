@@ -175,8 +175,20 @@ class StorageUser(AbstractBaseUser, PermissionsMixin):
 
 class Phong(models.Model):
     fond_name = models.CharField(max_length=256, verbose_name='Tên phông')
-    fond_history = models.CharField(max_length=640, verbose_name='Lịch sử đơn vị hình thành phông')
-    archives_time = models.CharField(max_length=256, verbose_name='Thời gian tài liệu')
+    fond_history = models.CharField(
+        max_length=640,
+        blank=True,
+        null=True,
+        default="",
+        verbose_name='Lịch sử đơn vị hình thành phông'
+    )
+    archives_time = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        default="",
+        verbose_name='Thời gian tài liệu'
+    )
 
     identifier = models.CharField(max_length=64, verbose_name="Mã phông")
     organ = models.ForeignKey(
@@ -194,7 +206,7 @@ class Phong(models.Model):
         verbose_name_plural = 'Phông lưu trữ'
 
     def __str__(self):
-        return self.name
+        return self.fond_name
 
 
 class CategoryFile(models.Model):
