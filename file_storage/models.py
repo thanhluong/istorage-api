@@ -97,6 +97,32 @@ class OrganDepartment(models.Model):
         return self.name
 
 
+class OrganRole(models.Model):
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Tên chức vụ'
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name='Mô tả'
+    )
+    organ = models.ForeignKey(
+        Organ,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.CASCADE,
+        verbose_name='Cơ quan'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Chức vụ trong cơ quan'
+        verbose_name_plural = 'Chức vụ trong cơ quan'
+
+
 class StorageUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=84, unique=True, verbose_name="Email")
     username = models.CharField(max_length=64, unique=True, verbose_name="Tên đăng nhập")
@@ -105,6 +131,7 @@ class StorageUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False, verbose_name="Quản trị cơ quan")
     is_superuser = models.BooleanField(default=False, verbose_name="Quản trị hệ thống")
     is_active = models.BooleanField(default=True, verbose_name="Đang hoạt động")
+    is_archive_staff = models.BooleanField(default=False, verbose_name="Nhân viên lưu trữ LS")
 
     first_name = models.CharField(max_length=64, blank=True, verbose_name="Tên đệm và tên")
     last_name = models.CharField(max_length=32, blank=True, verbose_name="Họ")
@@ -383,32 +410,6 @@ class DocumentSecurityLevel(models.Model):
     class Meta:
         verbose_name = 'Cấp độ bảo mật'
         verbose_name_plural = 'Cấp độ bảo mật'
-
-
-class OrganRole(models.Model):
-    name = models.CharField(
-        max_length=256,
-        verbose_name='Tên chức vụ'
-    )
-    description = models.TextField(
-        blank=True,
-        verbose_name='Mô tả'
-    )
-    organ = models.ForeignKey(
-        Organ,
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=models.CASCADE,
-        verbose_name='Cơ quan'
-    )
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Chức vụ trong cơ quan'
-        verbose_name_plural = 'Chức vụ trong cơ quan'
 
 
 class Plan(models.Model):
