@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import permissions, status
 
 from file_storage.serializers import OrganSerializer
 from file_storage.serializers import OrganDepartmentSerializer
@@ -9,6 +9,8 @@ from file_storage.models import OrganDepartment
 
 
 class OrganListApiView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
     # 1. List all
     def get(self, request, *args, **kwargs):
         organs = Organ.objects.all()
