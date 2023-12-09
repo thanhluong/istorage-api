@@ -43,7 +43,7 @@ class DocumentSecurityLevelAdmin(admin.ModelAdmin):
 
 
 class OrganRoleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
+    list_display = ('name', 'organ', 'description')
 
 
 class OrganAdmin(admin.ModelAdmin):
