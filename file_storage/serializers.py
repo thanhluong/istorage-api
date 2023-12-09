@@ -100,6 +100,8 @@ class OrganDepartmentSerializer(serializers.ModelSerializer):
 
 
 class OrganRoleSerializer(serializers.ModelSerializer):
+    organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
+
     class Meta:
         model = OrganDepartment
         fields = '__all__'
