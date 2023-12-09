@@ -93,6 +93,34 @@ class Phong(models.Model):
         return self.name
 
 
+class CategoryFile(models.Model):
+    name = models.CharField(max_length=256, verbose_name='Tên danh mục')
+    order = models.IntegerField(default=1, verbose_name='Order')
+    organ = models.ForeignKey(
+        Organ,
+        default=None,
+        blank=True,
+        null=True,
+        on_delete=models.SET(None),
+        verbose_name='Cơ quan'
+    )
+    parent = models.ForeignKey(
+        'self',
+        default=None,
+        blank=True,
+        null=True,
+        on_delete=models.SET(None),
+        verbose_name='Danh mục cha'
+    )
+
+    class Meta:
+        verbose_name = 'Danh mục hồ sơ'
+        verbose_name_plural = 'Danh mục hồ sơ'
+
+    def __str__(self):
+        return self.name
+
+
 class GovFile(models.Model):
     gov_file_code = models.CharField(max_length=100, blank=True, null=True)
     identifier = models.CharField(max_length=100, blank=True, null=True)

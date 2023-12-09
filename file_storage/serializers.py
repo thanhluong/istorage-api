@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from file_storage.models import Document, GovFile, GovFileProfile
 from file_storage.models import Organ, OrganDepartment
-from file_storage.models import Phong
+from file_storage.models import Phong, CategoryFile
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -15,6 +15,21 @@ class DocumentSerializer(serializers.ModelSerializer):
                 destination.write(chunk)
 
         return file_path
+
+
+class PhongSerializer(serializers.ModelSerializer):
+    organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
+    class Meta:
+        model = Phong
+        fields = '__all__'
+
+
+class CategoryFileSerializer(serializers.ModelSerializer):
+    organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
+    parent = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    class Meta:
+        model = CategoryFile
+        fields = '__all__'
 
 
 class GovFileSerializer(serializers.ModelSerializer):
