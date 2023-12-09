@@ -25,8 +25,17 @@ DEBUG = local_settings.DEBUG
 SECRET_KEY = 'django-insecure-ft^^8vx@n(z=5%8-70p51beg=!=*!u^$ie4)^hkar@7a98=gf$'
 
 ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    'http://0.0.0.0:8000',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:3000',
+    'http://localhost',
+    'https://khaithacluutru.quangngai.gov.vn'
+]
 
 CORS_ALLOW_METHODS = ["*"]
 CORS_ALLOW_HEADERS = ["*"]
