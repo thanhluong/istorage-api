@@ -18,7 +18,7 @@ class StorageUserAdmin(UserAdmin):
         ('Thông tin cá nhân', {'fields': ['full_name', 'phone', 'email']}),
         ('Thông tin đăng nhập', {'fields': ['username', 'password']}),
         ('Thông tin cơ quan', {'fields': ['department', 'role']}),
-        ('Thông tin quyền hạn', {'fields': ['is_active', 'is_staff', 'is_superuser']}),
+        ('Thông tin quyền hạn', {'fields': ['is_active', 'is_staff', 'is_archive_staff', 'is_superuser']}),
         ('Thông tin hệ thống', {'fields': ['date_joined', 'last_login']}),
     ]
 
