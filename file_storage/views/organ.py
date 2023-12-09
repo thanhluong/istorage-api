@@ -153,3 +153,40 @@ class OrganRoleListApiView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrganRoleDetailApiView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self, organ_role_id, *args, **kwargs):
+        try:
+            return OrganRole.objects.get(id=organ_role_id)
+        except OrganRole.DoesNotExist:
+            return None
+
+    # 3. Retrieve
+    def get(self, request, organ_role_id, *args, **kwargs):
+        organ_role_instance = self.get_object(organ_role_id)
+        if organ_role_instance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = OrganRoleSerializer(organ_role_instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # 4. Update
+    def put(self, request, organ_role_id, *args, **kwargs):
+        organ_role_instance = self.get_object(organ_role_id)
+        if organ_role_instance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = OrganRoleSerializer(organ_role_instance, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # 5. Delete
+    def delete(self, request, organ_role_id, *args, **kwargs):
+        organ_role_instance = self.get_object(organ_role_id)
+        if organ_role_instance is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        organ_role_instance.delete()
+        return Response(status=status.HTTP_200_OK)

@@ -42,6 +42,7 @@ urlpatterns = [
     path('organ_department/by_organ/<int:organ_id>', OrganDepartmentByOrganIdListView.as_view(), name='organ_department_by_organ'),
     # OrganRole APIs
     path('organ_role', OrganRoleListApiView.as_view(), name='organ_role'),
+    path('organ_role/<int:organ_role_id>', OrganRoleListApiView.as_view(), name='organ_role_detail'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),
