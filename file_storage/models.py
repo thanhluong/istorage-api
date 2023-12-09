@@ -1,5 +1,6 @@
 from django.db import models
 from enum import Enum
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 
 
 def menu_icon_path(instance, filename):
@@ -73,9 +74,84 @@ class Organ(models.Model):
         return self.name
 
 
+class OrganDepartment(models.Model):
+    organ = models.ForeignKey(
+        Organ,
+        on_delete=models.CASCADE,
+        verbose_name='Cơ quan'
+    )
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Tên phòng ban'
+    )
+    code = models.CharField(
+        max_length=84,
+        verbose_name="Mã phòng ban"
+    )
+
+    class Meta:
+        verbose_name = 'Phòng ban'
+        verbose_name_plural = 'Phòng ban'
+
+    def __str__(self):
+        return self.name
+
+
+class StorageUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(max_length=84, unique=True, verbose_name="Email")
+    username = models.CharField(max_length=64, unique=True, verbose_name="Tên đăng nhập")
+    full_name = models.CharField(max_length=64, blank=True, verbose_name="Họ và tên")
+    phone = models.CharField(max_length=32, blank=True, verbose_name="Số điện thoại")
+    is_staff = models.BooleanField(default=False, verbose_name="Quản trị cơ quan")
+    is_superuser = models.BooleanField(default=False, verbose_name="Quản trị hệ thống")
+    is_active = models.BooleanField(default=True, verbose_name="Đang hoạt động")
+
+    first_name = models.CharField(max_length=64, blank=True, verbose_name="Tên đệm và tên")
+    last_name = models.CharField(max_length=32, blank=True, verbose_name="Họ")
+    date_joined = models.DateTimeField(auto_now_add=True, verbose_name="Ngày tham gia")
+    last_login = models.DateTimeField(auto_now=True, verbose_name="Lần đăng nhập cuối")
+
+    department = models.ForeignKey(
+        OrganDepartment,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.CASCADE,
+        verbose_name='Phòng ban',
+    )
+    role = models.ForeignKey(
+        OrganRole,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.CASCADE,
+        verbose_name='Chức vụ',
+    )
+    menu_permission = models.CharField(
+        max_length=640,
+        blank=True,
+        verbose_name="Các menu được truy cập"
+    )
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+
+    objects = UserManager()
+
+    class Meta:
+        verbose_name = 'Người dùng hệ thống'
+        verbose_name_plural = 'Người dùng hệ thống'
+
+    def __str__(self):
+        return self.username
+
+
 class Phong(models.Model):
-    name = models.CharField(max_length=256, verbose_name='Tên phông')
-    code = models.CharField(max_length=64, verbose_name="Mã phông")
+    fond_name = models.CharField(max_length=256, verbose_name='Tên phông')
+    fond_history = models.CharField(max_length=640, verbose_name='Lịch sử đơn vị hình thành phông')
+    archives_time = models.CharField(max_length=256, verbose_name='Thời gian tài liệu')
+
+    identifier = models.CharField(max_length=64, verbose_name="Mã phông")
     organ = models.ForeignKey(
         Organ,
         default=None,
@@ -84,6 +160,7 @@ class Phong(models.Model):
         on_delete=models.SET(None),
         verbose_name='Mã cơ quan lưu trữ'
     )
+
 
     class Meta:
         verbose_name = 'Phông lưu trữ'
@@ -306,29 +383,6 @@ class DocumentSecurityLevel(models.Model):
     class Meta:
         verbose_name = 'Cấp độ bảo mật'
         verbose_name_plural = 'Cấp độ bảo mật'
-
-
-class OrganDepartment(models.Model):
-    organ = models.ForeignKey(
-        Organ,
-        on_delete=models.CASCADE,
-        verbose_name='Cơ quan'
-    )
-    name = models.CharField(
-        max_length=256,
-        verbose_name='Tên phòng ban'
-    )
-    code = models.CharField(
-        max_length=84,
-        verbose_name="Mã phòng ban"
-    )
-
-    class Meta:
-        verbose_name = 'Phòng ban'
-        verbose_name_plural = 'Phòng ban'
-
-    def __str__(self):
-        return self.name
 
 
 class OrganRole(models.Model):

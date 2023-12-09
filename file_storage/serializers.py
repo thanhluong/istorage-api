@@ -26,7 +26,7 @@ class PhongSerializer(serializers.ModelSerializer):
 
 class CategoryFileSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
-    parent = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    parent = serializers.PrimaryKeyRelatedField(queryset=CategoryFile.objects.all())
     class Meta:
         model = CategoryFile
         fields = '__all__'
