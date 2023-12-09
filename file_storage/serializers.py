@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from file_storage.models import Document, GovFile, GovFileProfile
 from file_storage.models import Organ, OrganDepartment
+from file_storage.models import Phong
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -17,6 +18,8 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 
 class GovFileSerializer(serializers.ModelSerializer):
+    official_organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
+    organ_id = serializers.PrimaryKeyRelatedField(queryset=Phong.objects.all())
     class Meta:
         model = GovFile
         fields = '__all__'

@@ -6,10 +6,113 @@ def menu_icon_path(instance, filename):
     return 'menu_icon/{0}'.format(filename)
 
 
+class Organ(models.Model):
+    storage = models.BooleanField(default=False, null=True, verbose_name="Lưu trữ")
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Tên cơ quan'
+    )
+    code = models.CharField(
+        max_length=64,
+        verbose_name="Mã cơ quan"
+    )
+    address = models.TextField(
+        blank=True,
+        verbose_name='Địa chỉ'
+    )
+    phone = models.CharField(
+        max_length=64,
+        blank=True,
+        verbose_name='Số điện thoại'
+    )
+    fax = models.CharField(
+        max_length=64,
+        blank=True,
+        verbose_name='Số fax'
+    )
+    provinceName = models.CharField(
+        default="Tỉnh Quảng Ngãi",
+        max_length=64,
+        blank=True,
+        verbose_name='Tỉnh thành'
+    )
+    province = models.IntegerField(
+        default=51,
+        blank=True,
+        null=True,
+        verbose_name='ID tỉnh thành'
+    )
+    districtName = models.CharField(
+        default="Thành phố Quảng Ngãi",
+        max_length=64,
+        blank=True,
+        verbose_name='Quận huyện'
+    )
+    district = models.IntegerField(
+        default=522,
+        blank=True,
+        null=True,
+        verbose_name='ID quận huyện'
+    )
+    wardName = models.CharField(
+        max_length=64,
+        blank=True,
+        verbose_name='Phường xã'
+    )
+    ward = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name='ID phường xã'
+    )
+
+    class Meta:
+        verbose_name = 'Cơ quan'
+        verbose_name_plural = 'Cơ quan'
+
+    def __str__(self):
+        return self.name
+
+
+class Phong(models.Model):
+    name = models.CharField(max_length=256, verbose_name='Tên phông')
+    code = models.CharField(max_length=64, verbose_name="Mã phông")
+    organ = models.ForeignKey(
+        Organ,
+        default=None,
+        blank=True,
+        null=True,
+        on_delete=models.SET(None),
+        verbose_name='Mã cơ quan lưu trữ'
+    )
+
+    class Meta:
+        verbose_name = 'Phông lưu trữ'
+        verbose_name_plural = 'Phông lưu trữ'
+
+    def __str__(self):
+        return self.name
+
+
 class GovFile(models.Model):
     gov_file_code = models.CharField(max_length=100, blank=True, null=True)
     identifier = models.CharField(max_length=100, blank=True, null=True)
-    organ_id = models.CharField(max_length=100, blank=True, null=True)
+    organ_id = models.ForeignKey(
+        Phong,
+        default=None,
+        blank=True,
+        null=True,
+        on_delete=models.SET(None),
+        verbose_name='Phông lưu trữ lịch sử'
+    )
+    official_organ = models.ForeignKey(
+        Organ,
+        default=None,
+        blank=True,
+        null=True,
+        on_delete=models.SET(None),
+        verbose_name='Cơ quan lưu trữ'
+    )
+    on_trash = models.BooleanField(default=False)
     file_catalog = models.IntegerField(blank=True, null=True)
     file_notation = models.CharField(max_length=200, blank=True, null=True)
     title = models.CharField(max_length=1000, blank=True, null=True)
@@ -175,73 +278,6 @@ class DocumentSecurityLevel(models.Model):
     class Meta:
         verbose_name = 'Cấp độ bảo mật'
         verbose_name_plural = 'Cấp độ bảo mật'
-
-
-class Organ(models.Model):
-    storage = models.BooleanField(default=False, null=True, verbose_name="Lưu trữ")
-    name = models.CharField(
-        max_length=256,
-        verbose_name='Tên cơ quan'
-    )
-    code = models.CharField(
-        max_length=64,
-        verbose_name="Mã cơ quan"
-    )
-    address = models.TextField(
-        blank=True,
-        verbose_name='Địa chỉ'
-    )
-    phone = models.CharField(
-        max_length=64,
-        blank=True,
-        verbose_name='Số điện thoại'
-    )
-    fax = models.CharField(
-        max_length=64,
-        blank=True,
-        verbose_name='Số fax'
-    )
-    provinceName = models.CharField(
-        default="Tỉnh Quảng Ngãi",
-        max_length=64,
-        blank=True,
-        verbose_name='Tỉnh thành'
-    )
-    province = models.IntegerField(
-        default=51,
-        blank=True,
-        null=True,
-        verbose_name='ID tỉnh thành'
-    )
-    districtName = models.CharField(
-        default="Thành phố Quảng Ngãi",
-        max_length=64,
-        blank=True,
-        verbose_name='Quận huyện'
-    )
-    district = models.IntegerField(
-        default=522,
-        blank=True,
-        null=True,
-        verbose_name='ID quận huyện'
-    )
-    wardName = models.CharField(
-        max_length=64,
-        blank=True,
-        verbose_name='Phường xã'
-    )
-    ward = models.IntegerField(
-        blank=True,
-        null=True,
-        verbose_name='ID phường xã'
-    )
-
-    class Meta:
-        verbose_name = 'Cơ quan'
-        verbose_name_plural = 'Cơ quan'
-
-    def __str__(self):
-        return self.name
 
 
 class OrganDepartment(models.Model):
