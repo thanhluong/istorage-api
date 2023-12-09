@@ -11,7 +11,7 @@ from .models import Organ, OrganDepartment
 
 
 class StorageUserAdmin(UserAdmin):
-    list_display = ('full_name', 'username', 'email', 'is_active')
+    list_display = ('full_name', 'username', 'email', 'is_active', 'is_staff')
     readonly_fields = ('date_joined', 'last_login', 'menu_permission')
 
     fieldsets = [
