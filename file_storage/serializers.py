@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from file_storage.models import StorageUser
 from file_storage.models import Document, GovFile, GovFileProfile
-from file_storage.models import Organ, OrganDepartment
+from file_storage.models import Organ, OrganDepartment, OrganRole
 from file_storage.models import Phong, CategoryFile
 
 
@@ -103,5 +103,5 @@ class OrganRoleSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
 
     class Meta:
-        model = OrganDepartment
+        model = OrganRole
         fields = '__all__'
