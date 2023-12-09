@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from rest_framework.authentication import SessionAuthentication
 
 from file_storage.serializers import OrganSerializer
 from file_storage.serializers import OrganDepartmentSerializer
@@ -10,6 +11,11 @@ from file_storage.models import Organ
 from file_storage.models import OrganDepartment
 from file_storage.models import OrganRole
 from file_storage.models import Phong
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
 
 
 class OrganListApiView(APIView):
@@ -213,6 +219,7 @@ class OrganRoleByOrganIdListApiView(APIView):
 
 class PhongListApiView(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     # 1. List all
     def get(self, request, *args, **kwargs):
@@ -231,6 +238,7 @@ class PhongListApiView(APIView):
 
 class PhongDetailApiView(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def get_object(self, fond_id, *args, **kwargs):
         try:
@@ -268,6 +276,7 @@ class PhongDetailApiView(APIView):
 
 class PhongByOrganIdListApiView(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     # 1. List all
     def get(self, request, organ_id, *args, **kwargs):
