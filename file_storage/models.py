@@ -1,6 +1,5 @@
 from django.db import models
 from enum import Enum
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 
 
 def menu_icon_path(instance, filename):
@@ -178,6 +177,24 @@ class DocumentSecurityLevel(models.Model):
         verbose_name_plural = 'Cấp độ bảo mật'
 
 
+class OrganRole(models.Model):
+    name = models.CharField(
+        max_length=128,
+        verbose_name='Tên chức vụ'
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name='Mô tả'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Chức vụ trong cơ quan'
+        verbose_name_plural = 'Chức vụ trong cơ quan'
+
+
 class Organ(models.Model):
     storage = models.BooleanField(default=False, null=True, verbose_name="Lưu trữ")
     name = models.CharField(
@@ -268,32 +285,6 @@ class OrganDepartment(models.Model):
         return self.name
 
 
-class OrganRole(models.Model):
-    name = models.CharField(
-        max_length=256,
-        verbose_name='Tên chức vụ'
-    )
-    description = models.TextField(
-        blank=True,
-        verbose_name='Mô tả'
-    )
-    organ = models.ForeignKey(
-        Organ,
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=models.CASCADE,
-        verbose_name='Cơ quan'
-    )
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Chức vụ trong cơ quan'
-        verbose_name_plural = 'Chức vụ trong cơ quan'
-
-
 class Plan(models.Model):
     STATE_CHOICE = (
         ("Mới lập", "Mới lập"),
@@ -309,13 +300,9 @@ class Plan(models.Model):
     date = models.DateField(
         verbose_name='Thời gian'
     )
-    organ = models.ForeignKey(
-        Organ,
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=models.CASCADE,
-        verbose_name='Cơ quan'
+    organ_id = models.IntegerField(
+        default=1,
+        verbose_name='ID cơ quan'
     )
     state = models.CharField(
         max_length=64,
@@ -329,52 +316,3 @@ class Plan(models.Model):
     class Meta:
         verbose_name = 'Kế hoạch'
         verbose_name_plural = 'Kế hoạch'
-
-
-class StorageUser(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(max_length=84, unique=True, verbose_name="Email")
-    username = models.CharField(max_length=64, unique=True, verbose_name="Tên đăng nhập")
-    full_name = models.CharField(max_length=64, blank=True, verbose_name="Họ và tên")
-    phone = models.CharField(max_length=32, blank=True, verbose_name="Số điện thoại")
-    is_staff = models.BooleanField(default=False, verbose_name="Quản trị cơ quan")
-    is_superuser = models.BooleanField(default=False, verbose_name="Quản trị hệ thống")
-    is_active = models.BooleanField(default=True, verbose_name="Đang hoạt động")
-
-    first_name = models.CharField(max_length=64, blank=True, verbose_name="Tên đệm và tên")
-    last_name = models.CharField(max_length=32, blank=True, verbose_name="Họ")
-    date_joined = models.DateTimeField(auto_now_add=True, verbose_name="Ngày tham gia")
-    last_login = models.DateTimeField(auto_now=True, verbose_name="Lần đăng nhập cuối")
-
-    department = models.ForeignKey(
-        OrganDepartment,
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=models.CASCADE,
-        verbose_name='Phòng ban',
-    )
-    role = models.ForeignKey(
-        OrganRole,
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=models.CASCADE,
-        verbose_name='Chức vụ',
-    )
-    menu_permission = models.CharField(
-        max_length=640,
-        blank=True,
-        verbose_name="Các menu được truy cập"
-    )
-
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
-
-    objects = UserManager()
-
-    class Meta:
-        verbose_name = 'Người dùng hệ thống'
-        verbose_name_plural = 'Người dùng hệ thống'
-
-    def __str__(self):
-        return self.username
