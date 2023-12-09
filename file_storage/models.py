@@ -177,24 +177,6 @@ class DocumentSecurityLevel(models.Model):
         verbose_name_plural = 'Cấp độ bảo mật'
 
 
-class OrganRole(models.Model):
-    name = models.CharField(
-        max_length=128,
-        verbose_name='Tên chức vụ'
-    )
-    description = models.TextField(
-        blank=True,
-        verbose_name='Mô tả'
-    )
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Chức vụ trong cơ quan'
-        verbose_name_plural = 'Chức vụ trong cơ quan'
-
-
 class Organ(models.Model):
     storage = models.BooleanField(default=False, null=True, verbose_name="Lưu trữ")
     name = models.CharField(
@@ -283,6 +265,32 @@ class OrganDepartment(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class OrganRole(models.Model):
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Tên chức vụ'
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name='Mô tả'
+    )
+    organ = models.ForeignKey(
+        Organ,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.CASCADE,
+        verbose_name='Cơ quan'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Chức vụ trong cơ quan'
+        verbose_name_plural = 'Chức vụ trong cơ quan'
 
 
 class Plan(models.Model):
