@@ -4,8 +4,14 @@ from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, Updat
 from .views.search import FullTextSearchView
 from .views.organ import OrganListApiView, OrganDetailApiView
 from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
+from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView
 
 urlpatterns = [
+    # User APIs,
+    path('user', StorageUserListApiView.as_view(), name='user'),
+    path('user/user_id/<int:user_id>', StorageUserDetailApiView.as_view(), name='user_detail'),
+    path('user/by_department/<int:department_id>', StorageUserByDepartmentListView.as_view(), name='user_by_department'),
+
     # Doc APIs
     path('upload_document/', DocumentUploadView.as_view(), name='upload_document'),
     path('get_doc_by_gov_file_id/', GetDocumentByGovFileId.as_view(), name='get_doc_by_gov_file_id'),
