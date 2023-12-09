@@ -4,6 +4,7 @@ from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, Updat
 from .views.search import FullTextSearchView
 from .views.organ import OrganListApiView, OrganDetailApiView
 from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
+from .views.organ import OrganRoleListApiView
 from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView
 from .views.storage_user import StorageUserLoginView, StorageUserLogoutView
 from .views.storage_user import StorageUserInfoView, StorageUserSetPasswordView
@@ -39,6 +40,8 @@ urlpatterns = [
     path('organ_department', OrganDepartmentListApiView.as_view(), name='organ_department'),
     path('organ_department/<int:organ_department_id>', OrganDepartmentDetailApiView.as_view(), name='organ_department_detail'),
     path('organ_department/by_organ/<int:organ_id>', OrganDepartmentByOrganIdListView.as_view(), name='organ_department_by_organ'),
+    # OrganRole APIs
+    path('organ_role', OrganRoleListApiView.as_view(), name='organ_role'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),
