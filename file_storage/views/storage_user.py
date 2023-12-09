@@ -10,8 +10,14 @@ from file_storage.models import StorageUser
 from file_storage.serializers import StorageUserSerializer, StorageUserCreationSerializer
 
 
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
+
+
 class StorageUserListApiView(CsrfExemptMixin, APIView):
     permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     # 1. List all
     def get(self, request, *args, **kwargs):
