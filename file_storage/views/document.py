@@ -1,12 +1,11 @@
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import permissions, status
+from rest_framework.authentication import SessionAuthentication
 
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-
-from braces.views import CsrfExemptMixin
 
 from file_storage.models import Document
 from file_storage.serializers import DocumentSerializer
@@ -16,9 +15,15 @@ import os
 from pymongo import MongoClient
 from pypdf import PdfReader 
 
-class DocumentUploadView(CsrfExemptMixin, APIView):
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
+
+
+class DocumentUploadView(CsrfExemptSessionAuthentication, APIView):
     parser_classes = [MultiPartParser, FormParser]
-    authentication_classes = []
+    permission_classes = (permissions.AllowAny,)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -92,9 +97,9 @@ class DocumentUploadView(CsrfExemptMixin, APIView):
         return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class GetDocumentByGovFileId(CsrfExemptMixin, APIView):
+class GetDocumentByGovFileId(CsrfExemptSessionAuthentication, APIView):
     parser_classes = [JSONParser]
-    authentication_classes = []
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, *args, **kwargs):
         gov_file_id = request.GET.get('gov_file_id')
@@ -118,8 +123,8 @@ class GetDocumentByGovFileId(CsrfExemptMixin, APIView):
             return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class DeleteDocumentById(CsrfExemptMixin, APIView):
-    authentication_classes = []
+class DeleteDocumentById(CsrfExemptSessionAuthentication, APIView):
+    permission_classes = (permissions.AllowAny,)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -139,8 +144,8 @@ class DeleteDocumentById(CsrfExemptMixin, APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class UpdateDocumentById(CsrfExemptMixin, APIView):
-    authentication_classes = []
+class UpdateDocumentById(CsrfExemptSessionAuthentication, APIView):
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         document_id = request.data.get('id')
