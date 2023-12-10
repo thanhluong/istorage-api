@@ -15,7 +15,7 @@ from .models import Warehouse, WarehouseRoom, Shelf, Drawer
 
 class StorageUserAdmin(UserAdmin):
     list_display = ('full_name', 'username', 'email', 'is_active', 'is_staff')
-    readonly_fields = ('date_joined', 'last_login', 'menu_permission')
+    readonly_fields = ('date_joined', 'last_login')
 
     fieldsets = [
         ('Thông tin cá nhân', {'fields': ['full_name', 'phone', 'email']}),
