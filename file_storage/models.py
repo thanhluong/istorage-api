@@ -248,6 +248,18 @@ class GovFileLanguage(models.Model):
         return self.name
 
 
+class PhysicalState(models.Model):
+    name = models.CharField(max_length=128, verbose_name='Tên tình trạng vật lý')
+    code = models.CharField(max_length=16, verbose_name='Mã tình trạng vật lý')
+
+    class Meta:
+        verbose_name = 'Tình trạng vật lý'
+        verbose_name_plural = 'Tình trạng vật lý'
+
+    def __str__(self):
+        return self.name
+
+
 class GovFile(models.Model):
     gov_file_code = models.CharField(max_length=100, blank=True, null=True)
     identifier = models.CharField(max_length=100, blank=True, null=True)
@@ -297,7 +309,14 @@ class GovFile(models.Model):
     keyword = models.CharField(max_length=100, blank=True, null=True)
     sheet_number = models.IntegerField(blank=True, null=True)
     page_number = models.IntegerField(blank=True, null=True)
-    format = models.CharField(max_length=100, blank=True, null=True)
+    format = models.ForeignKey(
+        PhysicalState,
+        default=None,
+        blank=True,
+        null=True,
+        on_delete=models.SET(None),
+        verbose_name='Tình trạng vật lý'
+    )
     extra_info = models.TextField(blank=True, null=True)
 
     def __str__(self):
