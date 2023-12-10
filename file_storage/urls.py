@@ -11,6 +11,7 @@ from .views.storage_user import StorageUserLoginView, StorageUserLogoutView
 from .views.storage_user import StorageUserInfoView, StorageUserSetPasswordView
 from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailView
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
+from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 
 urlpatterns = [
     # User APIs,
@@ -59,6 +60,10 @@ urlpatterns = [
     # PhysicalState APIs
     path('physical_state', PhysicalStateListView.as_view(), name='physical_state'),
     path('physical_state/<int:physical_state_id>', PhysicalStateDetailView.as_view(), name='physical_state_detail'),
+
+    # GovFileLanguage APIs
+    path('language', GovFileLanguageListView.as_view(), name='gov_file_language'),
+    path('language/<int:gov_file_language_id>', GovFileLanguageDetailView.as_view(), name='gov_file_language_detail'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),

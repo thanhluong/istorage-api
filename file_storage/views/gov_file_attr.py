@@ -125,3 +125,57 @@ class PhysicalStateDetailView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         physical_state.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class GovFileLanguageListView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        gov_file_languages = GovFileLanguage.objects.all()
+        serializer = GovFileLanguageSerializer(gov_file_languages, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = GovFileLanguageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GovFileLanguageDetailView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self, gov_file_language_id, *args, **kwargs):
+        try:
+            return GovFileLanguage.objects.get(id=gov_file_language_id)
+        except GovFileLanguage.DoesNotExist:
+            return None
+
+    def get(self, request, gov_file_language_id):
+        gov_file_language = self.get_object(gov_file_language_id)
+        if gov_file_language is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = GovFileLanguageSerializer(gov_file_language)
+        return Response(serializer.data)
+
+    def put(self, request, gov_file_language_id):
+        gov_file_language = self.get_object(gov_file_language_id)
+        if gov_file_language is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = GovFileLanguageSerializer(gov_file_language, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, gov_file_language_id):
+        gov_file_language = self.get_object(gov_file_language_id)
+        if gov_file_language is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        gov_file_language.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
