@@ -80,20 +80,11 @@ class GetGovFiles(CsrfExemptMixin, APIView):
         return True
 
     def get(self, request, *args, **kwargs):
-        perm_token = int(request.GET.get('perm_token'))
-
         filter_id = int(request.GET.get('id')) if 'id' in request.GET else None
         filter_state = str(request.GET.get('state')) if 'state' in request.GET else None
         filter_start_date = convert_date(request.GET.get('start_date')) if 'start_date' in request.GET else None
         filter_end_date = convert_date(request.GET.get('end_date')) if 'end_date' in request.GET else None
         filter_title = request.GET.get('title') if 'title' in request.GET else None
-
-        if perm_token not in perm_read_dict:
-            response_msg = {
-                "error_code": status.HTTP_401_UNAUTHORIZED,
-                "description": "Không có quyền!"
-            }
-            return Response(response_msg, status=status.HTTP_200_OK)
 
         files = GovFile.objects.all()
         serializer = GovFileSerializer(files, many=True)
@@ -215,10 +206,6 @@ class DeleteGovFileById(CsrfExemptMixin, APIView):
             "description": "Bạn không có quyền xóa hồ sơ này!",
 
         }
-        # if 'perm_token' in request.data:
-        #     perm_token = int(request.data.get('perm_token'))
-        # else:
-        #     return Response(perm_response_msg, status.HTTP_200_OK)
 
         gov_file = GovFile.objects.filter(id=gov_file_id)
         gov_file_profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
@@ -231,9 +218,6 @@ class DeleteGovFileById(CsrfExemptMixin, APIView):
 
             }
             return Response(response_msg, status=status.HTTP_200_OK)
-
-        # if profile_json['state'] and profile_json['state'] not in perm_read_dict[perm_token]:
-        #     return Response(perm_response_msg, status.HTTP_200_OK)
 
         gov_file.delete()
         gov_file_profile.delete()
