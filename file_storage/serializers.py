@@ -6,6 +6,7 @@ from file_storage.models import Organ, OrganDepartment, OrganRole
 from file_storage.models import Phong, CategoryFile
 from file_storage.models import GovFileLanguage, StorageDuration, PhysicalState
 from file_storage.models import Plan
+from file_storage.models import Warehouse, WarehouseRoom, Drawer, Shelf
 
 
 class StorageUserSerializer(serializers.ModelSerializer):
@@ -84,6 +85,8 @@ class GovFileSerializer(serializers.ModelSerializer):
     plan_bmcl = serializers.PrimaryKeyRelatedField(required=False, queryset=Plan.objects.all())
     plan_nopluuls = serializers.PrimaryKeyRelatedField(required=False, queryset=Plan.objects.all())
     plan_tieuhuy = serializers.PrimaryKeyRelatedField(required=False, queryset=Plan.objects.all())
+
+    drawer = serializers.PrimaryKeyRelatedField(required=False, queryset=Drawer.objects.all())
 
     class Meta:
         model = GovFile
