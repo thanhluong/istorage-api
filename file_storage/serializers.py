@@ -81,10 +81,10 @@ class GovFileSerializer(serializers.ModelSerializer):
     language = serializers.PrimaryKeyRelatedField(queryset=GovFileLanguage.objects.all())
     maintenance = serializers.PrimaryKeyRelatedField(queryset=StorageDuration.objects.all())
 
-    plan_thuthap = serializers.PrimaryKeyRelatedField(required=False, queryset=Plan.objects.all())
-    plan_bmcl = serializers.PrimaryKeyRelatedField(required=False, queryset=Plan.objects.all())
-    plan_nopluuls = serializers.PrimaryKeyRelatedField(required=False, queryset=Plan.objects.all())
-    plan_tieuhuy = serializers.PrimaryKeyRelatedField(required=False, queryset=Plan.objects.all())
+    plan_thuthap = serializers.PrimaryKeyRelatedField(required=False, allow_null=True, queryset=Plan.objects.all())
+    plan_bmcl = serializers.PrimaryKeyRelatedField(required=False, allow_null=True, queryset=Plan.objects.all())
+    plan_nopluuls = serializers.PrimaryKeyRelatedField(required=False, allow_null=True, queryset=Plan.objects.all())
+    plan_tieuhuy = serializers.PrimaryKeyRelatedField(required=False, allow_null=True, queryset=Plan.objects.all())
 
     drawer = serializers.PrimaryKeyRelatedField(required=False, queryset=Drawer.objects.all())
 
