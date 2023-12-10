@@ -7,6 +7,10 @@ def menu_icon_path(instance, filename):
     return 'menu_icon/{0}'.format(filename)
 
 
+def plan_directory_path(instance, filename):
+    return 'plan/{0}/{1}'.format(instance.id, filename)
+
+
 class Organ(models.Model):
     storage = models.BooleanField(default=False, null=True, verbose_name="Lưu trữ")
     name = models.CharField(
@@ -273,6 +277,57 @@ class StorageDuration(models.Model):
         return self.duration
 
 
+class Plan(models.Model):
+    STATE_CHOICE = (
+        ("Mới lập", "Mới lập"),
+        ("Đợi duyệt", "Đợi duyệt"),
+        ("Đã duyệt", "Đã duyệt"),
+        ("Trả về", "Trả về"),
+    )
+
+    name = models.CharField(
+        max_length=512,
+        verbose_name='Tên kế hoạch'
+    )
+    start_date = models.DateField(
+        blank=True,
+        null=True,
+        default=None,
+        verbose_name='Thời gian bắt đầu'
+    )
+    end_date = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name='Thời gian kết thúc'
+    )
+    organ_id = models.IntegerField(
+        default=1,
+        verbose_name='ID cơ quan'
+    )
+    state = models.CharField(
+        max_length=64,
+        choices=STATE_CHOICE,
+        verbose_name='Trạng thái'
+    )
+    type = models.IntegerField(
+        default=1,
+        verbose_name='Loại kế hoạch'
+    )
+    attachment = models.FileField(
+        blank=True,
+        null=True,
+        default=None,
+        upload_to=plan_directory_path
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Kế hoạch'
+        verbose_name_plural = 'Kế hoạch'
+
+
 class GovFile(models.Model):
     gov_file_code = models.CharField(max_length=100, blank=True, null=True)
     identifier = models.CharField(max_length=100, blank=True, null=True)
@@ -338,6 +393,46 @@ class GovFile(models.Model):
         verbose_name='Tình trạng vật lý'
     )
     extra_info = models.TextField(blank=True, null=True)
+
+    plan_thuthap = models.ForeignKey(
+        Plan,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.SET(None),
+        related_name="thuthapnopluu",
+        verbose_name='Nằm trong kế hoạch thu thập'
+    )
+
+    plan_bmcl = models.ForeignKey(
+        Plan,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.SET(None),
+        related_name="bienmucchinhly",
+        verbose_name='Nằm trong kế hoạch biên mục chỉnh lý'
+    )
+
+    plan_nopluuls = models.ForeignKey(
+        Plan,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.SET(None),
+        related_name="nopluulichsu",
+        verbose_name='Nằm trong kế hoạch nộp lưu LS'
+    )
+
+    plan_tieuhuy = models.ForeignKey(
+        Plan,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.SET(None),
+        related_name="tieuhuy",
+        verbose_name='Nằm trong kế hoạch tiêu huỷ'
+    )
 
     def __str__(self):
         return 'Hồ sơ: ' + self.title
@@ -487,36 +582,3 @@ class DocumentSecurityLevel(models.Model):
     class Meta:
         verbose_name = 'Cấp độ bảo mật'
         verbose_name_plural = 'Cấp độ bảo mật'
-
-
-class Plan(models.Model):
-    STATE_CHOICE = (
-        ("Mới lập", "Mới lập"),
-        ("Đợi duyệt", "Đợi duyệt"),
-        ("Đã duyệt", "Đã duyệt"),
-        ("Trả về", "Trả về"),
-    )
-
-    name = models.CharField(
-        max_length=128,
-        verbose_name='Tên kế hoạch'
-    )
-    date = models.DateField(
-        verbose_name='Thời gian'
-    )
-    organ_id = models.IntegerField(
-        default=1,
-        verbose_name='ID cơ quan'
-    )
-    state = models.CharField(
-        max_length=64,
-        choices=STATE_CHOICE,
-        verbose_name='Trạng thái'
-    )
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Kế hoạch'
-        verbose_name_plural = 'Kế hoạch'

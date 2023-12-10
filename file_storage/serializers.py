@@ -5,6 +5,7 @@ from file_storage.models import Document, GovFile, GovFileProfile
 from file_storage.models import Organ, OrganDepartment, OrganRole
 from file_storage.models import Phong, CategoryFile
 from file_storage.models import GovFileLanguage, StorageDuration, PhysicalState
+from file_storage.models import Plan
 
 
 class StorageUserSerializer(serializers.ModelSerializer):
@@ -78,6 +79,11 @@ class GovFileSerializer(serializers.ModelSerializer):
     format = serializers.SlugRelatedField(slug_field='name', queryset=PhysicalState.objects.all())
     language = serializers.SlugRelatedField(slug_field='name', queryset=GovFileLanguage.objects.all())
     maintenance = serializers.SlugRelatedField(slug_field='name', queryset=StorageDuration.objects.all())
+
+    plan_thuthap = serializers.SlugRelatedField(slug_field='name', queryset=Plan.objects.all())
+    plan_bmcl = serializers.SlugRelatedField(slug_field='name', queryset=Plan.objects.all())
+    plan_nopluuls = serializers.SlugRelatedField(slug_field='name', queryset=Plan.objects.all())
+    plan_tieuhuy = serializers.SlugRelatedField(slug_field='name', queryset=Plan.objects.all())
 
     class Meta:
         model = GovFile
