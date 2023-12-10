@@ -8,7 +8,8 @@ def menu_icon_path(instance, filename):
 
 
 def plan_directory_path(instance, filename):
-    return 'plan/{0}/{1}'.format(instance.id, filename)
+    folder_name = abs(hash(instance.name)) + 2023
+    return 'plan/{0}/{1}'.format(folder_name, filename)
 
 
 class Organ(models.Model):
@@ -300,9 +301,13 @@ class Plan(models.Model):
         null=True,
         verbose_name='Thời gian kết thúc'
     )
-    organ_id = models.IntegerField(
-        default=1,
-        verbose_name='ID cơ quan'
+    organ = models.ForeignKey(
+        Organ,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.SET(None),
+        verbose_name='Cơ quan'
     )
     state = models.CharField(
         max_length=64,
@@ -310,6 +315,12 @@ class Plan(models.Model):
         verbose_name='Trạng thái'
     )
     type = models.IntegerField(
+        choices=[
+            (1, 1),
+            (2, 2),
+            (3, 3),
+            (4, 4)
+        ],
         default=1,
         verbose_name='Loại kế hoạch'
     )

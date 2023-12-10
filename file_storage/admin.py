@@ -10,6 +10,7 @@ from .models import DocumentSecurityLevel
 from .models import OrganRole
 from .models import Organ, OrganDepartment
 from .models import Phong
+from .models import Plan
 
 
 class StorageUserAdmin(UserAdmin):
@@ -76,6 +77,10 @@ class StorageDurationAdmin(admin.ModelAdmin):
     list_display = ('duration', 'number_of_year', 'code')
 
 
+class PlanAdmin(admin.ModelAdmin):
+    list_display = ('name', 'organ', 'type')
+
+
 admin.site.register(StorageUser, StorageUserAdmin)
 admin.site.register(Document)
 admin.site.register(GovFile)
@@ -91,3 +96,4 @@ admin.site.register(CategoryFile, CategoryFileAdmin)
 admin.site.register(GovFileLanguage, GovFileLanguageAdmin)
 admin.site.register(PhysicalState, PhysicalStateAdmin)
 admin.site.register(StorageDuration, StorageDurationAdmin)
+admin.site.register(Plan, PlanAdmin)
