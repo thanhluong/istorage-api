@@ -200,7 +200,6 @@ class Phong(models.Model):
         verbose_name='Mã cơ quan lưu trữ'
     )
 
-
     class Meta:
         verbose_name = 'Phông lưu trữ'
         verbose_name_plural = 'Phông lưu trữ'
@@ -237,6 +236,18 @@ class CategoryFile(models.Model):
         return self.name
 
 
+class GovFileLanguage(models.Model):
+    name = models.CharField(max_length=128, verbose_name='Tên ngôn ngữ')
+    code = models.CharField(max_length=16, verbose_name='Mã ngôn ngữ')
+
+    class Meta:
+        verbose_name = 'Ngôn ngữ'
+        verbose_name_plural = 'Ngôn ngữ'
+
+    def __str__(self):
+        return self.name
+
+
 class GovFile(models.Model):
     gov_file_code = models.CharField(max_length=100, blank=True, null=True)
     identifier = models.CharField(max_length=100, blank=True, null=True)
@@ -267,15 +278,22 @@ class GovFile(models.Model):
     on_trash = models.BooleanField(default=False)
     file_catalog = models.IntegerField(blank=True, null=True)
     file_notation = models.CharField(max_length=200, blank=True, null=True)
-    title = models.CharField(max_length=1000, blank=True, null=True)
+    title = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Tiêu đề')
     maintenance = models.CharField(max_length=100, blank=True, null=True)
     rights = models.CharField(max_length=100, blank=True, null=True)
-    language = models.CharField(max_length=100, blank=True, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
+    language = models.ForeignKey(
+        GovFileLanguage,
+        default=None,
+        blank=True,
+        null=True,
+        on_delete=models.SET(None),
+        verbose_name='Ngôn ngữ'
+    )
+    start_date = models.DateField(blank=True, null=True, verbose_name='Ngày bắt đầu')
+    end_date = models.DateField(blank=True, null=True, verbose_name='Ngày kết thúc')
     total_doc = models.IntegerField(blank=True, null=True)
     description = models.CharField(max_length=2000, blank=True, null=True)
-    infor_sign = models.CharField(max_length=100, blank=True, null=True)
+    infor_sign = models.CharField(max_length=100, blank=True, null=True, verbose_name='Bút tích')
     keyword = models.CharField(max_length=100, blank=True, null=True)
     sheet_number = models.IntegerField(blank=True, null=True)
     page_number = models.IntegerField(blank=True, null=True)

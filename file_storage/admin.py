@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 
 from .models import StorageUser
 from .models import Document, GovFile, GovFileProfile
-from .models import CategoryFile
+from .models import CategoryFile, GovFileLanguage
 from .models import SiteMenu
 from .models import OrganTemplate
 from .models import DocumentSecurityLevel
@@ -64,6 +64,10 @@ class CategoryFileAdmin(admin.ModelAdmin):
     list_display = ('name', 'parent', 'organ')
 
 
+class GovFileLanguageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code')
+
+
 admin.site.register(StorageUser, StorageUserAdmin)
 admin.site.register(Document)
 admin.site.register(GovFile)
@@ -76,3 +80,4 @@ admin.site.register(Organ, OrganAdmin)
 admin.site.register(OrganDepartment, OrganDepartmentAdmin)
 admin.site.register(Phong, PhongAdmin)
 admin.site.register(CategoryFile, CategoryFileAdmin)
+admin.site.register(GovFileLanguage, GovFileLanguageAdmin)
