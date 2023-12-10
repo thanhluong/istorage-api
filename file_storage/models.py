@@ -457,6 +457,15 @@ class GovFile(models.Model):
         verbose_name='Nằm trong kế hoạch tiêu huỷ'
     )
 
+    shelf = models.ForeignKey(
+        'Shelf',
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.SET(None),
+        verbose_name='Kệ lưu trữ'
+    )
+
     def __str__(self):
         return 'Hồ sơ: ' + self.title
 
