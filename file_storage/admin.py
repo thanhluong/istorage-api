@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 
 from .models import StorageUser
 from .models import Document, GovFile, GovFileProfile
+from .models import CategoryFile
 from .models import SiteMenu
 from .models import OrganTemplate
 from .models import DocumentSecurityLevel
@@ -59,6 +60,10 @@ class PhongAdmin(admin.ModelAdmin):
     list_display = ('fond_name', 'organ')
 
 
+class CategoryFileAdmin(admin.ModelAdmin):
+    list_display = ('name', 'parent', 'organ')
+
+
 admin.site.register(StorageUser, StorageUserAdmin)
 admin.site.register(Document)
 admin.site.register(GovFile)
@@ -70,3 +75,4 @@ admin.site.register(OrganRole, OrganRoleAdmin)
 admin.site.register(Organ, OrganAdmin)
 admin.site.register(OrganDepartment, OrganDepartmentAdmin)
 admin.site.register(Phong, PhongAdmin)
+admin.site.register(CategoryFile, CategoryFileAdmin)
