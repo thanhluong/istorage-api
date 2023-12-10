@@ -605,3 +605,98 @@ class DocumentSecurityLevel(models.Model):
     class Meta:
         verbose_name = 'Cấp độ bảo mật'
         verbose_name_plural = 'Cấp độ bảo mật'
+
+
+class Warehouse(models.Model):
+    organ = models.ForeignKey(
+        Organ,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.SET(None),
+        verbose_name='Cơ quan'
+    )
+    state = models.BooleanField(default=True, verbose_name="Trạng thái kho")
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Tên kho'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Lưu trữ - Kho'
+        verbose_name_plural = 'Lưu trữ - Kho'
+
+
+class WarehouseRoom(models.Model):
+    warehouse = models.ForeignKey(
+        Warehouse,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.CASCADE,
+        verbose_name='Kho'
+    )
+
+    state = models.BooleanField(default=True, verbose_name="Trạng thái phòng kho")
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Tên phòng kho'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Lưu trữ - Phòng kho'
+        verbose_name_plural = 'Lưu trữ - Phòng kho'
+
+
+class Shelf(models.Model):
+    warehouse_room = models.ForeignKey(
+        WarehouseRoom,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.CASCADE,
+        verbose_name='Phòng kho'
+    )
+
+    state = models.BooleanField(default=True, verbose_name="Trạng thái kệ")
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Tên kệ'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Lưu trữ - Kệ'
+        verbose_name_plural = 'Lưu trữ - Kệ'
+
+
+class Drawer(models.Model):
+    shelf = models.ForeignKey(
+        Shelf,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.CASCADE,
+        verbose_name='Kệ'
+    )
+
+    state = models.BooleanField(default=True, verbose_name="Trạng thái hộp")
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Tên hộp'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Lưu trữ - Hộp'
+        verbose_name_plural = 'Lưu trữ - Hộp'
