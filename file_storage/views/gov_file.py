@@ -3,9 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, status
 from rest_framework.renderers import JSONRenderer
-
-from braces.views import CsrfExemptMixin
-
+from rest_framework.authentication import SessionAuthentication
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
@@ -17,6 +15,11 @@ from datetime import datetime
 from unidecode import unidecode
 from enum import Enum
 from pymongo import MongoClient
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
 
 
 def convert_date(date_str):
@@ -50,9 +53,8 @@ perm_read_dict = {
 }
 
 
-class GetGovFiles(CsrfExemptMixin, APIView):
+class GetGovFiles(CsrfExemptSessionAuthentication, APIView):
     permission_classes = (permissions.AllowAny,)
-    authentication_classes = []
 
     def filter_by_fields(self, field, filter_field):
         if filter_field and field != filter_field:
@@ -129,9 +131,8 @@ class GetGovFiles(CsrfExemptMixin, APIView):
         return Response(response_data, status=status.HTTP_200_OK)
 
 
-class CreateGovFile(CsrfExemptMixin, APIView):
+class CreateGovFile(CsrfExemptSessionAuthentication, APIView):
     permission_classes = (permissions.AllowAny,)
-    authentication_classes = []
     parser_classes = [JSONParser]
 
     def post(self, request, *args, **kwargs):
@@ -184,8 +185,8 @@ class CreateGovFile(CsrfExemptMixin, APIView):
         return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class DeleteGovFileById(CsrfExemptMixin, APIView):
-    authentication_classes = []
+class DeleteGovFileById(CsrfExemptSessionAuthentication, APIView):
+    permission_classes = (permissions.AllowAny,)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -229,8 +230,8 @@ class DeleteGovFileById(CsrfExemptMixin, APIView):
         return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class UpdateGovFileById(CsrfExemptMixin, APIView):
-    authentication_classes = []
+class UpdateGovFileById(CsrfExemptSessionAuthentication, APIView):
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         gov_file_id = request.data.get('id')
@@ -282,8 +283,8 @@ class UpdateGovFileById(CsrfExemptMixin, APIView):
             return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class UpdateGovFileStateById(CsrfExemptMixin, APIView):
-    authentication_classes = []
+class UpdateGovFileStateById(CsrfExemptSessionAuthentication, APIView):
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         """
