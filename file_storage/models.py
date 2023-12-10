@@ -73,6 +73,11 @@ class Organ(models.Model):
         default=None,
         verbose_name='ID phường xã'
     )
+    note = models.TextField(
+        blank=True,
+        default="",
+        verbose_name='Ghi chú'
+    )
 
     class Meta:
         verbose_name = 'Cơ quan'
