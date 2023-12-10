@@ -141,7 +141,7 @@ class PhysicalStateSerializer(serializers.ModelSerializer):
 
 class PlanSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
-    attachment = serializers.FileField()
+    attachment = serializers.FileField(required=False)
 
     class Meta:
         model = Plan
