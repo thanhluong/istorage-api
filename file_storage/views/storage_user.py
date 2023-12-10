@@ -36,6 +36,8 @@ class StorageUserListApiView(CsrfExemptMixin, APIView):
 
 class StorageUserDetailApiView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
     def get_object(self, user_id, *args, **kwargs):
         try:
             return StorageUser.objects.get(id=user_id)
