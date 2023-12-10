@@ -73,17 +73,17 @@ class CategoryFileSerializer(serializers.ModelSerializer):
 
 
 class GovFileSerializer(serializers.ModelSerializer):
-    identifier = serializers.SlugRelatedField(slug_field='name', queryset=Organ.objects.all())
-    organ_id = serializers.SlugRelatedField(slug_field='fond_name', queryset=Phong.objects.all())
-    category_file = serializers.SlugRelatedField(slug_field='name', queryset=CategoryFile.objects.all())
-    format = serializers.SlugRelatedField(slug_field='name', queryset=PhysicalState.objects.all())
-    language = serializers.SlugRelatedField(slug_field='name', queryset=GovFileLanguage.objects.all())
-    maintenance = serializers.SlugRelatedField(slug_field='duration', queryset=StorageDuration.objects.all())
+    identifier = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
+    organ_id = serializers.PrimaryKeyRelatedField(queryset=Phong.objects.all())
+    category_file = serializers.PrimaryKeyRelatedField(queryset=CategoryFile.objects.all())
+    format = serializers.PrimaryKeyRelatedField(queryset=PhysicalState.objects.all())
+    language = serializers.PrimaryKeyRelatedField(queryset=GovFileLanguage.objects.all())
+    maintenance = serializers.PrimaryKeyRelatedField(queryset=StorageDuration.objects.all())
 
-    plan_thuthap = serializers.SlugRelatedField(required=False, slug_field='name', queryset=Plan.objects.all())
-    plan_bmcl = serializers.SlugRelatedField(required=False, slug_field='name', queryset=Plan.objects.all())
-    plan_nopluuls = serializers.SlugRelatedField(required=False, slug_field='name', queryset=Plan.objects.all())
-    plan_tieuhuy = serializers.SlugRelatedField(required=False, slug_field='name', queryset=Plan.objects.all())
+    plan_thuthap = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+    plan_bmcl = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+    plan_nopluuls = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+    plan_tieuhuy = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
 
     class Meta:
         model = GovFile
