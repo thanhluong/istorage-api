@@ -146,3 +146,35 @@ class PlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Plan
         fields = '__all__'
+
+
+class WarehouseSerializer(serializers.ModelSerializer):
+    organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
+
+    class Meta:
+        model = Warehouse
+        fields = '__all__'
+
+
+class WarehouseRoomSerializer(serializers.ModelSerializer):
+    warehouse = serializers.PrimaryKeyRelatedField(queryset=Warehouse.objects.all())
+
+    class Meta:
+        model = WarehouseRoom
+        fields = '__all__'
+
+
+class ShelfSerializer(serializers.ModelSerializer):
+    warehouse_room = serializers.PrimaryKeyRelatedField(queryset=WarehouseRoom.objects.all())
+
+    class Meta:
+        model = Shelf
+        fields = '__all__'
+
+
+class DrawerSerializer(serializers.ModelSerializer):
+    shelf = serializers.PrimaryKeyRelatedField(queryset=Shelf.objects.all())
+
+    class Meta:
+        model = Drawer
+        fields = '__all__'
