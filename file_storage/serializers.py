@@ -73,17 +73,17 @@ class CategoryFileSerializer(serializers.ModelSerializer):
 
 
 class GovFileSerializer(serializers.ModelSerializer):
-    official_organ = serializers.SlugRelatedField(slug_field='name', queryset=Organ.objects.all())
+    identifier = serializers.SlugRelatedField(slug_field='name', queryset=Organ.objects.all())
     organ_id = serializers.SlugRelatedField(slug_field='fond_name', queryset=Phong.objects.all())
     category_file = serializers.SlugRelatedField(slug_field='name', queryset=CategoryFile.objects.all())
     format = serializers.SlugRelatedField(slug_field='name', queryset=PhysicalState.objects.all())
     language = serializers.SlugRelatedField(slug_field='name', queryset=GovFileLanguage.objects.all())
-    maintenance = serializers.SlugRelatedField(slug_field='name', queryset=StorageDuration.objects.all())
+    maintenance = serializers.SlugRelatedField(slug_field='duration', queryset=StorageDuration.objects.all())
 
-    plan_thuthap = serializers.SlugRelatedField(slug_field='name', queryset=Plan.objects.all())
-    plan_bmcl = serializers.SlugRelatedField(slug_field='name', queryset=Plan.objects.all())
-    plan_nopluuls = serializers.SlugRelatedField(slug_field='name', queryset=Plan.objects.all())
-    plan_tieuhuy = serializers.SlugRelatedField(slug_field='name', queryset=Plan.objects.all())
+    plan_thuthap = serializers.SlugRelatedField(required=False, slug_field='name', queryset=Plan.objects.all())
+    plan_bmcl = serializers.SlugRelatedField(required=False, slug_field='name', queryset=Plan.objects.all())
+    plan_nopluuls = serializers.SlugRelatedField(required=False, slug_field='name', queryset=Plan.objects.all())
+    plan_tieuhuy = serializers.SlugRelatedField(required=False, slug_field='name', queryset=Plan.objects.all())
 
     class Meta:
         model = GovFile

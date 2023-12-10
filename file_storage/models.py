@@ -341,7 +341,6 @@ class Plan(models.Model):
 
 class GovFile(models.Model):
     gov_file_code = models.CharField(max_length=100, blank=True, null=True)
-    identifier = models.CharField(max_length=100, blank=True, null=True)
     organ_id = models.ForeignKey(
         Phong,
         default=None,
@@ -350,7 +349,7 @@ class GovFile(models.Model):
         on_delete=models.SET(None),
         verbose_name='Phông lưu trữ lịch sử'
     )
-    official_organ = models.ForeignKey(
+    identifier = models.ForeignKey(
         Organ,
         default=None,
         blank=True,
@@ -365,7 +364,7 @@ class GovFile(models.Model):
         null=True,
         on_delete=models.SET(None),
         verbose_name='Danh mục hồ sơ'
-    ),
+    )
     on_trash = models.BooleanField(default=False)
     file_catalog = models.IntegerField(blank=True, null=True)
     file_notation = models.CharField(max_length=200, blank=True, null=True)

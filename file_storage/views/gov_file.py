@@ -135,23 +135,23 @@ class CreateGovFile(CsrfExemptMixin, APIView):
     parser_classes = [JSONParser]
 
     def post(self, request, *args, **kwargs):
-        date_error_msg = {
-            "error_code": status.HTTP_400_BAD_REQUEST,
-            "description": "Ngày bắt đầu hoặc kết thúc không hợp lệ"
-        }
-        resp_date_error = Response(date_error_msg, status=status.HTTP_200_OK)
-
-        if "start_date" not in request.data:
-            return resp_date_error
-        try:
-            start_date = convert_date(request.data.get('start_date'))
-            if "end_date" in request.data and request.data.get('end_date'):
-                end_date = convert_date(request.data.get('end_date'))
-
-                if start_date > end_date:
-                    return resp_date_error
-        except ValueError:
-            return resp_date_error
+        # date_error_msg = {
+        #     "error_code": status.HTTP_400_BAD_REQUEST,
+        #     "description": "Ngày bắt đầu hoặc kết thúc không hợp lệ"
+        # }
+        # resp_date_error = Response(date_error_msg, status=status.HTTP_200_OK)
+        #
+        # if "start_date" not in request.data:
+        #     return resp_date_error
+        # try:
+        #     start_date = convert_date(request.data.get('start_date'))
+        #     if "end_date" in request.data and request.data.get('end_date'):
+        #         end_date = convert_date(request.data.get('end_date'))
+        #
+        #         if start_date > end_date:
+        #             return resp_date_error
+        # except ValueError:
+        #     return resp_date_error
 
         serializer = GovFileSerializer(data=request.data)
         print(serializer)
@@ -179,7 +179,7 @@ class CreateGovFile(CsrfExemptMixin, APIView):
 
         response_msg = {
             "error_code": status.HTTP_400_BAD_REQUEST,
-            "description": "Invalid serialize data"
+            "description": serializer.errors
         }
         return Response(response_msg, status=status.HTTP_200_OK)
 
@@ -270,7 +270,7 @@ class UpdateGovFileById(CsrfExemptMixin, APIView):
             else:
                 response_msg = {
                     "error_code": status.HTTP_400_BAD_REQUEST,
-                    "description": "Invalid serialize data"
+                    "description": serializer.errors
                 }
                 return Response(response_msg, status=status.HTTP_200_OK)
 
@@ -372,7 +372,7 @@ class UpdateGovFileStateById(CsrfExemptMixin, APIView):
             else:
                 response_msg = {
                     "error_code": status.HTTP_400_BAD_REQUEST,
-                    "description": "Invalid serialize data"
+                    "description": new_serializer.errors
                 }
                 return Response(response_msg, status=status.HTTP_200_OK)
 
