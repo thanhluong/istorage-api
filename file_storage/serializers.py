@@ -4,6 +4,7 @@ from file_storage.models import StorageUser
 from file_storage.models import Document, GovFile, GovFileProfile
 from file_storage.models import Organ, OrganDepartment, OrganRole
 from file_storage.models import Phong, CategoryFile
+from file_storage.models import GovFileLanguage, StorageDuration, PhysicalState
 
 
 class StorageUserSerializer(serializers.ModelSerializer):
@@ -104,4 +105,22 @@ class OrganRoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrganRole
+        fields = '__all__'
+
+
+class GovFileLanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GovFileLanguage
+        fields = '__all__'
+
+
+class StorageDurationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StorageDuration
+        fields = '__all__'
+
+
+class PhysicalStateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhysicalState
         fields = '__all__'
