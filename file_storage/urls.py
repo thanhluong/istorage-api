@@ -9,6 +9,7 @@ from .views.organ import PhongListApiView, PhongDetailApiView, PhongByOrganIdLis
 from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView
 from .views.storage_user import StorageUserLoginView, StorageUserLogoutView
 from .views.storage_user import StorageUserInfoView, StorageUserSetPasswordView
+from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailView
 
 urlpatterns = [
     # User APIs,
@@ -49,6 +50,10 @@ urlpatterns = [
     path('fond', PhongListApiView.as_view(), name='phong'),
     path('fond/<int:fond_id>', PhongDetailApiView.as_view(), name='phong_detail'),
     path('fond/by_organ/<int:organ_id>', PhongByOrganIdListApiView.as_view(), name='phong_by_organ'),
+
+    # StorageDuration APIs
+    path('storage_duration', StorageDurationListView.as_view(), name='storage_duration'),
+    path('storage_duration/<int:storage_duration_id>', StorageDurationDetailView.as_view(), name='storage_duration_detail'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),
