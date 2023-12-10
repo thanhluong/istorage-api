@@ -12,6 +12,7 @@ from .views.storage_user import StorageUserInfoView, StorageUserSetPasswordView
 from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailView
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
+from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView
 
 urlpatterns = [
     # User APIs,
@@ -64,6 +65,10 @@ urlpatterns = [
     # GovFileLanguage APIs
     path('language', GovFileLanguageListView.as_view(), name='gov_file_language'),
     path('language/<int:gov_file_language_id>', GovFileLanguageDetailView.as_view(), name='gov_file_language_detail'),
+
+    # CategoryFile APIs
+    path('category_file', CategoryFileListView.as_view(), name='category_file'),
+    path('category_file/<int:category_file_id>', CategoryFileDetailView.as_view(), name='category_file_detail'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),

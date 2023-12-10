@@ -179,3 +179,57 @@ class GovFileLanguageDetailView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         gov_file_language.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CategoryFileListView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        category_files = CategoryFile.objects.all()
+        serializer = CategoryFileSerializer(category_files, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CategoryFileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CategoryFileDetailView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self, category_file_id, *args, **kwargs):
+        try:
+            return CategoryFile.objects.get(id=category_file_id)
+        except CategoryFile.DoesNotExist:
+            return None
+
+    def get(self, request, category_file_id):
+        category_file = self.get_object(category_file_id)
+        if category_file is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = CategoryFileSerializer(category_file)
+        return Response(serializer.data)
+
+    def put(self, request, category_file_id):
+        category_file = self.get_object(category_file_id)
+        if category_file is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = CategoryFileSerializer(category_file, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, category_file_id):
+        category_file = self.get_object(category_file_id)
+        if category_file is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        category_file.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
