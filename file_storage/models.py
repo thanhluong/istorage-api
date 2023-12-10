@@ -385,7 +385,12 @@ class GovFile(models.Model):
         on_delete=models.SET(None),
         verbose_name='Thời hạn bảo quản'
     )
-    rights = models.CharField(max_length=100, blank=True, null=True)
+    rights = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name="Chế độ sử dụng"
+    )
     language = models.ForeignKey(
         GovFileLanguage,
         default=None,
