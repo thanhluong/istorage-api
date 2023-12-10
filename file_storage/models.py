@@ -63,11 +63,14 @@ class Organ(models.Model):
     wardName = models.CharField(
         max_length=64,
         blank=True,
+        null=True,
+        default=None,
         verbose_name='Phường xã'
     )
     ward = models.IntegerField(
         blank=True,
         null=True,
+        default=None,
         verbose_name='ID phường xã'
     )
 
