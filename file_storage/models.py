@@ -256,6 +256,14 @@ class GovFile(models.Model):
         on_delete=models.SET(None),
         verbose_name='Cơ quan lưu trữ'
     )
+    category_file = models.ForeignKey(
+        CategoryFile,
+        default=None,
+        blank=True,
+        null=True,
+        on_delete=models.SET(None),
+        verbose_name='Danh mục hồ sơ'
+    ),
     on_trash = models.BooleanField(default=False)
     file_catalog = models.IntegerField(blank=True, null=True)
     file_notation = models.CharField(max_length=200, blank=True, null=True)
