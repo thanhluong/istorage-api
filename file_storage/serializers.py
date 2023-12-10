@@ -134,3 +134,12 @@ class PhysicalStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PhysicalState
         fields = '__all__'
+
+
+class PlanSerializer(serializers.ModelSerializer):
+    organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
+    attachment = serializers.FileField()
+
+    class Meta:
+        model = Plan
+        fields = '__all__'

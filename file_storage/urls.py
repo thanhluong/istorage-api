@@ -13,6 +13,7 @@ from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailV
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView
+from .views.plan import PlanListView, PlanDetailView
 
 urlpatterns = [
     # User APIs,
@@ -69,6 +70,10 @@ urlpatterns = [
     # CategoryFile APIs
     path('category_file', CategoryFileListView.as_view(), name='category_file'),
     path('category_file/<int:category_file_id>', CategoryFileDetailView.as_view(), name='category_file_detail'),
+
+    # Plan APIs
+    path('plan', PlanListView.as_view(), name='plan'),
+    path('plan/<int:plan_id>', PlanDetailView.as_view(), name='plan_detail'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),
