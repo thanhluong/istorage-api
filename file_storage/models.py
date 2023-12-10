@@ -250,7 +250,7 @@ class GovFileLanguage(models.Model):
 
 class PhysicalState(models.Model):
     name = models.CharField(max_length=128, verbose_name='Tên tình trạng vật lý')
-    code = models.CharField(max_length=16, verbose_name='Mã tình trạng vật lý')
+    code = models.CharField(max_length=64, verbose_name='Mã tình trạng vật lý')
 
     class Meta:
         verbose_name = 'Tình trạng vật lý'
@@ -258,6 +258,19 @@ class PhysicalState(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class StorageDuration(models.Model):
+    duration = models.CharField(max_length=128, verbose_name='Tên thời hạn bảo quản')
+    code = models.CharField(max_length=64, verbose_name='Mã thời hạn bảo quản')
+    number_of_year = models.IntegerField(verbose_name='Số năm')
+
+    class Meta:
+        verbose_name = 'Thời hạn bảo quản'
+        verbose_name_plural = 'Thời hạn bảo quản'
+
+    def __str__(self):
+        return self.duration
 
 
 class GovFile(models.Model):
@@ -291,7 +304,14 @@ class GovFile(models.Model):
     file_catalog = models.IntegerField(blank=True, null=True)
     file_notation = models.CharField(max_length=200, blank=True, null=True)
     title = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Tiêu đề')
-    maintenance = models.CharField(max_length=100, blank=True, null=True)
+    maintenance = models.ForeignKey(
+        StorageDuration,
+        default=None,
+        blank=True,
+        null=True,
+        on_delete=models.SET(None),
+        verbose_name='Thời hạn bảo quản'
+    )
     rights = models.CharField(max_length=100, blank=True, null=True)
     language = models.ForeignKey(
         GovFileLanguage,
