@@ -75,8 +75,9 @@ class GovFileSerializer(serializers.ModelSerializer):
     official_organ = serializers.PrimaryKeyRelatedField(slug_field='name', queryset=Organ.objects.all())
     organ_id = serializers.PrimaryKeyRelatedField(slug_field='fond_name', queryset=Phong.objects.all())
     category_file = serializers.SlugRelatedField(slug_field='name', queryset=CategoryFile.objects.all())
-    format = serializers.SlugRelatedField(slug_field='name', queryset=CategoryFile.objects.all())
+    format = serializers.SlugRelatedField(slug_field='name', queryset=PhysicalState.objects.all())
     language = serializers.SlugRelatedField(slug_field='name', queryset=GovFileLanguage.objects.all())
+    maintenance = serializers.SlugRelatedField(slug_field='name', queryset=StorageDuration.objects.all())
 
     class Meta:
         model = GovFile
