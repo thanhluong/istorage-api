@@ -88,7 +88,13 @@ class GetGovFiles(CsrfExemptSessionAuthentication, APIView):
         filter_end_date = convert_date(request.GET.get('end_date')) if 'end_date' in request.GET else None
         filter_title = request.GET.get('title') if 'title' in request.GET else None
 
-        files = GovFile.objects.all()
+        files = None
+        if request.user.is_authenticated:
+            if request.user.is_superuser:
+                files = GovFile.objects.all()
+            else:
+                files = GovFile.objects.filter(organ_id=request.user.organ_id)
+
         serializer = GovFileSerializer(files, many=True)
         response_data = []
 
