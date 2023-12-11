@@ -81,13 +81,16 @@ class DocumentUploadView(CsrfExemptSessionAuthentication, APIView):
 
         if serializer.is_valid():
             serializer.save()
-            self.insert_to_fts_db(
-                file_path=file_path, 
-                gov_file_id=serializer.data["gov_file_id"],
-                doc_id=serializer.data["id"],
-                doc_code=serializer.data["doc_code"],
-                doc_name=file.name
-            )
+            try:
+                self.insert_to_fts_db(
+                    file_path=file_path,
+                    gov_file_id=serializer.data["gov_file_id"],
+                    doc_id=serializer.data["id"],
+                    doc_code=serializer.data["doc_code"],
+                    doc_name=file.name
+                )
+            except:
+                pass
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         response_msg = {
