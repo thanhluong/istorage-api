@@ -86,10 +86,11 @@ class GovFileSerializer(serializers.ModelSerializer):
     plan_nopluuls = serializers.PrimaryKeyRelatedField(required=False, allow_null=True, queryset=Plan.objects.all())
     plan_tieuhuy = serializers.PrimaryKeyRelatedField(required=False, allow_null=True, queryset=Plan.objects.all())
 
-    drawer = serializers.PrimaryKeyRelatedField(required=False, queryset=Drawer.objects.all())
+    drawer = serializers.PrimaryKeyRelatedField(required=False, allow_null=True, queryset=Drawer.objects.all())
 
     organ_id_name = serializers.SerializerMethodField()
     maintenance_name = serializers.SerializerMethodField()
+    drawer_name = serializers.SerializerMethodField()
 
     class Meta:
         model = GovFile
@@ -103,6 +104,18 @@ class GovFileSerializer(serializers.ModelSerializer):
     def get_maintenance_name(self, obj):
         if obj.maintenance:
             return obj.maintenance.duration
+        return ""
+
+    def get_drawer_name(self, obj):
+        if obj.drawer:
+            result = obj.drawer.name
+            if obj.drawer.shelf:
+                result = obj.drawer.shelf.name + ", " + result
+                if obj.drawer.shelf.warehouse_room:
+                    result = obj.drawer.shelf.warehouse_room.name + ", " + result
+                    if obj.drawer.shelf.warehouse_room.warehouse:
+                        result = obj.drawer.shelf.warehouse_room.warehouse.name + ", " + result
+            return result
         return ""
 
 
