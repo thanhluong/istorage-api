@@ -156,9 +156,16 @@ class PlanSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
     attachment = serializers.FileField(required=False, allow_null=True)
 
+    organ_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Plan
         fields = '__all__'
+
+    def get_organ_name(self, obj):
+        if obj.organ:
+            return obj.organ.name
+        return ""
 
 
 class WarehouseSerializer(serializers.ModelSerializer):
