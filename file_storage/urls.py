@@ -13,7 +13,7 @@ from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailV
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView
-from .views.plan import PlanListView, PlanDetailView
+from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView
 from .views.storage_unit import WarehouseListView, WarehouseDetailView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView
 from .views.storage_unit import ShelfListView, ShelfDetailView
@@ -78,6 +78,7 @@ urlpatterns = [
     # Plan APIs
     path('plan', PlanListView.as_view(), name='plan'),
     path('plan/<int:plan_id>', PlanDetailView.as_view(), name='plan_detail'),
+    path('plan/by_type/<int:plan_type>', PlanByTypeListView.as_view(), name='plan_by_type'),
 
 
     # Warehouse APIs
@@ -91,6 +92,10 @@ urlpatterns = [
     # Shelf APIs
     path('shelf', ShelfListView.as_view(), name='shelf'),
     path('shelf/<int:shelf_id>', ShelfDetailView.as_view(), name='shelf_detail'),
+
+    # Drawer APIs
+    path('drawer', DrawerListView.as_view(), name='drawer'),
+    path('drawer/<int:drawer_id>', DrawerDetailView.as_view(), name='drawer_detail'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),

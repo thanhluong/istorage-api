@@ -65,3 +65,13 @@ class PlanDetailView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         plan.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PlanByTypeListView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, plan_type):
+        plan = Plan.objects.filter(type=plan_type)
+        serializer = PlanSerializer(plan, many=True)
+        return Response(serializer.data)
