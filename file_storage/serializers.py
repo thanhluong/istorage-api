@@ -95,7 +95,9 @@ class GovFileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_organ_id_name(self, obj):
-        return obj.organ_id.name
+        if obj.organ_id:
+            return obj.organ_id.fond_name
+        return ""
 
 
 class GovFileProfileSerializer(serializers.ModelSerializer):
