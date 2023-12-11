@@ -88,9 +88,14 @@ class GovFileSerializer(serializers.ModelSerializer):
 
     drawer = serializers.PrimaryKeyRelatedField(required=False, queryset=Drawer.objects.all())
 
+    organ_id_name = serializers.SerializerMethodField()
+
     class Meta:
         model = GovFile
         fields = '__all__'
+
+    def get_organ_id_name(self, obj):
+        return obj.organ_id.name
 
 
 class GovFileProfileSerializer(serializers.ModelSerializer):
