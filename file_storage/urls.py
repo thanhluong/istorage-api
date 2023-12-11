@@ -22,7 +22,7 @@ from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView
 from .views.storage_unit import WarehouseListView, WarehouseDetailView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
 from .views.storage_unit import ShelfListView, ShelfDetailView, ShelfByWarehouseRoomIdListView
-from .views.storage_unit import DrawerListView, DrawerDetailView
+from .views.storage_unit import DrawerListView, DrawerDetailView, DrawerByShelfIdListView
 
 
 schema_view = get_schema_view(
@@ -122,6 +122,7 @@ urlpatterns = [
     # Drawer APIs
     path('drawer', DrawerListView.as_view(), name='drawer'),
     path('drawer/<int:drawer_id>', DrawerDetailView.as_view(), name='drawer_detail'),
+    path('drawer/by_shelf/<int:shelf_id>', DrawerByShelfIdListView.as_view(), name='drawer_by_shelf'),
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),

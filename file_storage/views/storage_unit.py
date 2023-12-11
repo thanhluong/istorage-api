@@ -262,3 +262,21 @@ class DrawerDetailView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         drawer.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class DrawerByShelfIdListView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self, shelf_id, *args, **kwargs):
+        try:
+            return Drawer.objects.filter(shelf=shelf_id)
+        except Drawer.DoesNotExist:
+            return None
+
+    def get(self, request, shelf_id):
+        drawer = self.get_object(shelf_id)
+        if drawer is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = DrawerSerializer(drawer, many=True)
+        return Response(serializer.data)
