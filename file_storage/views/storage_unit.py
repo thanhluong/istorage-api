@@ -120,6 +120,24 @@ class WarehouseRoomDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class WarehouseRoomByWarehouseIdListView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self, warehouse_id, *args, **kwargs):
+        try:
+            return WarehouseRoom.objects.filter(warehouse=warehouse_id)
+        except WarehouseRoom.DoesNotExist:
+            return None
+
+    def get(self, request, warehouse_id):
+        warehouse_room = self.get_object(warehouse_id)
+        if warehouse_room is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = WarehouseRoomSerializer(warehouse_room, many=True)
+        return Response(serializer.data)
+
+
 class ShelfListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
