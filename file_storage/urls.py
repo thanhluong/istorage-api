@@ -19,7 +19,7 @@ from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView
 from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView
-from .views.storage_unit import WarehouseListView, WarehouseDetailView
+from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
 from .views.storage_unit import ShelfListView, ShelfDetailView, ShelfByWarehouseRoomIdListView
 from .views.storage_unit import DrawerListView, DrawerDetailView, DrawerByShelfIdListView
@@ -108,6 +108,7 @@ urlpatterns = [
     # Warehouse APIs
     path('warehouse', WarehouseListView.as_view(), name='warehouse'),
     path('warehouse/<int:warehouse_id>', WarehouseDetailView.as_view(), name='warehouse_detail'),
+    path('warehouse/by_organ/<int:organ_id>', WarehouseByOrganIdListView.as_view(), name='warehouse_by_organ'),
 
     # WarehouseRoom APIs
     path('warehouse_room', WarehouseRoomListView.as_view(), name='warehouse_room'),

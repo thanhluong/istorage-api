@@ -184,9 +184,16 @@ class PlanSerializer(serializers.ModelSerializer):
 class WarehouseSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
 
+    organ_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Warehouse
         fields = '__all__'
+
+    def get_organ_name(self, obj):
+        if obj.organ:
+            return obj.organ.name
+        return ""
 
 
 class WarehouseRoomSerializer(serializers.ModelSerializer):

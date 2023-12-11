@@ -66,6 +66,24 @@ class WarehouseDetailView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class WarehouseByOrganIdListView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self, organ_id, *args, **kwargs):
+        try:
+            return Warehouse.objects.filter(organ=organ_id)
+        except Warehouse.DoesNotExist:
+            return None
+
+    def get(self, request, organ_id):
+        warehouse = self.get_object(organ_id)
+        if warehouse is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = WarehouseSerializer(warehouse, many=True)
+        return Response(serializer.data)
+
+
 class WarehouseRoomListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
