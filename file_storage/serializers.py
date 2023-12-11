@@ -10,9 +10,26 @@ from file_storage.models import Warehouse, WarehouseRoom, Drawer, Shelf
 
 
 class StorageUserSerializer(serializers.ModelSerializer):
+    organ_id = serializers.SerializerMethodField()
+    organ_name = serializers.SerializerMethodField()
+
     class Meta:
         model = StorageUser
         exclude = ('password',)
+
+    def get_organ_id(self, obj):
+        if obj.department:
+            if obj.department.organ:
+                return obj.department.organ.id
+            return ""
+        return ""
+
+    def get_organ_name(self, obj):
+        if obj.department:
+            if obj.department.organ:
+                return obj.department.organ.name
+            return ""
+        return ""
 
 
 class StorageUserCreationSerializer(serializers.ModelSerializer):
