@@ -89,6 +89,7 @@ class GovFileSerializer(serializers.ModelSerializer):
     drawer = serializers.PrimaryKeyRelatedField(required=False, queryset=Drawer.objects.all())
 
     organ_id_name = serializers.SerializerMethodField()
+    maintenance_name = serializers.SerializerMethodField()
 
     class Meta:
         model = GovFile
@@ -97,6 +98,11 @@ class GovFileSerializer(serializers.ModelSerializer):
     def get_organ_id_name(self, obj):
         if obj.organ_id:
             return obj.organ_id.fond_name
+        return ""
+
+    def get_maintenance_name(self, obj):
+        if obj.maintenance:
+            return obj.maintenance.duration
         return ""
 
 
