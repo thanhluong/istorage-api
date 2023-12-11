@@ -93,7 +93,7 @@ class GetGovFiles(CsrfExemptSessionAuthentication, APIView):
             if request.user.is_superuser:
                 files = GovFile.objects.all()
             else:
-                files = GovFile.objects.filter(organ_id=request.user.organ)
+                files = GovFile.objects.filter(organ_id=request.user.organ.id)
 
         serializer = GovFileSerializer(files, many=True)
         response_data = []
