@@ -306,6 +306,7 @@ class DrawerAssignmentView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
+        print(request.data)
         drawer_id = request.data['drawer_id']
         gov_file_id = request.data['gov_file_id']
         if drawer_id and gov_file_id:
