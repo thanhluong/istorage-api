@@ -12,6 +12,7 @@ from file_storage.models import Warehouse
 from file_storage.models import WarehouseRoom
 from file_storage.models import Shelf
 from file_storage.models import Drawer
+from file_storage.models import GovFile
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -298,3 +299,20 @@ class DrawerByShelfIdListView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = DrawerSerializer(drawer, many=True)
         return Response(serializer.data)
+
+
+class DrawerAssignmentView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        drawer_id = request.data.get('drawer_id')
+        gov_file_id = request.data.get('gov_file_id')
+        if drawer_id and gov_file_id:
+            gov_file = GovFile.objects.get(id=gov_file_id)
+            drawer = Drawer.objects.get(id=drawer_id)
+            gov_file.drawer = drawer
+            gov_file.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
