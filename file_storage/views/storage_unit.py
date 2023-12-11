@@ -192,6 +192,24 @@ class ShelfDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class ShelfByWarehouseRoomIdListView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self, warehouse_room_id, *args, **kwargs):
+        try:
+            return Shelf.objects.filter(warehouse_room=warehouse_room_id)
+        except Shelf.DoesNotExist:
+            return None
+
+    def get(self, request, warehouse_room_id):
+        shelf = self.get_object(warehouse_room_id)
+        if shelf is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ShelfSerializer(shelf, many=True)
+        return Response(serializer.data)
+
+
 class DrawerListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)

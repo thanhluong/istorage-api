@@ -21,7 +21,7 @@ from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView
 from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView
 from .views.storage_unit import WarehouseListView, WarehouseDetailView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
-from .views.storage_unit import ShelfListView, ShelfDetailView
+from .views.storage_unit import ShelfListView, ShelfDetailView, ShelfByWarehouseRoomIdListView
 from .views.storage_unit import DrawerListView, DrawerDetailView
 
 
@@ -117,6 +117,7 @@ urlpatterns = [
     # Shelf APIs
     path('shelf', ShelfListView.as_view(), name='shelf'),
     path('shelf/<int:shelf_id>', ShelfDetailView.as_view(), name='shelf_detail'),
+    path('shelf/by_warehouse_room/<int:warehouse_room_id>', ShelfByWarehouseRoomIdListView.as_view(), name='shelf_by_warehouse_room'),
 
     # Drawer APIs
     path('drawer', DrawerListView.as_view(), name='drawer'),
