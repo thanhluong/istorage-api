@@ -84,8 +84,8 @@ class SetPlanView(APIView):
 
     def post(self, request):
         print("request: ", request)
-        gov_file_id = request.data[0]['gov_file_id']
-        plan_id = request.data[0]['plan_id']
+        gov_file_id = request.data['gov_file_id']
+        plan_id = request.data['plan_id']
 
         gov_file = GovFile.objects.get(id=gov_file_id)
         plan = Plan.objects.get(id=plan_id)
