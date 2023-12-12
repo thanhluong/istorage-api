@@ -104,7 +104,7 @@ urlpatterns = [
     path('plan', PlanListView.as_view(), name='plan'),
     path('plan/<int:plan_id>', PlanDetailView.as_view(), name='plan_detail'),
     path('plan/by_type/<int:plan_type>', PlanByTypeListView.as_view(), name='plan_by_type'),
-    path('set_plan', SetPlanView.as_view(), name='set_plan'),
+    path('plan/set_plan', SetPlanView.as_view(), name='set_plan'),
 
 
     # Warehouse APIs
