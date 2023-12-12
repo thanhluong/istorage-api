@@ -83,7 +83,6 @@ class SetPlanView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        print("request: ", request)
         gov_file_id = request.data['gov_file_id']
         plan_id = request.data['plan_id']
 
