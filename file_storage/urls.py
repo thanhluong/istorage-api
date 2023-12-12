@@ -17,7 +17,7 @@ from .views.storage_user import StorageUserInfoView, StorageUserSetPasswordView
 from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailView
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
-from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView
+from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView
 from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView
 from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
@@ -98,7 +98,7 @@ urlpatterns = [
     # CategoryFile APIs
     path('category_file', CategoryFileListView.as_view(), name='category_file'),
     path('category_file/<int:category_file_id>', CategoryFileDetailView.as_view(), name='category_file_detail'),
-    path('category_file/by_organ/<int:organ_id>', CategoryFileDetailView.as_view(), name='category_file_by_organ'),
+    path('category_file/by_organ/<int:organ_id>', CategoryFileByOrganListView.as_view(), name='category_file_by_organ'),
 
     # Plan APIs
     path('plan', PlanListView.as_view(), name='plan'),
