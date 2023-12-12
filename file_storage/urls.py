@@ -18,7 +18,7 @@ from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailV
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView
-from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView
+from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SetPlanView
 from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
 from .views.storage_unit import ShelfListView, ShelfDetailView, ShelfByWarehouseRoomIdListView
@@ -104,6 +104,7 @@ urlpatterns = [
     path('plan', PlanListView.as_view(), name='plan'),
     path('plan/<int:plan_id>', PlanDetailView.as_view(), name='plan_detail'),
     path('plan/by_type/<int:plan_type>', PlanByTypeListView.as_view(), name='plan_by_type'),
+    path('set_plan', SetPlanView.as_view(), name='set_plan'),
 
 
     # Warehouse APIs

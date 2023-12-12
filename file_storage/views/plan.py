@@ -6,6 +6,7 @@ from rest_framework.authentication import SessionAuthentication
 from file_storage.serializers import PlanSerializer
 
 from file_storage.models import Plan
+from file_storage.models import GovFile
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -75,3 +76,18 @@ class PlanByTypeListView(APIView):
         plan = Plan.objects.filter(type=plan_type)
         serializer = PlanSerializer(plan, many=True)
         return Response(serializer.data)
+
+
+class SetPlanView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        gov_file_id = request.data[0]['gov_file_id']
+        plan_id = request.data[0]['plan_id']
+
+        gov_file = GovFile.objects.get(id=gov_file_id)
+        plan = Plan.objects.get(id=plan_id)
+        gov_file.plan = plan
+        gov_file.save()
+        return Response(status=status.HTTP_200_OK)
