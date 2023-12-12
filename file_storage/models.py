@@ -222,7 +222,7 @@ class Phong(models.Model):
 
 
 class CategoryFile(models.Model):
-    name = models.CharField(max_length=256, verbose_name='Tên danh mục')
+    name = models.CharField(max_length=512, verbose_name='Tên danh mục')
     order = models.IntegerField(default=1, verbose_name='Order')
     organ = models.ForeignKey(
         Organ,

@@ -233,3 +233,13 @@ class CategoryFileDetailView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         category_file.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CategoryFileByOrganListView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, organ_id):
+        category_files = CategoryFile.objects.filter(organ__id=organ_id)
+        serializer = CategoryFileSerializer(category_files, many=True)
+        return Response(serializer.data)

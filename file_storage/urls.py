@@ -98,6 +98,7 @@ urlpatterns = [
     # CategoryFile APIs
     path('category_file', CategoryFileListView.as_view(), name='category_file'),
     path('category_file/<int:category_file_id>', CategoryFileDetailView.as_view(), name='category_file_detail'),
+    path('category_file/by_organ/<int:organ_id>', CategoryFileDetailView.as_view(), name='category_file_by_organ'),
 
     # Plan APIs
     path('plan', PlanListView.as_view(), name='plan'),
