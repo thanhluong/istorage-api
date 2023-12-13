@@ -3,10 +3,17 @@ from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
 
 from braces.views import CsrfExemptMixin
+from rest_framework.authentication import SessionAuthentication
+from rest_framework import permissions, status
 
 from django.conf import settings
 from .common import *
 from pymongo import MongoClient
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
 
 
 # Error messages
@@ -42,9 +49,9 @@ class MongoDocItem:
         return result
     
 
-class FullTextSearchView(CsrfExemptMixin, APIView):
+class FullTextSearchView(CsrfExemptSessionAuthentication, APIView):
+    permission_classes = (permissions.AllowAny,)
     parser_classes = [JSONParser]
-    authentication_classes = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
