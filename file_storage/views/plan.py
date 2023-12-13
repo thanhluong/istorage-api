@@ -83,12 +83,24 @@ class SetPlanView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        print("Request data: ", request.data)
         gov_file_id = request.data['gov_file_id']
         plan_id = request.data['plan_id']
 
         gov_file = GovFile.objects.get(id=gov_file_id)
         plan = Plan.objects.get(id=plan_id)
         gov_file.plan_nopluuls = plan
+        gov_file.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+class RemovePlanView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        gov_file_id = request.data['gov_file_id']
+
+        gov_file = GovFile.objects.get(id=gov_file_id)
+        gov_file.plan_nopluuls = None
         gov_file.save()
         return Response(status=status.HTTP_200_OK)
