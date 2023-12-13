@@ -87,6 +87,7 @@ class GetGovFiles(CsrfExemptSessionAuthentication, APIView):
         filter_start_date = convert_date(request.GET.get('start_date')) if 'start_date' in request.GET else None
         filter_end_date = convert_date(request.GET.get('end_date')) if 'end_date' in request.GET else None
         filter_title = request.GET.get('title') if 'title' in request.GET else None
+        filter_plannlls = request.GET.get('plannlls') if 'plannlls' in request.GET else None
 
         files = None
         if request.user.is_authenticated:
@@ -97,6 +98,9 @@ class GetGovFiles(CsrfExemptSessionAuthentication, APIView):
                 if request.user.department and request.user.department.organ:
                     organ_id = request.user.department.organ.id
                 files = GovFile.objects.filter(organ_id=organ_id)
+
+        if filter_plannlls:
+            files = files.filter(plannlls__id=filter_plannlls)
 
         serializer = GovFileSerializer(files, many=True)
         response_data = []
