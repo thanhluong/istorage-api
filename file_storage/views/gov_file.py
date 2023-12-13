@@ -100,7 +100,7 @@ class GetGovFiles(CsrfExemptSessionAuthentication, APIView):
                 files = GovFile.objects.filter(organ_id=organ_id)
 
         if filter_plannlls:
-            files = files.filter(plannlls__id=filter_plannlls)
+            files = files.filter(plan_nopluuls__id=filter_plannlls)
 
         serializer = GovFileSerializer(files, many=True)
         response_data = []
