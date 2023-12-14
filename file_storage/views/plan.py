@@ -80,6 +80,12 @@ class PlanByTypeListView(APIView):
 
     def get(self, request, plan_type):
         plan = Plan.objects.filter(type=plan_type)
+
+        if request.user.is_authenticated:
+            if (not request.user.is_superuser) and request.user.department and request.user.department.organ:
+                organ_id = request.user.department.organ.id
+                plan = Plan.objects.filter(organ__id=organ_id)
+
         serializer = PlanSerializer(plan, many=True)
         return Response(serializer.data)
 
