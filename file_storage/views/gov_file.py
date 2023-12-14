@@ -98,7 +98,7 @@ class GetGovFiles(APIView):
                 organ_id = 0
                 if request.user.department and request.user.department.organ:
                     organ_id = request.user.department.organ.id
-                files = GovFile.objects.filter(organ_id=organ_id)
+                files = GovFile.objects.filter(identifier__id=organ_id)
 
         if filter_plannlls:
             files = files.filter(plan_nopluuls__id=filter_plannlls)
