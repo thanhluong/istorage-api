@@ -116,3 +116,31 @@ class RemovePlanView(APIView):
         gov_file.plan_nopluuls = None
         gov_file.save()
         return Response(status=status.HTTP_200_OK)
+
+
+class SetPlanTieuHuyView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        gov_file_id = request.data['gov_file_id']
+        plan_id = request.data['plan_id']
+
+        gov_file = GovFile.objects.get(id=gov_file_id)
+        plan = Plan.objects.get(id=plan_id)
+        gov_file.plan_tieuhuy = plan
+        gov_file.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+class RemovePlanTieuHuyView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        gov_file_id = request.data['gov_file_id']
+
+        gov_file = GovFile.objects.get(id=gov_file_id)
+        gov_file.plan_tieuhuy = None
+        gov_file.save()
+        return Response(status=status.HTTP_200_OK)
