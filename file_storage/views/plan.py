@@ -20,6 +20,11 @@ class PlanListView(APIView):
 
     def get(self, request):
         plan = Plan.objects.all()
+
+        if request.user.is_authenticated:
+            if (not request.user.is_superuser) and request.user.organ:
+                plan = Plan.objects.all(organ=request.user.organ)
+
         serializer = PlanSerializer(plan, many=True)
         return Response(serializer.data)
 
