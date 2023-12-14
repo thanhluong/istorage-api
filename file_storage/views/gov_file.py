@@ -53,8 +53,9 @@ perm_read_dict = {
 }
 
 
-class GetGovFiles(CsrfExemptSessionAuthentication, APIView):
+class GetGovFiles(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def filter_by_fields(self, field, filter_field):
         if filter_field and field != filter_field:
@@ -144,8 +145,9 @@ class GetGovFiles(CsrfExemptSessionAuthentication, APIView):
         return Response(response_data, status=status.HTTP_200_OK)
 
 
-class CreateGovFile(CsrfExemptSessionAuthentication, APIView):
+class CreateGovFile(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
     parser_classes = [JSONParser]
 
     def post(self, request, *args, **kwargs):
@@ -198,8 +200,9 @@ class CreateGovFile(CsrfExemptSessionAuthentication, APIView):
         return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class DeleteGovFileById(CsrfExemptSessionAuthentication, APIView):
+class DeleteGovFileById(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -243,8 +246,9 @@ class DeleteGovFileById(CsrfExemptSessionAuthentication, APIView):
         return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class UpdateGovFileById(CsrfExemptSessionAuthentication, APIView):
+class UpdateGovFileById(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def post(self, request):
         gov_file_id = request.data.get('id')
@@ -296,8 +300,9 @@ class UpdateGovFileById(CsrfExemptSessionAuthentication, APIView):
             return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class UpdateGovFileStateById(CsrfExemptSessionAuthentication, APIView):
+class UpdateGovFileStateById(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def post(self, request):
         """
