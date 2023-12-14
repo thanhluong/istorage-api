@@ -105,10 +105,10 @@ urlpatterns = [
     path('plan', PlanListView.as_view(), name='plan'),
     path('plan/<int:plan_id>', PlanDetailView.as_view(), name='plan_detail'),
     path('plan/by_type/<int:plan_type>', PlanByTypeListView.as_view(), name='plan_by_type'),
-    path('plan/set_plan', SetPlanView.as_view(), name='set_plan'),
-    path('plan/remove_plan', RemovePlanView.as_view(), name='set_plan'),
-    path('plan/set_plan_tieuhuy', SetPlanTieuHuyView.as_view(), name='set_plan_tieuhuy'),
-    path('plan/remove_plan_tieuhuy', RemovePlanTieuHuyView.as_view(), name='set_plan'),
+    path('plan/set_plan', SetPlanView.as_view(), name='set_plan'), # Luu Tru Lich Su
+    path('plan/remove_plan', RemovePlanView.as_view(), name='remove_plan'),
+    path('plan/set_plan_tieuhuy', SetPlanTieuHuyView.as_view(), name='set_plan_tieuhuy'), # Tieu Huy
+    path('plan/remove_plan_tieuhuy', RemovePlanTieuHuyView.as_view(), name='remove_plan_tieuhuy'),
 
 
     # Warehouse APIs
