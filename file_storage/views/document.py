@@ -21,9 +21,10 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
         return
 
 
-class DocumentUploadView(CsrfExemptSessionAuthentication, APIView):
+class DocumentUploadView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -100,9 +101,10 @@ class DocumentUploadView(CsrfExemptSessionAuthentication, APIView):
         return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class GetDocumentByGovFileId(CsrfExemptSessionAuthentication, APIView):
+class GetDocumentByGovFileId(APIView):
     parser_classes = [JSONParser]
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def get(self, request, *args, **kwargs):
         gov_file_id = request.GET.get('gov_file_id')
@@ -126,8 +128,9 @@ class GetDocumentByGovFileId(CsrfExemptSessionAuthentication, APIView):
             return Response(response_msg, status=status.HTTP_200_OK)
 
 
-class DeleteDocumentById(CsrfExemptSessionAuthentication, APIView):
+class DeleteDocumentById(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -147,8 +150,9 @@ class DeleteDocumentById(CsrfExemptSessionAuthentication, APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class UpdateDocumentById(CsrfExemptSessionAuthentication, APIView):
+class UpdateDocumentById(APIView):
     permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def post(self, request):
         document_id = request.data.get('id')
