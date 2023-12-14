@@ -89,6 +89,7 @@ class GetGovFiles(APIView):
         filter_end_date = convert_date(request.GET.get('end_date')) if 'end_date' in request.GET else None
         filter_title = request.GET.get('title') if 'title' in request.GET else None
         filter_plannlls = request.GET.get('plannlls') if 'plannlls' in request.GET else None
+        filter_plantieuhuy = request.GET.get('plantieuhuy') if 'plantieuhuy' in request.GET else None
 
         files = None
         if request.user.is_authenticated:
@@ -102,6 +103,8 @@ class GetGovFiles(APIView):
 
         if filter_plannlls:
             files = files.filter(plan_nopluuls__id=filter_plannlls)
+        if filter_plantieuhuy:
+            files = files.filter(plan_tieuhuy__id=filter_plantieuhuy)
 
         serializer = GovFileSerializer(files, many=True)
         response_data = []
