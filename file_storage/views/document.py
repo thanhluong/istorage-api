@@ -181,7 +181,7 @@ class DisplayPdfView(APIView):
         doc_instance = get_object_or_404(Document, id=doc_id)
 
         file_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT,
-                                 settings.DOCUMENT_PATH)
+                                 settings.DOCUMENT_PATH, str(gov_file_id))
 
         return Response({'file_path': file_path}, status=status.HTTP_200_OK)
 
