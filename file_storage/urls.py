@@ -5,6 +5,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from .views.document import DocumentUploadView, GetDocumentByGovFileId, DeleteDocumentById, UpdateDocumentById
+from .views.document import DisplayPdfView
 from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, UpdateGovFileStateById, DeleteGovFileById
 from .views.search import FullTextSearchView
 from .views.organ import OrganListApiView, OrganDetailApiView
@@ -59,6 +60,7 @@ urlpatterns = [
     path('get_doc_by_gov_file_id/', GetDocumentByGovFileId.as_view(), name='get_doc_by_gov_file_id'),
     path('update_document_by_id/', UpdateDocumentById.as_view(), name='update_document'),
     path('delete_document_by_id/', DeleteDocumentById.as_view(), name='delete_document'),
+    path('display_pdf/<int:gov_file_id>/<int:doc_id>', DisplayPdfView.as_view(), name='display_pdf'),
     path('get_gov_files/', GetGovFiles.as_view(), name='get_files'),
     
     # GovFile APIs

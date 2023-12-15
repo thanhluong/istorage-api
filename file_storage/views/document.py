@@ -6,6 +6,7 @@ from rest_framework.authentication import SessionAuthentication
 
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 
 from file_storage.models import Document
 from file_storage.serializers import DocumentSerializer
@@ -70,6 +71,7 @@ class DocumentUploadView(APIView):
 
         if not os.path.isdir(folder_path):
             os.system('mkdir -p ' + folder_path)
+
         file_path = os.path.join(folder_path, file.name)
 
         doc_table_data = {
@@ -169,3 +171,17 @@ class UpdateDocumentById(APIView):
                 "description": "Invalid data"
             }
             return Response(response_msg, status=status.HTTP_200_OK)
+
+
+class DisplayPdfView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    def get(self, request, gov_file_id, doc_id):
+        doc_instance = get_object_or_404(Document, id=doc_id)
+        file_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT, gov_file_id, doc_instance.doc_name)
+        with open(file_path, 'rb') as pdf:
+            response = HttpResponse(pdf.read(), content_type='application/pdf')
+            response['Content-Disposition'] = 'inline;filename=' + doc_instance.doc_name
+            return response
+
