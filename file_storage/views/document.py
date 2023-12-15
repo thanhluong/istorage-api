@@ -178,8 +178,8 @@ class DisplayPdfView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def get(self, request, gov_file_id, doc_id):
-        return Response({'file_path': doc_id}, status=status.HTTP_200_OK)
         doc_instance = get_object_or_404(Document, id=doc_id)
+        return Response({'file_path': doc_id}, status=status.HTTP_200_OK)
         file_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT,
                                  settings.DOCUMENT_PATH, gov_file_id, doc_instance.doc_name)
 
