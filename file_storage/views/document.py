@@ -179,7 +179,8 @@ class DisplayPdfView(APIView):
 
     def get(self, request, gov_file_id, doc_id):
         doc_instance = get_object_or_404(Document, id=doc_id)
-        file_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT, gov_file_id, doc_instance.doc_name)
+        file_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT,
+                                 settings.DOCUMENT_PATH, gov_file_id, doc_instance.doc_name)
         with open(file_path, 'rb') as pdf:
             response = HttpResponse(pdf.read(), content_type='application/pdf')
             response['Content-Disposition'] = 'inline;filename=' + doc_instance.doc_name
