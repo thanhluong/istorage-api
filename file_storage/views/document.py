@@ -116,8 +116,8 @@ class GetDocumentByGovFileId(APIView):
             serialization_result = serializer.data
             result = []
             for doc in serialization_result:
-                doc['url'] = "https://" + request.get_host() + settings.MEDIA_URL + settings.DOCUMENT_PATH \
-                             + '/' + doc['gov_file_id'] + '/' + doc['doc_name']
+                doc['url'] = "https://" + request.get_host() + '/api/display_pdf' \
+                             + '/' + doc['gov_file_id'] + '/' + doc['id']
                 result.append(doc)
 
             sorted_data = sorted(result, key=lambda x: x["doc_ordinal"])
