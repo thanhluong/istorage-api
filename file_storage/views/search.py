@@ -50,7 +50,7 @@ class MongoDocItem:
     
 
 class FullTextSearchView(CsrfExemptSessionAuthentication, APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     parser_classes = [JSONParser]
 
     def __init__(self, *args, **kwargs):

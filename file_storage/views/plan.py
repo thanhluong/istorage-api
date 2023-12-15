@@ -16,7 +16,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 class PlanListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         plan = Plan.objects.all()
@@ -40,7 +40,7 @@ class PlanListView(APIView):
 
 class PlanDetailView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, plan_id, *args, **kwargs):
         try:
@@ -76,7 +76,7 @@ class PlanDetailView(APIView):
 
 class PlanByTypeListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, plan_type):
         plan = Plan.objects.filter(type=plan_type)
@@ -92,7 +92,7 @@ class PlanByTypeListView(APIView):
 
 class SetPlanView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         gov_file_id = request.data['gov_file_id']
@@ -107,7 +107,7 @@ class SetPlanView(APIView):
 
 class RemovePlanView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         gov_file_id = request.data['gov_file_id']
@@ -120,7 +120,7 @@ class RemovePlanView(APIView):
 
 class SetPlanTieuHuyView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         gov_file_id = request.data['gov_file_id']
@@ -135,7 +135,7 @@ class SetPlanTieuHuyView(APIView):
 
 class RemovePlanTieuHuyView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         gov_file_id = request.data['gov_file_id']

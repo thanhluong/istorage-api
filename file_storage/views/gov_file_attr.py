@@ -21,7 +21,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 class StorageDurationListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         storage_durations = StorageDuration.objects.all()
@@ -39,7 +39,7 @@ class StorageDurationListView(APIView):
 
 class StorageDurationDetailView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, storage_duration_id, *args, **kwargs):
         try:
@@ -75,7 +75,7 @@ class StorageDurationDetailView(APIView):
 
 class PhysicalStateListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         physical_states = PhysicalState.objects.all()
@@ -93,7 +93,7 @@ class PhysicalStateListView(APIView):
 
 class PhysicalStateDetailView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, physical_state_id, *args, **kwargs):
         try:
@@ -129,7 +129,7 @@ class PhysicalStateDetailView(APIView):
 
 class GovFileLanguageListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         gov_file_languages = GovFileLanguage.objects.all()
@@ -147,7 +147,7 @@ class GovFileLanguageListView(APIView):
 
 class GovFileLanguageDetailView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, gov_file_language_id, *args, **kwargs):
         try:
@@ -183,7 +183,7 @@ class GovFileLanguageDetailView(APIView):
 
 class CategoryFileListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         category_files = CategoryFile.objects.all()
@@ -201,7 +201,7 @@ class CategoryFileListView(APIView):
 
 class CategoryFileDetailView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, category_file_id, *args, **kwargs):
         try:
@@ -237,7 +237,7 @@ class CategoryFileDetailView(APIView):
 
 class CategoryFileByOrganListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, organ_id):
         category_files = CategoryFile.objects.filter(organ__id=organ_id)

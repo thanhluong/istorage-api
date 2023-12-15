@@ -19,7 +19,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 
 class OrganListApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     # 1. List all
     def get(self, request, *args, **kwargs):
@@ -37,7 +37,7 @@ class OrganListApiView(APIView):
 
 
 class OrganDetailApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, organ_id, *args, **kwargs):
         try:
@@ -74,7 +74,7 @@ class OrganDetailApiView(APIView):
 
 
 class OrganDepartmentListApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     # 1. List all
     def get(self, request, *args, **kwargs):
@@ -92,7 +92,7 @@ class OrganDepartmentListApiView(APIView):
 
 
 class OrganDepartmentDetailApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, organ_department_id, *args, **kwargs):
         try:
@@ -129,7 +129,7 @@ class OrganDepartmentDetailApiView(APIView):
 
 
 class OrganDepartmentByOrganIdListView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     # 1. List all
     def get(self, request, organ_id, *args, **kwargs):
@@ -146,7 +146,7 @@ class OrganDepartmentByOrganIdListView(APIView):
 
 
 class OrganRoleListApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     # 1. List all
     def get(self, request, *args, **kwargs):
@@ -164,7 +164,7 @@ class OrganRoleListApiView(APIView):
 
 
 class OrganRoleDetailApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, organ_role_id, *args, **kwargs):
         try:
@@ -201,7 +201,7 @@ class OrganRoleDetailApiView(APIView):
 
 
 class OrganRoleByOrganIdListApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     # 1. List all
     def get(self, request, organ_id, *args, **kwargs):
@@ -218,7 +218,7 @@ class OrganRoleByOrganIdListApiView(APIView):
 
 
 class PhongListApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     # 1. List all
@@ -237,7 +237,7 @@ class PhongListApiView(APIView):
 
 
 class PhongDetailApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def get_object(self, fond_id, *args, **kwargs):
@@ -275,7 +275,7 @@ class PhongDetailApiView(APIView):
 
 
 class PhongByOrganIdListApiView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     # 1. List all

@@ -73,7 +73,7 @@ class StorageUserDetailApiView(APIView):
 
 
 class StorageUserByDepartmentListView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, department_id, *args, **kwargs):
         users = StorageUser.objects.filter(department_id=department_id)
@@ -102,7 +102,7 @@ class StorageUserLoginView(APIView):
 
 
 class StorageUserLogoutView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = ()
 
     def post(self, request, *args, **kwargs):

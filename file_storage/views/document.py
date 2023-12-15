@@ -23,7 +23,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 class DocumentUploadView(APIView):
     parser_classes = [MultiPartParser, FormParser]
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def __init__(self, *args, **kwargs):
@@ -103,7 +103,7 @@ class DocumentUploadView(APIView):
 
 class GetDocumentByGovFileId(APIView):
     parser_classes = [JSONParser]
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def get(self, request, *args, **kwargs):
@@ -129,7 +129,7 @@ class GetDocumentByGovFileId(APIView):
 
 
 class DeleteDocumentById(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def __init__(self, *args, **kwargs):
@@ -151,7 +151,7 @@ class DeleteDocumentById(APIView):
 
 
 class UpdateDocumentById(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def post(self, request):

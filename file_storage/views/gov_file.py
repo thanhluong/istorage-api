@@ -54,7 +54,7 @@ perm_read_dict = {
 
 
 class GetGovFiles(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def filter_by_fields(self, field, filter_field):
@@ -149,7 +149,7 @@ class GetGovFiles(APIView):
 
 
 class CreateGovFile(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     parser_classes = [JSONParser]
 
@@ -204,7 +204,7 @@ class CreateGovFile(APIView):
 
 
 class DeleteGovFileById(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def __init__(self, *args, **kwargs):
@@ -250,7 +250,7 @@ class DeleteGovFileById(APIView):
 
 
 class UpdateGovFileById(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def post(self, request):
@@ -304,7 +304,7 @@ class UpdateGovFileById(APIView):
 
 
 class UpdateGovFileStateById(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def post(self, request):

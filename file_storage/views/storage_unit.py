@@ -22,7 +22,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 class WarehouseListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         warehouse = Warehouse.objects.all()
@@ -40,7 +40,7 @@ class WarehouseListView(APIView):
 
 class WarehouseDetailView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, warehouse_id, *args, **kwargs):
         try:
@@ -69,7 +69,7 @@ class WarehouseDetailView(APIView):
 
 class WarehouseByOrganIdListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, organ_id, *args, **kwargs):
         try:
@@ -87,7 +87,7 @@ class WarehouseByOrganIdListView(APIView):
 
 class WarehouseRoomListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         warehouse_room = WarehouseRoom.objects.all()
@@ -105,7 +105,7 @@ class WarehouseRoomListView(APIView):
 
 class WarehouseRoomDetailView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, warehouse_room_id, *args, **kwargs):
         try:
@@ -141,7 +141,7 @@ class WarehouseRoomDetailView(APIView):
 
 class WarehouseRoomByWarehouseIdListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, warehouse_id, *args, **kwargs):
         try:
@@ -159,7 +159,7 @@ class WarehouseRoomByWarehouseIdListView(APIView):
 
 class ShelfListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         shelf = Shelf.objects.all()
@@ -177,7 +177,7 @@ class ShelfListView(APIView):
 
 class ShelfDetailView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, shelf_id, *args, **kwargs):
         try:
@@ -213,7 +213,7 @@ class ShelfDetailView(APIView):
 
 class ShelfByWarehouseRoomIdListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, warehouse_room_id, *args, **kwargs):
         try:
@@ -231,7 +231,7 @@ class ShelfByWarehouseRoomIdListView(APIView):
 
 class DrawerListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         drawer = Drawer.objects.all()
@@ -249,7 +249,7 @@ class DrawerListView(APIView):
 
 class DrawerDetailView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, drawer_id, *args, **kwargs):
         try:
@@ -285,7 +285,7 @@ class DrawerDetailView(APIView):
 
 class DrawerByShelfIdListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, shelf_id, *args, **kwargs):
         try:
@@ -303,7 +303,7 @@ class DrawerByShelfIdListView(APIView):
 
 class DrawerAssignmentView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         drawer_id = request.data[0]['drawer_id']
