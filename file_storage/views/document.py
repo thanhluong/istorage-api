@@ -66,16 +66,20 @@ class DocumentUploadView(APIView):
             return Response(response_msg, status=status.HTTP_200_OK)
 
         file = request.FILES['file']
-        folder_path = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT,
-                                   settings.DOCUMENT_PATH, request.data['gov_file_id'])
+        folder_path = str(os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT,
+                                   settings.DOCUMENT_PATH, request.data['gov_file_id']))
 
         if not os.path.isdir(folder_path):
             os.system('mkdir -p ' + folder_path)
 
-        file_path = os.path.join(folder_path, file.name)
+        filename = file.name
+        if not filename.endswith('.pdf'):
+            filename += '.pdf'
+
+        file_path = os.path.join(folder_path, filename)
 
         doc_table_data = {
-            'doc_name': file.name,
+            'doc_name': filename,
         }
         doc_table_data.update(dict(request.data.items()))
 
@@ -90,7 +94,7 @@ class DocumentUploadView(APIView):
                     gov_file_id=serializer.data["gov_file_id"],
                     doc_id=serializer.data["id"],
                     doc_code=serializer.data["doc_code"],
-                    doc_name=file.name
+                    doc_name=filename
                 )
             except:
                 pass
