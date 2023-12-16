@@ -521,6 +521,11 @@ class StateEnum(Enum):
     HSCL_TAO_MOI = 11
     HSCL_GIAO_NOP = 12
     HSCL_BI_TRA_VE = 13
+    THHS_CHO_TIEU_HUY = 14
+    THHS_CHO_PHE_DUYET_TIEU_HUY = 15
+    THHS_DA_TIEU_HUY = 16
+    THHS_KHOI_PHUC = 17
+    NOP_LUU_LICH_SU_CHO_SO_NOI_VU_DUYET = 18
 
     @classmethod
     def choices(cls):
