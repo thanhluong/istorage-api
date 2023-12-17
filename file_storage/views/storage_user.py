@@ -91,7 +91,7 @@ class StorageUserLoginView(APIView):
 
         user = StorageUser.objects.filter(email=email).first()
         if user is None:
-            return Response(data={"message": "Không tồn tại người dùng"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(data={"message": "Sai tên đăng nhập hoặc mật khẩu"}, status=status.HTTP_400_BAD_REQUEST)
 
         if not user.check_password(password):
             return Response(data={"message": "Sai tên đăng nhập hoặc mật khẩu"}, status=status.HTTP_400_BAD_REQUEST)
