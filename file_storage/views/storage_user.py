@@ -9,10 +9,23 @@ from rest_framework import permissions, status
 from file_storage.models import StorageUser
 from file_storage.serializers import StorageUserSerializer, StorageUserCreationSerializer
 
+import ldap3
+from ldap3.core.exceptions import LDAPException
+
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return
+
+
+def ldap_login(username, password):
+    try:
+        with ldap3.Connection('ldap://203.162.230.142:389', user=username, password=password) as conn:
+            print(conn.result["description"]) # "success" if bind is ok
+            return True
+    except LDAPException:
+        print('Unable to connect to LDAP server')
+        return False
 
 
 class StorageUserListApiView(CsrfExemptMixin, APIView):
@@ -88,13 +101,18 @@ class StorageUserLoginView(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         password = request.data.get('password')
+        sso = request.data.get('sso')
 
         user = StorageUser.objects.filter(email=email).first()
         if user is None:
             return Response(data={"message": "Sai tên đăng nhập hoặc mật khẩu"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not user.check_password(password):
-            return Response(data={"message": "Sai tên đăng nhập hoặc mật khẩu"}, status=status.HTTP_400_BAD_REQUEST)
+        if sso:
+            if not ldap_login(email, password):
+                return Response(data={"message": "Sai tên đăng nhập hoặc mật khẩu"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            if not user.check_password(password):
+                return Response(data={"message": "Sai tên đăng nhập hoặc mật khẩu"}, status=status.HTTP_400_BAD_REQUEST)
 
         login(request, user)
         serializer = StorageUserSerializer(user)
