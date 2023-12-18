@@ -292,6 +292,7 @@ class Plan(models.Model):
         ("Đợi duyệt", "Đợi duyệt"),
         ("Đã duyệt", "Đã duyệt"),
         ("Trả về", "Trả về"),
+        ("Đợi Sở Nội vụ duyệt", "Đợi Sở Nội vụ duyệt"),
     )
 
     name = models.CharField(
