@@ -41,7 +41,7 @@ class EofficeAttachmentListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def get(self, request, document_id):
-        url = EOFFICE_HOST + '/api/file/getfileattach/' + document_id
+        url = EOFFICE_HOST + '/api/file/getfileattach/' + document_id +'/'
         res = requests.get(
             url,
             headers={'X-AUTHENTICATION-TOKEN': request.headers["X-AUTHENTICATION-TOKEN"]}
