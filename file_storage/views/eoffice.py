@@ -34,3 +34,17 @@ class EofficeDocumentListView(APIView):
             headers={'X-AUTHENTICATION-TOKEN': request.headers["X-AUTHENTICATION-TOKEN"]}
         )
         return Response(res.json(), status=status.HTTP_200_OK)
+
+
+class EofficeAttachmentListView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    def get(self, request, document_id):
+        url = EOFFICE_HOST + '/api/file/getfileattach/' + str(document_id)
+        res = requests.post(
+            url,
+            json=request.data,
+            headers={'X-AUTHENTICATION-TOKEN': request.headers["X-AUTHENTICATION-TOKEN"]}
+        )
+        return Response(res.json(), status=status.HTTP_200_OK)
