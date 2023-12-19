@@ -25,7 +25,7 @@ from .views.storage_unit import WarehouseListView, WarehouseDetailView, Warehous
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
 from .views.storage_unit import ShelfListView, ShelfDetailView, ShelfByWarehouseRoomIdListView
 from .views.storage_unit import DrawerListView, DrawerDetailView, DrawerByShelfIdListView, DrawerAssignmentView
-
+from .views.eoffice import EofficeLoginView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -136,4 +136,7 @@ urlpatterns = [
 
     # Full-text search APIs
     path('search/', FullTextSearchView.as_view(), name='full_text_search'),
+
+    # e-Office APIs
+    path('eoffice/login/<str:username>/<str:password>', EofficeLoginView.as_view(), name='eoffice_login'),
 ] 
