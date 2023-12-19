@@ -33,4 +33,4 @@ class EofficeDocumentListView(APIView):
             json=request.data,
             headers={'X-AUTHENTICATION-TOKEN': request.headers["X-AUTHENTICATION-TOKEN"]}
         )
-        return Response(res.json(), status=res.status_code)
+        return Response(res.json(), status=status.HTTP_200_OK)
