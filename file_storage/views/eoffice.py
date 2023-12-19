@@ -26,7 +26,7 @@ class EofficeDocumentListView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request):
         url = EOFFICE_HOST + '/api/document/getlistlookupbyparam/'
         res = requests.post(
             url,
