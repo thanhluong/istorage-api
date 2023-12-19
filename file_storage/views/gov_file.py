@@ -254,8 +254,22 @@ class UpdateGovFileById(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def post(self, request):
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         gov_file_id = request.data.get('id')
         gov_file = GovFile.objects.filter(id=gov_file_id)
+
+        if not request.user.is_superuser:
+            if not request.user.department or not request.user.department.organ:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+            organ_id = request.user.department.organ.id
+            gov_organ_id = gov_file.first().identifier.id
+
+            if organ_id != gov_organ_id:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         if gov_file:
             gov_file = gov_file.first()
             gov_file_serialized = GovFileSerializer(gov_file)
