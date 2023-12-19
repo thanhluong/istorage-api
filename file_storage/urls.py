@@ -140,5 +140,5 @@ urlpatterns = [
     # e-Office APIs
     path('eoffice/login/<str:username>/<str:password>', EofficeLoginView.as_view(), name='eoffice_login'),
     path('eoffice/document_list', EofficeDocumentListView.as_view(), name='eoffice_document_list'),
-    path('eoffice/attachment_list/<int:document_id>', EofficeAttachmentListView.as_view(), name='eoffice_attachment_list'),
+    path('eoffice/attachment_list/<str:document_id>', EofficeAttachmentListView.as_view(), name='eoffice_attachment_list'),
 ] 
