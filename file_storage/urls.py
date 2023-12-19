@@ -26,6 +26,7 @@ from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, 
 from .views.storage_unit import ShelfListView, ShelfDetailView, ShelfByWarehouseRoomIdListView
 from .views.storage_unit import DrawerListView, DrawerDetailView, DrawerByShelfIdListView, DrawerAssignmentView
 from .views.eoffice import EofficeLoginView, EofficeDocumentListView, EofficeAttachmentListView
+from .views.eoffice import EofficeAttachmentDownloadView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -141,4 +142,5 @@ urlpatterns = [
     path('eoffice/login/<str:username>/<str:password>', EofficeLoginView.as_view(), name='eoffice_login'),
     path('eoffice/document_list', EofficeDocumentListView.as_view(), name='eoffice_document_list'),
     path('eoffice/attachment_list/<str:document_id>', EofficeAttachmentListView.as_view(), name='eoffice_attachment_list'),
+    path('eoffice/attachment_list/<str:attachment_id>', EofficeAttachmentDownloadView.as_view(), name='eoffice_attachment_download'),
 ] 
