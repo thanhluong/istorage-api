@@ -69,7 +69,6 @@ class EofficeAttachmentDownloadView(APIView):
             url,
             headers={'X-AUTHENTICATION-TOKEN': request.headers["X-AUTHENTICATION-TOKEN"]}
         )
-        return Response(res.json()["data"]["data"], status=status.HTTP_200_OK)
-        response = HttpResponse(decode_base64(res["data"]["data"]), content_type='application/pdf')
+        response = HttpResponse(decode_base64(res.json()["data"]["data"]), content_type='application/pdf')
         response['Content-Disposition'] = 'inline;filename=attachment.pdf'
         return response
