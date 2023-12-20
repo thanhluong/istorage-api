@@ -83,7 +83,7 @@ class PhongSerializer(serializers.ModelSerializer):
 
 class CategoryFileSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
-    parent = serializers.PrimaryKeyRelatedField(queryset=CategoryFile.objects.all())
+    parent = serializers.PrimaryKeyRelatedField(allow_null=True, queryset=CategoryFile.objects.all())
 
     class Meta:
         model = CategoryFile
