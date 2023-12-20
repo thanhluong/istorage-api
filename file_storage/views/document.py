@@ -74,7 +74,7 @@ class DocumentUploadView(APIView):
 
         filename = file.name
 
-        if len(request.data['doc_nane'].strip()) > 0:
+        if 'doc_name' in request.data and len(request.data['doc_name'].strip()) > 0:
             filename = request.data['doc_name'].strip()
 
         if not filename.endswith('.pdf'):
