@@ -73,6 +73,10 @@ class DocumentUploadView(APIView):
             os.system('mkdir -p ' + folder_path)
 
         filename = file.name
+
+        if len(request.data['doc_nane'].strip()) > 0:
+            filename = request.data['doc_name'].strip()
+
         if not filename.endswith('.pdf'):
             filename += '.pdf'
 
