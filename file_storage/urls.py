@@ -27,6 +27,7 @@ from .views.storage_unit import ShelfListView, ShelfDetailView, ShelfByWarehouse
 from .views.storage_unit import DrawerListView, DrawerDetailView, DrawerByShelfIdListView, DrawerAssignmentView
 from .views.eoffice import EofficeLoginView, EofficeDocumentListView, EofficeAttachmentListView
 from .views.eoffice import EofficeAttachmentDownloadView
+from .views.khaithac import KhaithacGovFileListView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -143,4 +144,7 @@ urlpatterns = [
     path('eoffice/document_list', EofficeDocumentListView.as_view(), name='eoffice_document_list'),
     path('eoffice/attachment_list/<str:document_id>', EofficeAttachmentListView.as_view(), name='eoffice_attachment_list'),
     path('eoffice/attachment_download/<str:attachment_id>', EofficeAttachmentDownloadView.as_view(), name='eoffice_attachment_download'),
+
+    # KhaiThac APIs
+    path('khaithac/get_gov_files/', KhaithacGovFileListView.as_view(), name='khaithac_get_files'),
 ] 
