@@ -66,6 +66,13 @@ class WarehouseDetailView(APIView):
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, warehouse_id):
+        warehouse = self.get_object(warehouse_id)
+        if warehouse is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        warehouse.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class WarehouseByOrganIdListView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
