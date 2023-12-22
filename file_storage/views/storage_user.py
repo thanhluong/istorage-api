@@ -18,6 +18,11 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
         return
 
 
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
+
+
 def ldap_login(username, password):
     try:
         with ldap3.Connection('ldap://203.162.230.142:389', user=username, password=password) as conn:
@@ -96,7 +101,7 @@ class StorageUserByDepartmentListView(APIView):
 
 class StorageUserLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
-    authentication_classes = (SessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
