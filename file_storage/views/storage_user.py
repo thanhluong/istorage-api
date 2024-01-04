@@ -144,7 +144,7 @@ class StorageUserInfoView(APIView):
 
 class StorageUserSetPasswordView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def get_object(self, user_id, *args, **kwargs):
         try:
