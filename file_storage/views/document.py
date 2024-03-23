@@ -113,7 +113,7 @@ class DocumentUploadView(APIView):
 
 class GetDocumentByGovFileId(APIView):
     parser_classes = [JSONParser]
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def get(self, request, *args, **kwargs):

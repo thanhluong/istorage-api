@@ -147,4 +147,5 @@ urlpatterns = [
 
     # KhaiThac APIs
     path('khaithac/get_gov_files/', KhaithacGovFileListView.as_view(), name='khaithac_get_files'),
+    path('khaithac/get_doc_by_gov_file_id/', GetDocumentByGovFileId.as_view(), name='khaithac_get_doc_by_gov_file_id'),
 ] 
