@@ -5,21 +5,21 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from .views.document import DocumentUploadView, GetDocumentByGovFileId, DeleteDocumentById, UpdateDocumentById
-from .views.document import DisplayPdfView
+from .views.document import DisplayPdfView, ExportExcelDocument
 from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, UpdateGovFileStateById, DeleteGovFileById
 from .views.search import FullTextSearchView
 from .views.organ import OrganListApiView, OrganDetailApiView
 from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
 from .views.organ import OrganRoleListApiView, OrganRoleDetailApiView, OrganRoleByOrganIdListApiView
 from .views.organ import PhongListApiView, PhongDetailApiView, PhongByOrganIdListApiView
-from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView
+from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView, StorageUserByOrganListView
 from .views.storage_user import StorageUserLoginView, StorageUserLogoutView
 from .views.storage_user import StorageUserInfoView, StorageUserSetPasswordView
 from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailView
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView
-from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView
+from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendPlanView
 from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView
 from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
@@ -52,6 +52,7 @@ urlpatterns = [
     path('user', StorageUserListApiView.as_view(), name='user'),
     path('user/user_id/<int:user_id>', StorageUserDetailApiView.as_view(), name='user_detail'),
     path('user/by_department/<int:department_id>', StorageUserByDepartmentListView.as_view(), name='user_by_department'),
+    path('user/by_organ/<int:organ_id>', StorageUserByOrganListView.as_view(), name='user_by_organ'),
     path('user/login', StorageUserLoginView.as_view(), name='user_login'),
     path('user/logout', StorageUserLogoutView.as_view(), name='user_logout'),
     path('user/info', StorageUserInfoView.as_view(), name='user_info'),
@@ -64,6 +65,7 @@ urlpatterns = [
     path('delete_document_by_id/', DeleteDocumentById.as_view(), name='delete_document'),
     path('display_pdf/<int:gov_file_id>/<int:doc_id>', DisplayPdfView.as_view(), name='display_pdf'),
     path('get_gov_files/', GetGovFiles.as_view(), name='get_files'),
+    path('doc/export_excel/<int:gov_file_id>', ExportExcelDocument.as_view(), name='export_excel'),
     
     # GovFile APIs
     path('create_gov_file/', CreateGovFile.as_view(), name='create_file'),
@@ -113,7 +115,7 @@ urlpatterns = [
     path('plan/remove_plan', RemovePlanView.as_view(), name='remove_plan'),
     path('plan/set_plan_tieuhuy', SetPlanTieuHuyView.as_view(), name='set_plan_tieuhuy'), # Tieu Huy
     path('plan/remove_plan_tieuhuy', RemovePlanTieuHuyView.as_view(), name='remove_plan_tieuhuy'),
-
+   path('plan/send_plan', SendPlanView.as_view(), name='send_plan'),
 
     # Warehouse APIs
     path('warehouse', WarehouseListView.as_view(), name='warehouse'),

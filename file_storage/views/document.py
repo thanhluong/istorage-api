@@ -8,13 +8,15 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
-from file_storage.models import Document
-from file_storage.serializers import DocumentSerializer
+from file_storage.models import Document, GovFile
+from file_storage.serializers import DocumentSerializer, GovFileSerializer
 
 import os
-
+import io
 from pymongo import MongoClient
 from pypdf import PdfReader 
+import requests
+from django.http import HttpResponse
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -124,7 +126,7 @@ class GetDocumentByGovFileId(APIView):
             serialization_result = serializer.data
             result = []
             for doc in serialization_result:
-                doc['url'] = "https://" + request.get_host() + '/api/display_pdf' \
+                doc['url'] = "http://localhost/api/display_pdf" \
                               + '/' + doc['gov_file_id'] + '/' + str(doc['id'])
 
                 result.append(doc)
@@ -196,4 +198,28 @@ class DisplayPdfView(APIView):
             response = HttpResponse(pdf.read(), content_type='application/pdf')
             response['Content-Disposition'] = 'inline;filename=' + doc_instance.doc_name
             return response
+
+class ExportExcelDocument(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    MIME_TYPE_FOR_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+    def get(self, request, gov_file_id):
+        gov_file = GovFile.objects.get(id=gov_file_id)
+        serializer = GovFileSerializer(gov_file)
+        gov_file = serializer.data
+        
+        docs = Document.objects.filter(gov_file_id=gov_file_id)
+        serializer = DocumentSerializer(docs, many=True)
+        docs = serializer.data
+        
+        url = "http://localhost:5678/excel_doc"
+        
+        response =  requests.post(url,json= {
+            "docs": docs, 
+            "file": gov_file,
+        })
+
+        return HttpResponse(response.content, content_type=self.MIME_TYPE_FOR_XLSX)
 

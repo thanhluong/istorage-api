@@ -144,3 +144,16 @@ class RemovePlanTieuHuyView(APIView):
         gov_file.plan_tieuhuy = None
         gov_file.save()
         return Response(status=status.HTTP_200_OK)
+    
+class SendPlanView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        plan_id = request.data['plan_id']
+        gov_file_id = request.data['approver_ids']
+        gov_file = GovFile.objects.get(id=gov_file_id)
+        plan = Plan.objects.get(id=plan_id)
+        gov_file.plan_bmcl = plan
+        gov_file.save()
+        return Response(status=status.HTTP_200_OK)

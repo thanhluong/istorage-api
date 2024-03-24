@@ -350,7 +350,32 @@ class Plan(models.Model):
         verbose_name = 'Kế hoạch'
         verbose_name_plural = 'Kế hoạch'
 
+class PlanApprover(models.Model):
+    plan = models.ForeignKey(
+        Plan, 
+        on_delete=models.CASCADE, 
+        verbose_name='Kế hoạch'
+    )
+    organ = models.ForeignKey(
+        Organ,
+        default=None,
+        blank=True,
+        null=True,
+        on_delete=models.SET(None),
+        verbose_name='Cơ quan'
+    )
+    approver = models.ForeignKey(
+        StorageUser, 
+        on_delete=models.CASCADE, 
+        verbose_name='Người phê duyệt'
+    )
+    def __str__(self):
+        return self.name
 
+    class Meta:
+        verbose_name = 'Người phê duyệt kế hoạch'
+        verbose_name_plural = 'Người phê duyệt kế hoạch'
+    
 class GovFile(models.Model):
     gov_file_code = models.CharField(max_length=100, blank=True, null=True)
     organ_id = models.ForeignKey(
