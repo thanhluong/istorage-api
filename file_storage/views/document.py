@@ -214,7 +214,7 @@ class ExportExcelDocument(APIView):
         serializer = DocumentSerializer(docs, many=True)
         docs = serializer.data
         
-        url = "http://localhost:5678/excel_doc"
+        url = "https://luutrudientu.quangngai.gov.vn/excel_doc"
         
         response =  requests.post(url,json= {
             "docs": docs, 
