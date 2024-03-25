@@ -126,7 +126,7 @@ class GetDocumentByGovFileId(APIView):
             serialization_result = serializer.data
             result = []
             for doc in serialization_result:
-                doc['url'] = "http://localhost/api/display_pdf" \
+                doc['url'] = "https://" + request.get_host() + '/api/display_pdf' \
                               + '/' + doc['gov_file_id'] + '/' + str(doc['id'])
 
                 result.append(doc)
