@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1",
+    "name": "HỒ SƠ TÀI LIỆU VỀ CÔNG TÁC TỔNG HỢP - VĂN PHÒNG",
+    "order": 1,
+    "parent": null
+  },
+  {
+    "id": "2",
+    "name": "Hồ sơ, tài liệu công tác tổng hợp",
+    "order": 2,
+    "parent": "1"
+  },
+  {
+    "id": "4",
+    "name": "HỒ SƠ, TÀI LIỆU VỀ HOẠT ĐỘNG CHUYÊN MÔN",
+    "order": 1,
+    "parent": null
+  },
+  {
+    "id": "5",
+    "name": "HỒ SƠ TÀI LIỆU VỀ HOẠT ĐỘNG CỦA TỔ CHỨC ĐẢNG VÀ CÁC ĐOÀN THỂ CƠ QUAN",
+    "order": 1,
+    "parent": null
+  },
+  {
+    "id": "8",
+    "name": "Tài liệu về công tác hành chính, văn thư, pháp chế, quản trị công sở",
+    "order": 2,
+    "parent": "1"
+  },
+  {
+    "id": "9",
+    "name": "Hồ sơ, tài liệu về công tác tổ chức bộ máy, cán bộ, lao động, tiền lương",
+    "order": 2,
+    "parent": "1"
+  },
+  {
+    "id": "10",
+    "name": "Hồ sơ, tài liệu quản lý về lĩnh vực tài chính",
+    "order": 2,
+    "parent": "4"
+  },
+  {
+    "id": "11",
+    "name": "Tài liệu về công tác quản lý tài sản",
+    "order": 2,
+    "parent": "4"
+  },
+  {
+    "id": "13",
+    "name": "Tài liệu về công tác quản lý giá, thuế",
+    "order": 2,
+    "parent": "4"
+  }
+]
