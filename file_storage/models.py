@@ -376,6 +376,32 @@ class PlanNLLSApprover(models.Model):
     class Meta:
         verbose_name = 'Người phê duyệt kế hoạch'
         verbose_name_plural = 'Người phê duyệt kế hoạch'
+class PlanNLLSOrgan(models.Model):
+    plan = models.ForeignKey(
+        Plan, 
+        on_delete=models.CASCADE, 
+        verbose_name='Kế hoạch'
+    )
+    organ = models.ForeignKey(
+        Organ, 
+        on_delete=models.CASCADE, 
+        verbose_name='Cơ quan',
+        related_name='organ_plannllsorgan_set',
+        default=None,
+    )
+    sender = models.ForeignKey(
+        StorageUser, 
+        on_delete=models.CASCADE, 
+        verbose_name='Người gửi',
+        related_name='sender_plannllsorgan_set',
+        default=None,
+    )
+    def __str__(self):
+        return "Kế hoạch: " + self.plan.name
+
+    class Meta:
+        verbose_name = 'Cơ quan nhận kế hoạch'
+        verbose_name_plural = 'Cơ quan nhận kế hoạch'
     
 class GovFile(models.Model):
     gov_file_code = models.CharField(max_length=100, blank=True, null=True)

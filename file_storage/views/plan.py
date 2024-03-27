@@ -3,10 +3,10 @@ from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.authentication import SessionAuthentication
 
-from file_storage.serializers import PlanSerializer
+from file_storage.serializers import PlanSerializer, OrganSerializer
 
 from file_storage.models import Plan
-from file_storage.models import GovFile, PlanNLLSApprover, StorageUser, Organ
+from file_storage.models import GovFile, PlanNLLSApprover, StorageUser, Organ, PlanNLLSOrgan
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -145,7 +145,7 @@ class RemovePlanTieuHuyView(APIView):
         gov_file.save()
         return Response(status=status.HTTP_200_OK)
     
-class SendPlanNLLS(APIView):
+class SendNLLSInternal(APIView):
     # authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
@@ -154,18 +154,8 @@ class SendPlanNLLS(APIView):
         plan = Plan.objects.get(id=request.data['plan_id'])
         approver_ids = request.data['approver_ids']
         
-        
-        exist_plan = PlanNLLSApprover.objects.filter(
-            plan=plan,
-            sender=sender, 
-        )
-
         for approver_id in approver_ids:
             approver = StorageUser.objects.get(id=approver_id)
-            
-            if exist_plan and exist_plan.filter(approver=approver).count() > 0:
-                return Response({"message": f"Approver {approver.id} already exists"}, status=status.HTTP_200_OK)
-            
             PlanNLLSApprover.objects.create(
                 sender=sender, 
                 plan=plan,
@@ -173,3 +163,56 @@ class SendPlanNLLS(APIView):
             )
             
         return Response({"message": "Send plan success"},status=status.HTTP_200_OK)
+
+
+class SendNLLSOrgan(APIView):
+    # authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        sender = StorageUser.objects.get(id=request.data['sender_id'])
+        plan = Plan.objects.get(id=request.data['plan_id'])
+        organ_ids = request.data['organ_ids']
+        
+        
+        exist_plan = PlanNLLSOrgan.objects.filter(
+            plan=plan,
+            sender=sender,
+        )
+
+        for organ_id in organ_ids:
+            
+            organ = Organ.objects.get(id=organ_id)
+
+            if exist_plan and exist_plan.filter(organ=organ).count() > 0:
+                return Response({"message": f"Organ {organ.id} already exists"}, status=status.HTTP_200_OK)
+            
+            PlanNLLSOrgan.objects.create(
+                sender=sender, 
+                plan=plan,
+                organ=organ
+            )
+            
+        return Response({"message": "Send plan success"},status=status.HTTP_200_OK)
+
+class NLLSInternal(APIView):
+    # authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, id):
+        plans = PlanNLLSApprover.objects.filter(approver_id=id)
+        serialized_plans = []
+        for plan in plans:
+            serialized_plans.append(PlanSerializer(Plan.objects.get(id=plan.plan.id)).data)
+        return Response(serialized_plans, status=status.HTTP_200_OK)
+
+class NLLSOrgan(APIView):
+    # authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, id):
+        organs = PlanNLLSOrgan.objects.filter(organ_id=id)
+        serialized_organs = []
+        for organ in organs:
+            serialized_organs.append(OrganSerializer(Organ.objects.get(id=organ.organ.id)).data)
+        return Response(serialized_organs, status=status.HTTP_200_OK)

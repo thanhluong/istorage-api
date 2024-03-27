@@ -5,7 +5,7 @@ from file_storage.models import Document, GovFile, GovFileProfile
 from file_storage.models import Organ, OrganDepartment, OrganRole
 from file_storage.models import Phong, CategoryFile
 from file_storage.models import GovFileLanguage, StorageDuration, PhysicalState
-from file_storage.models import Plan
+from file_storage.models import Plan, PlanNLLSApprover, PlanNLLSOrgan
 from file_storage.models import Warehouse, WarehouseRoom, Drawer, Shelf
 
 
@@ -234,4 +234,19 @@ class DrawerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Drawer
+        fields = '__all__'
+
+class PlanNLLSOrganSerializer(serializers.ModelSerializer):
+    organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
+    plan = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+
+    class Meta:
+        model = PlanNLLSOrgan
+        fields = '__all__'
+
+class PlanNLLSApproverSerializer(serializers.ModelSerializer):
+    plan = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+    approver = serializers.PrimaryKeyRelatedField(queryset=OrganRole.objects.all())
+    class Meta:
+        model = PlanNLLSApprover
         fields = '__all__'
