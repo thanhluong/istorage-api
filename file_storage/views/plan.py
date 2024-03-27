@@ -6,7 +6,7 @@ from rest_framework.authentication import SessionAuthentication
 from file_storage.serializers import PlanSerializer
 
 from file_storage.models import Plan
-from file_storage.models import GovFile
+from file_storage.models import GovFile, PlanNLLSApprover, StorageUser, Organ
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -145,15 +145,31 @@ class RemovePlanTieuHuyView(APIView):
         gov_file.save()
         return Response(status=status.HTTP_200_OK)
     
-class SendPlanView(APIView):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
+class SendPlanNLLS(APIView):
+    # authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        plan_id = request.data['plan_id']
-        gov_file_id = request.data['approver_ids']
-        gov_file = GovFile.objects.get(id=gov_file_id)
-        plan = Plan.objects.get(id=plan_id)
-        gov_file.plan_bmcl = plan
-        gov_file.save()
-        return Response(status=status.HTTP_200_OK)
+        sender = StorageUser.objects.get(id=request.data['sender_id'])
+        plan = Plan.objects.get(id=request.data['plan_id'])
+        approver_ids = request.data['approver_ids']
+        
+        
+        exist_plan = PlanNLLSApprover.objects.filter(
+            plan=plan,
+            sender=sender, 
+        )
+
+        for approver_id in approver_ids:
+            approver = StorageUser.objects.get(id=approver_id)
+            
+            if exist_plan and exist_plan.filter(approver=approver).count() > 0:
+                return Response({"message": f"Approver {approver.id} already exists"}, status=status.HTTP_200_OK)
+            
+            PlanNLLSApprover.objects.create(
+                sender=sender, 
+                plan=plan,
+                approver=approver
+            )
+            
+        return Response({"message": "Send plan success"},status=status.HTTP_200_OK)

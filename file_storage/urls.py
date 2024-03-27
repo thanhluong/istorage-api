@@ -19,7 +19,7 @@ from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailV
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView
-from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendPlanView
+from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendPlanNLLS
 from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView
 from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
@@ -115,7 +115,7 @@ urlpatterns = [
     path('plan/remove_plan', RemovePlanView.as_view(), name='remove_plan'),
     path('plan/set_plan_tieuhuy', SetPlanTieuHuyView.as_view(), name='set_plan_tieuhuy'), # Tieu Huy
     path('plan/remove_plan_tieuhuy', RemovePlanTieuHuyView.as_view(), name='remove_plan_tieuhuy'),
-   path('plan/send_plan', SendPlanView.as_view(), name='send_plan'),
+   path('plan/send_plan_nlls', SendPlanNLLS.as_view(), name='send_plan_nlls'),
 
     # Warehouse APIs
     path('warehouse', WarehouseListView.as_view(), name='warehouse'),

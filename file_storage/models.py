@@ -350,27 +350,28 @@ class Plan(models.Model):
         verbose_name = 'Kế hoạch'
         verbose_name_plural = 'Kế hoạch'
 
-class PlanApprover(models.Model):
+class PlanNLLSApprover(models.Model):
     plan = models.ForeignKey(
         Plan, 
         on_delete=models.CASCADE, 
         verbose_name='Kế hoạch'
     )
-    organ = models.ForeignKey(
-        Organ,
-        default=None,
-        blank=True,
-        null=True,
-        on_delete=models.SET(None),
-        verbose_name='Cơ quan'
-    )
     approver = models.ForeignKey(
         StorageUser, 
         on_delete=models.CASCADE, 
-        verbose_name='Người phê duyệt'
+        verbose_name='Người phê duyệt',
+        related_name='approver_planapprover_set',
+        default=None,
+    )
+    sender = models.ForeignKey(
+        StorageUser, 
+        on_delete=models.CASCADE, 
+        verbose_name='Người gửi',
+        related_name='sender_planapprover_set',
+        default=None,
     )
     def __str__(self):
-        return self.name
+        return "Kế hoạch: " + self.plan.name
 
     class Meta:
         verbose_name = 'Người phê duyệt kế hoạch'
