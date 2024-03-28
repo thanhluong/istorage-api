@@ -146,7 +146,7 @@ class RemovePlanTieuHuyView(APIView):
         return Response(status=status.HTTP_200_OK)
     
 class SendNLLSInternal(APIView):
-    # authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
@@ -168,7 +168,7 @@ class SendNLLSInternal(APIView):
 
 
 class SendNLLSOrgan(APIView):
-    # authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
@@ -200,7 +200,7 @@ class SendNLLSOrgan(APIView):
         return Response({"message": "Send plan success"}, status=status.HTTP_200_OK)
 
 class NLLSInternal(APIView):
-    # authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, id):
@@ -211,7 +211,7 @@ class NLLSInternal(APIView):
         return Response(serialized_plans, status=status.HTTP_200_OK)
 
 class NLLSOrgan(APIView):
-    # authentication_classes = (CsrfExemptSessionAuthentication,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, id):
