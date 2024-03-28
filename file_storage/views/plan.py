@@ -151,18 +151,20 @@ class SendNLLSInternal(APIView):
 
     def post(self, request):
         sender = StorageUser.objects.get(id=request.data['sender_id'])
-        plan = Plan.objects.get(id=request.data['plan_id'])
         approver_ids = request.data['approver_ids']
+        plan_ids = request.data['plan_ids']
         
-        for approver_id in approver_ids:
-            approver = StorageUser.objects.get(id=approver_id)
-            PlanNLLSApprover.objects.create(
-                sender=sender, 
-                plan=plan,
-                approver=approver
-            )
-            
-        return Response({"message": "Send plan success"},status=status.HTTP_200_OK)
+        for plan_id in plan_ids:
+            plan = Plan.objects.get(id=plan_id)
+            for approver_id in approver_ids:
+                approver = StorageUser.objects.get(id=approver_id)
+                PlanNLLSApprover.objects.create(
+                    sender=sender, 
+                    plan=plan,
+                    approver=approver
+                )
+                
+        return Response({"message": "Send plan success"}, status=status.HTTP_200_OK)
 
 
 class SendNLLSOrgan(APIView):
@@ -171,29 +173,31 @@ class SendNLLSOrgan(APIView):
 
     def post(self, request):
         sender = StorageUser.objects.get(id=request.data['sender_id'])
-        plan = Plan.objects.get(id=request.data['plan_id'])
+        plan_ids = request.data['plan_ids']
         organ_ids = request.data['organ_ids']
-        
-        
-        exist_plan = PlanNLLSOrgan.objects.filter(
-            plan=plan,
-            sender=sender,
-        )
 
-        for organ_id in organ_ids:
-            
-            organ = Organ.objects.get(id=organ_id)
+        for plan_id in plan_ids:
+            plan = Plan.objects.get(id=plan_id)
 
-            if exist_plan and exist_plan.filter(organ=organ).count() > 0:
-                return Response({"message": f"Organ {organ.id} already exists"}, status=status.HTTP_200_OK)
-            
-            PlanNLLSOrgan.objects.create(
-                sender=sender, 
-                plan=plan,
-                organ=organ
-            )
-            
-        return Response({"message": "Send plan success"},status=status.HTTP_200_OK)
+            for organ_id in organ_ids:
+                organ = Organ.objects.get(id=organ_id)
+
+                exist_plan = PlanNLLSOrgan.objects.filter(
+                    plan=plan,
+                    sender=sender,
+                    organ=organ
+                )
+
+                if exist_plan.exists():
+                    return Response({"message": f"Plan {plan_id} for Organ {organ_id} already exists"}, status=status.HTTP_200_OK)
+
+                PlanNLLSOrgan.objects.create(
+                    sender=sender,
+                    plan=plan,
+                    organ=organ
+                )
+
+        return Response({"message": "Send plan success"}, status=status.HTTP_200_OK)
 
 class NLLSInternal(APIView):
     # authentication_classes = (CsrfExemptSessionAuthentication,)
@@ -211,8 +215,8 @@ class NLLSOrgan(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, id):
-        organs = PlanNLLSOrgan.objects.filter(organ_id=id)
-        serialized_organs = []
-        for organ in organs:
-            serialized_organs.append(OrganSerializer(Organ.objects.get(id=organ.organ.id)).data)
-        return Response(serialized_organs, status=status.HTTP_200_OK)
+        plans = PlanNLLSOrgan.objects.filter(organ_id=id)
+        serialized_plans = []
+        for plan in plans:
+            serialized_plans.append(PlanSerializer(Plan.objects.get(id=plan.plan.id)).data)
+        return Response(serialized_plans, status=status.HTTP_200_OK)
