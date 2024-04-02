@@ -12,7 +12,7 @@ from .models import Organ, OrganDepartment
 from .models import Phong
 from .models import Plan
 from .models import Warehouse, WarehouseRoom, Shelf, Drawer
-from .models import PlanNLLSApprover
+from .models import PlanNLLSApprover, PlanNLLSOrgan
 
 class StorageUserAdmin(UserAdmin):
     list_display = ('full_name', 'username', 'email', 'is_active', 'is_staff')
@@ -100,6 +100,9 @@ class DrawerAdmin(admin.ModelAdmin):
 class PlanApproverAdmin(admin.ModelAdmin):
     list_display = ('plan' ,'sender', 'approver')
 
+class PlanOrganAdmin(admin.ModelAdmin):
+    list_display = ('plan' ,'sender', 'organ', 'organ_sender')
+
 admin.site.register(StorageUser, StorageUserAdmin)
 admin.site.register(Document)
 admin.site.register(GovFile)
@@ -121,3 +124,4 @@ admin.site.register(WarehouseRoom, WarehouseRoomAdmin)
 admin.site.register(Shelf, ShelfAdmin)
 admin.site.register(Drawer, DrawerAdmin)
 admin.site.register(PlanNLLSApprover, PlanApproverAdmin)
+admin.site.register(PlanNLLSOrgan, PlanOrganAdmin)

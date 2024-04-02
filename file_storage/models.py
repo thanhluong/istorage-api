@@ -336,7 +336,35 @@ class Plan(models.Model):
         default=1,
         verbose_name='Loại kế hoạch'
     )
-    attachment = models.FileField(
+    reject_reason = models.TextField(
+        blank=True,
+        null=True,
+        default=None
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Kế hoạch'
+        verbose_name_plural = 'Kế hoạch'
+
+class Attachment(models.Model):
+    plan = models.ForeignKey(
+        Plan, 
+        on_delete=models.CASCADE, 
+        blank=True, 
+        null=True,
+        default=None,
+        related_name = 'attachment_set',
+    )
+    name = models.CharField(
+        max_length=256, 
+        default=None,
+        blank=True,
+        null=True
+    )
+    file = models.FileField(
         blank=True,
         null=True,
         default=None,
@@ -347,8 +375,8 @@ class Plan(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'Kế hoạch'
-        verbose_name_plural = 'Kế hoạch'
+        verbose_name = 'Văn bản'
+        verbose_name_plural = 'Văn bản'
 
 class PlanNLLSApprover(models.Model):
     plan = models.ForeignKey(
@@ -395,6 +423,13 @@ class PlanNLLSOrgan(models.Model):
         verbose_name='Người gửi',
         related_name='sender_plannllsorgan_set',
         default=None,
+    )
+    organ_sender = models.ForeignKey(
+        Organ, 
+        on_delete=models.CASCADE, 
+        verbose_name='Cơ quan gửi',
+        related_name='organ_plannllsorgan_send',
+        null=True,
     )
     def __str__(self):
         return "Kế hoạch: " + self.plan.name

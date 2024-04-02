@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.authentication import SessionAuthentication
 
-from file_storage.serializers import PlanSerializer, OrganSerializer
+from file_storage.serializers import PlanSerializer, AttachmentSerializer
 
 from file_storage.models import Plan
 from file_storage.models import GovFile, PlanNLLSApprover, StorageUser, Organ, PlanNLLSOrgan
@@ -24,18 +24,32 @@ class PlanListView(APIView):
         if request.user.is_authenticated:
             if (not request.user.is_superuser) and request.user.department and request.user.department.organ:
                 organ_id = request.user.department.organ.id
-                plan = Plan.objects.filter(organ__id=organ_id)
+                plan = plan.filter(organ__id=organ_id)
 
         serializer = PlanSerializer(plan, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = PlanSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer_plan = PlanSerializer(data={
+            "organ": request.data.get("organ"),
+            "name": request.data.get("name"),
+            "state": request.data.get("state"),
+            "type": request.data.get("type"),
+        })
+        if serializer_plan.is_valid():
+            plan_instance = serializer_plan.save()  # Save the plan instance
+            serializer = AttachmentSerializer(data={
+                "file": request.data['attachment'],
+                "plan": plan_instance.pk,  # Use the primary key of the plan instance
+                "name": "abc",
+            })
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer_plan.data, status=status.HTTP_201_CREATED)
+            else:
+                plan_instance.delete()  # Delete the plan instance if attachment serializer is not valid
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer_plan.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PlanDetailView(APIView):
@@ -175,7 +189,7 @@ class SendNLLSOrgan(APIView):
         sender = StorageUser.objects.get(id=request.data['sender_id'])
         plan_ids = request.data['plan_ids']
         organ_ids = request.data['organ_ids']
-
+        organ_sender = Organ.objects.get(id = request.data['organ_sender_id'])
         for plan_id in plan_ids:
             plan = Plan.objects.get(id=plan_id)
 
@@ -185,7 +199,8 @@ class SendNLLSOrgan(APIView):
                 exist_plan = PlanNLLSOrgan.objects.filter(
                     plan=plan,
                     sender=sender,
-                    organ=organ
+                    organ=organ,
+                    organ_sender=organ_sender,
                 )
 
                 if exist_plan.exists():
@@ -194,7 +209,8 @@ class SendNLLSOrgan(APIView):
                 PlanNLLSOrgan.objects.create(
                     sender=sender,
                     plan=plan,
-                    organ=organ
+                    organ=organ,
+                    organ_sender=organ_sender,
                 )
 
         return Response({"message": "Send plan success"}, status=status.HTTP_200_OK)
@@ -210,13 +226,26 @@ class NLLSInternal(APIView):
             serialized_plans.append(PlanSerializer(Plan.objects.get(id=plan.plan.id)).data)
         return Response(serialized_plans, status=status.HTTP_200_OK)
 
+class NLLSOrganByOrganId(APIView):
+    # authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, id):
+        # plans = PlanNLLSOrgan.objects.filter(organ_id=id)
+        # serialized_plans = []
+        # for plan in plans:
+        #     serialized_plans.append(PlanSerializer(Plan.objects.get(id=plan.plan.id)).data)
+        return Response([], status=status.HTTP_200_OK)
+
 class NLLSOrgan(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
-    def get(self, request, id):
-        plans = PlanNLLSOrgan.objects.filter(organ_id=id)
-        serialized_plans = []
-        for plan in plans:
-            serialized_plans.append(PlanSerializer(Plan.objects.get(id=plan.plan.id)).data)
-        return Response(serialized_plans, status=status.HTTP_200_OK)
+    def get(self, request):
+        # organ_sender_id = request.GET.get('organ_sender_id')
+        # plans = PlanNLLSOrgan.objects.filter(organ_sender_id=organ_sender_id)
+        # serialized_plans = []
+        # for plan in plans:
+        #     serialized_plans.append(PlanSerializer(Plan.objects.get(id=plan.plan.id)).data)
+        return Response([], status=status.HTTP_200_OK)
+
