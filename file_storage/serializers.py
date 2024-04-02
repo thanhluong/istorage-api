@@ -5,14 +5,14 @@ from file_storage.models import Document, GovFile, GovFileProfile
 from file_storage.models import Organ, OrganDepartment, OrganRole
 from file_storage.models import Phong, CategoryFile
 from file_storage.models import GovFileLanguage, StorageDuration, PhysicalState
-from file_storage.models import Plan, PlanNLLSApprover, PlanNLLSOrgan
 from file_storage.models import Warehouse, WarehouseRoom, Drawer, Shelf
+from file_storage.models import Plan, PlanNLLSApprover, PlanNLLSOrgan, Attachment
 
 
 class StorageUserSerializer(serializers.ModelSerializer):
     organ_id = serializers.SerializerMethodField()
     organ_name = serializers.SerializerMethodField()
-
+    department_name = serializers.SerializerMethodField()
     class Meta:
         model = StorageUser
         exclude = ('password',)
@@ -31,6 +31,10 @@ class StorageUserSerializer(serializers.ModelSerializer):
             return ""
         return ""
 
+    def get_department_name(self, obj):
+        if obj.department:
+            return obj.department.name
+        return ""
 
 class StorageUserCreationSerializer(serializers.ModelSerializer):
     def save(self, **kwargs):
@@ -185,7 +189,6 @@ class PhysicalStateSerializer(serializers.ModelSerializer):
 class PlanSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
     attachment = serializers.FileField(required=False, allow_null=True)
-
     organ_name = serializers.SerializerMethodField()
 
     class Meta:
@@ -193,10 +196,19 @@ class PlanSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_organ_name(self, obj):
+        print(obj)
         if obj.organ:
             return obj.organ.name
         return ""
 
+class AttachmentSerializer(serializers.ModelSerializer):
+    file = serializers.FileField()
+    plan = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+    name = serializers.CharField()
+
+    class Meta:
+        model = Attachment
+        fields = '__all__'
 
 class WarehouseSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
