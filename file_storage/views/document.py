@@ -220,6 +220,6 @@ class ExportExcelDocument(APIView):
             "docs": docs, 
             "file": gov_file,
         })
-
+        print(response)
         return HttpResponse(response.content, content_type=self.MIME_TYPE_FOR_XLSX)
 

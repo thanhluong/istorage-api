@@ -102,12 +102,13 @@ class StorageUserByDepartmentListView(APIView):
 class StorageUserByOrganListView(APIView):
     permission_classes = (permissions.AllowAny,)
     def get(self, request, organ_id, *args, **kwargs):
-        department = OrganDepartment.objects.filter(organ_id=organ_id).first()
-        if department is None:
-            return Response(data={"message": "Department not found"}, status=status.HTTP_404_NOT_FOUND)
-        users = StorageUser.objects.filter(department_id=department.id)
+        departments = OrganDepartment.objects.filter(organ_id=organ_id)
+        users = []
+        for department in departments:
+            users += list(StorageUser.objects.filter(department_id=department.id))
+            
         return Response(data=StorageUserSerializer(users, many=True).data, status=status.HTTP_200_OK)
-        
+    
 class StorageUserLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
     authentication_classes = (CsrfExemptSessionAuthentication,)

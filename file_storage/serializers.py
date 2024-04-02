@@ -12,6 +12,7 @@ from file_storage.models import Warehouse, WarehouseRoom, Drawer, Shelf
 class StorageUserSerializer(serializers.ModelSerializer):
     organ_id = serializers.SerializerMethodField()
     organ_name = serializers.SerializerMethodField()
+    department_name = serializers.SerializerMethodField()
 
     class Meta:
         model = StorageUser
@@ -31,6 +32,10 @@ class StorageUserSerializer(serializers.ModelSerializer):
             return ""
         return ""
 
+    def get_department_name(self, obj):
+        if obj.department:
+            return obj.department.name
+        return ""
 
 class StorageUserCreationSerializer(serializers.ModelSerializer):
     def save(self, **kwargs):
