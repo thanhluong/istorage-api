@@ -13,10 +13,6 @@ class StorageUserSerializer(serializers.ModelSerializer):
     organ_id = serializers.SerializerMethodField()
     organ_name = serializers.SerializerMethodField()
     department_name = serializers.SerializerMethodField()
-<<<<<<< HEAD
-
-=======
->>>>>>> 77fcc6b2ff5426933420570871c8b0c0f31d960d
     class Meta:
         model = StorageUser
         exclude = ('password',)
