@@ -6,9 +6,9 @@ from drf_yasg import openapi
 
 from .views.document import DocumentUploadView, GetDocumentByGovFileId, DeleteDocumentById, UpdateDocumentById
 from .views.document import DisplayPdfView, ExportExcelDocument
-from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, UpdateGovFileStateById, DeleteGovFileById
+from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, UpdateGovFileStateById, DeleteGovFileById, GetGovFileByOrganAndPlan
 from .views.search import FullTextSearchView
-from .views.organ import OrganListApiView, OrganDetailApiView
+from .views.organ import OrganListApiView, OrganDetailApiView, OrganByPlanNLLSId
 from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
 from .views.organ import OrganRoleListApiView, OrganRoleDetailApiView, OrganRoleByOrganIdListApiView
 from .views.organ import PhongListApiView, PhongDetailApiView, PhongByOrganIdListApiView
@@ -73,10 +73,12 @@ urlpatterns = [
     path('update_gov_file_state_by_id/', UpdateGovFileStateById.as_view(),
          name='update_gov_file_state'),
     path('delete_gov_file_by_id/', DeleteGovFileById.as_view(), name='delete_gov_file'),
+    path('get_gov_file_by_plan_organ/<int:plan_id>/<int:organ_id>', GetGovFileByOrganAndPlan.as_view(), name='get_gov_file_by_plan_organ'),
 
     # Organ APIs
     path('organ', OrganListApiView.as_view(), name='organ'),
     path('organ/<int:organ_id>', OrganDetailApiView.as_view(), name='organ_detail'),
+    path('organ/by_plan_nlls/<int:plan_id>', OrganByPlanNLLSId.as_view(), name='organ_nlls'),
     # OrganDepartment APIs
     path('organ_department', OrganDepartmentListApiView.as_view(), name='organ_department'),
     path('organ_department/<int:organ_department_id>', OrganDepartmentDetailApiView.as_view(), name='organ_department_detail'),

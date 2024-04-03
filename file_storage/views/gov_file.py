@@ -173,7 +173,6 @@ class CreateGovFile(APIView):
         #     return resp_date_error
 
         serializer = GovFileSerializer(data=request.data)
-        print(serializer)
 
         if serializer.is_valid():
             serializer.save()
@@ -219,7 +218,6 @@ class DeleteGovFileById(APIView):
 
     def post(self, request):
         gov_file_id = request.data.get('id')
-        print(type(gov_file_id))
 
         perm_response_msg = {
             "error_code": status.HTTP_401_UNAUTHORIZED,
@@ -416,3 +414,12 @@ class UpdateGovFileStateById(APIView):
             serializer.save()
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+class GetGovFileByOrganAndPlan(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    def get(self, request, plan_id, organ_id, *args, **kwargs):
+        gov_files = GovFile.objects.filter(plan_nopluuls_id=plan_id,organ_id=organ_id)
+        serializer = GovFileSerializer(gov_files, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

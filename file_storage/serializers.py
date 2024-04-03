@@ -53,7 +53,6 @@ class StorageUserCreationSerializer(serializers.ModelSerializer):
             first_name="",
             last_name=""
         )
-        print(self.data)
         password = self.validated_data['password']
         user.set_password(password)
         user.save()
@@ -188,15 +187,22 @@ class PhysicalStateSerializer(serializers.ModelSerializer):
 
 class PlanSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
-    attachment = serializers.FileField(required=False, allow_null=True)
+    attachments = serializers.SerializerMethodField(required=False, allow_null=True)
     organ_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Plan
         fields = '__all__'
 
+    def get_attachments(self, obj):
+        file_name = []
+        if obj.attachments:
+            for attachment in obj.attachments:
+                file_name.append(attachment.file.name)
+            return file_name
+        return None
+    
     def get_organ_name(self, obj):
-        print(obj)
         if obj.organ:
             return obj.organ.name
         return ""
@@ -204,7 +210,6 @@ class PlanSerializer(serializers.ModelSerializer):
 class AttachmentSerializer(serializers.ModelSerializer):
     file = serializers.FileField()
     plan = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
-    name = serializers.CharField()
 
     class Meta:
         model = Attachment

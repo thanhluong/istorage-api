@@ -11,7 +11,7 @@ from file_storage.models import Organ
 from file_storage.models import OrganDepartment
 from file_storage.models import OrganRole
 from file_storage.models import Phong
-
+from file_storage.models import PlanNLLSOrgan
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
@@ -289,3 +289,13 @@ class PhongByOrganIdListApiView(APIView):
             serializer.save(organ_id=organ_id)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class OrganByPlanNLLSId(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    def get(self, request, plan_id):
+        planNLLSOrgans = PlanNLLSOrgan.objects.filter(plan_id=plan_id)
+        organs = Organ.objects.filter(id__in=planNLLSOrgans.values_list('organ_id', flat=True))
+        serializer = OrganSerializer(organs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -8,7 +8,7 @@ def menu_icon_path(instance, filename):
 
 
 def plan_directory_path(instance, filename):
-    folder_name = abs(hash(instance.name)) + 2023
+    folder_name = abs(hash(instance.plan.name)) + 2023
     return 'plan/{0}/{1}'.format(folder_name, filename)
 
 
@@ -86,7 +86,6 @@ class Organ(models.Model):
     def __str__(self):
         return self.name
 
-
 class OrganDepartment(models.Model):
     organ = models.ForeignKey(
         Organ,
@@ -108,7 +107,6 @@ class OrganDepartment(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class OrganRole(models.Model):
     name = models.CharField(
@@ -134,7 +132,6 @@ class OrganRole(models.Model):
     class Meta:
         verbose_name = 'Chức vụ trong cơ quan'
         verbose_name_plural = 'Chức vụ trong cơ quan'
-
 
 class StorageUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=84, unique=True, verbose_name="Email")
@@ -184,7 +181,6 @@ class StorageUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
-
 
 class Phong(models.Model):
     fond_name = models.CharField(max_length=256, verbose_name='Tên phông')
@@ -358,12 +354,6 @@ class Attachment(models.Model):
         default=None,
         related_name = 'attachment_set',
     )
-    name = models.CharField(
-        max_length=256, 
-        default=None,
-        blank=True,
-        null=True
-    )
     file = models.FileField(
         blank=True,
         null=True,
@@ -372,11 +362,11 @@ class Attachment(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.file.name
 
     class Meta:
-        verbose_name = 'Văn bản'
-        verbose_name_plural = 'Văn bản'
+        verbose_name = 'Văn bản đính kèm'
+        verbose_name_plural = 'Văn bản đính kèm'
 
 class PlanNLLSApprover(models.Model):
     plan = models.ForeignKey(
@@ -404,6 +394,7 @@ class PlanNLLSApprover(models.Model):
     class Meta:
         verbose_name = 'Người phê duyệt kế hoạch'
         verbose_name_plural = 'Người phê duyệt kế hoạch'
+
 class PlanNLLSOrgan(models.Model):
     plan = models.ForeignKey(
         Plan, 

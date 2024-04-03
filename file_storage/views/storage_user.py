@@ -106,7 +106,6 @@ class StorageUserByOrganListView(APIView):
         users = []
         for department in departments:
             users += list(StorageUser.objects.filter(department_id=department.id))
-            
         return Response(data=StorageUserSerializer(users, many=True).data, status=status.HTTP_200_OK)
     
 class StorageUserLoginView(APIView):
