@@ -220,6 +220,7 @@ class Phong(models.Model):
 class CategoryFile(models.Model):
     name = models.CharField(max_length=512, verbose_name='Tên danh mục')
     order = models.IntegerField(default=1, verbose_name='Order')
+    year = models.IntegerField(default=2023, verbose_name='Năm')
     organ = models.ForeignKey(
         Organ,
         default=None,

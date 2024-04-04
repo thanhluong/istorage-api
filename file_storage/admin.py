@@ -64,7 +64,7 @@ class PhongAdmin(admin.ModelAdmin):
 
 
 class CategoryFileAdmin(admin.ModelAdmin):
-    list_display = ('name', 'parent', 'organ')
+    list_display = ('name', 'parent', 'organ', 'year')
 
 
 class GovFileLanguageAdmin(admin.ModelAdmin):
