@@ -21,14 +21,16 @@ class PlanListView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        plan = Plan.objects.all()
-
+        plans = Plan.objects.all()
         if request.user.is_authenticated:
             if (not request.user.is_superuser) and request.user.department and request.user.department.organ:
                 organ_id = request.user.department.organ.id
-                plan = plan.filter(organ__id=organ_id)
+                plans = plans.filter(organ__id=organ_id)
 
-        serializer = PlanSerializer(plan, many=True)
+        for plan in plans:
+            attachment = Attachment.objects.filter(plan=plan)
+            plan.attachments = attachment
+        serializer = PlanSerializer(plans, many=True)
         return Response(serializer.data)
 
     def post(self, request):

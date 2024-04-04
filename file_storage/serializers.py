@@ -196,7 +196,7 @@ class PlanSerializer(serializers.ModelSerializer):
 
     def get_attachments(self, obj):
         file_name = []
-        if obj.attachments:
+        if hasattr(obj, 'attachments') and obj.attachments:
             for attachment in obj.attachments:
                 file_name.append(attachment.file.name)
             return file_name
