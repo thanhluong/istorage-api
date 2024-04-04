@@ -222,6 +222,17 @@ class SendNLLSOrgan(APIView):
 
         return Response({"message": "Send plan success"}, status=status.HTTP_200_OK)
 
+class UpdateStateNLLSOrgan(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        plan = PlanNLLSOrgan.objects.get(plan_id=request.data['plan_id'], organ_id=request.data['organ_id'])
+        if plan:
+            plan.state = request.data['state']
+            plan.save()
+        return Response({"message": "Send plan success"}, status=status.HTTP_200_OK)
+
 class NLLSInternal(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)

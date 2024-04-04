@@ -298,4 +298,8 @@ class OrganByPlanNLLSId(APIView):
         planNLLSOrgans = PlanNLLSOrgan.objects.filter(plan_id=plan_id)
         organs = Organ.objects.filter(id__in=planNLLSOrgans.values_list('organ_id', flat=True))
         serializer = OrganSerializer(organs, many=True)
+        data = serializer.data
+        for i in range(len(data)):
+            data[i]['state'] = planNLLSOrgans.filter(organ_id=data[i]['id']).first().state
+            data[i]['plan_id'] = planNLLSOrgans.filter(organ_id=data[i]['id']).first().plan_id
         return Response(serializer.data, status=status.HTTP_200_OK)

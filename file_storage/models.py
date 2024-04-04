@@ -397,6 +397,12 @@ class PlanNLLSApprover(models.Model):
         verbose_name_plural = 'Người phê duyệt kế hoạch'
 
 class PlanNLLSOrgan(models.Model):
+    STATE_CHOICE = (
+        ("Chưa nộp", "Chưa nộp"),
+        ("Đã nộp", "Đã nộp"),
+        ("Đã duyệt nộp lưu lịch sử từ cơ quan", "Đã duyệt nộp lưu lịch sử từ cơ quan"),
+        ("Từ chối nộp lưu lịch sử từ cơ quan", "Từ chối nộp lưu lịch sử từ cơ quan"),
+    )
     plan = models.ForeignKey(
         Plan, 
         on_delete=models.CASCADE, 
@@ -422,6 +428,17 @@ class PlanNLLSOrgan(models.Model):
         verbose_name='Cơ quan gửi',
         related_name='organ_plannllsorgan_send',
         null=True,
+    )
+    state = models.CharField(
+        max_length=64,
+        choices=STATE_CHOICE,
+        default=STATE_CHOICE[0][0],
+        verbose_name='Trạng thái'
+    )
+    reject_reason = models.TextField(
+        blank=True,
+        null=True,
+        default=None
     )
     def __str__(self):
         return "Kế hoạch: " + self.plan.name

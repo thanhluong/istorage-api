@@ -146,10 +146,10 @@ class GovFileProfileSerializer(serializers.ModelSerializer):
 
 
 class OrganSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Organ
         fields = '__all__'
-
 
 class OrganDepartmentSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
