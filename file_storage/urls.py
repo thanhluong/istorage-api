@@ -19,7 +19,7 @@ from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailV
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView
-from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendNLLSInternal, SendNLLSOrgan, NLLSInternal, NLLSOrganByOrganId, NLLSOrgan
+from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendNLLSInternal, SendNLLSOrgan, NLLSInternal, NLLSOrganByOrganId, NLLSOrgan, SentNLLSInternal
 from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView
 from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
@@ -120,6 +120,7 @@ urlpatterns = [
    path('plan/send_nlls_internal', SendNLLSInternal.as_view(), name='send_nlls_internal'), # Gửi kế hoạch nộp lưu lịch sử đến người trong cơ quan để duyệt
    path('plan/send_nlls_organ', SendNLLSOrgan.as_view(), name='send_nlls_organ'), # Gửi kế hoạch nộp lưu lịch sử đến các cơ quan khác
    path('plan/nlls_internal/<int:id>', NLLSInternal.as_view(), name='nlls_internal_by_approver_id'), 
+   path('plan/sent_nlls_internal/by_sender_id/<int:sender_id>', SentNLLSInternal.as_view(), name='nlls_internal_by_approver_id'), 
    path('plan/nlls_organ', NLLSOrgan.as_view(), name='nlls_organ'),  # Get nlls_organ by organ_id
    path('plan/nlls_organ/<int:id>', NLLSOrganByOrganId.as_view(), name='nlls_organ_by_id'),  # Get nlls_organ by organ_id
     # Warehouse APIs

@@ -9,8 +9,6 @@ from file_storage.models import Plan
 from file_storage.models import GovFile, PlanNLLSApprover, StorageUser, Organ, PlanNLLSOrgan
 from file_storage.models import Attachment
 
-import json
-
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return
@@ -239,6 +237,16 @@ class NLLSInternal(APIView):
         serializer = PlanSerializer(plans, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class SentNLLSInternal(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+    def get(self, request, sender_id):
+        plans_nlls_organs = PlanNLLSOrgan.objects.filter(sender_id=sender_id)
+        distinct_plans_ids = plans_nlls_organs.values('plan_id').distinct()
+        plans = Plan.objects.filter(id__in=distinct_plans_ids)
+        serializer = PlanSerializer(plans, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class NLLSOrganByOrganId(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
@@ -269,4 +277,5 @@ class NLLSOrgan(APIView):
             plans.append(plan)
         serializer = PlanSerializer(plans, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
