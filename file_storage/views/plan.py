@@ -256,6 +256,15 @@ class SentNLLSInternal(APIView):
         distinct_plans_ids = plans_nlls_organs.values('plan_id').distinct()
         plans = Plan.objects.filter(id__in=distinct_plans_ids)
         serializer = PlanSerializer(plans, many=True)
+        data = serializer.data
+
+        for plan in data:
+            organ_ids = PlanNLLSOrgan.objects.filter(sender_id=sender_id, plan=plan['id']).values('organ_id').distinct()
+            state = PlanNLLSOrgan.objects.filter(sender_id=sender_id, plan=plan['id'], organ_id__in=organ_ids).values('state').distinct()
+            if len(state) == 1 and state[0]['state'] == 'Đã duyệt nộp lưu lịch sử từ cơ quan':
+                plan['state'] = 'Đã đầy đủ'
+            else:
+                plan['state'] = 'Chưa đầy đủ'
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class NLLSOrganByOrganId(APIView):

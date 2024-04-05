@@ -6,7 +6,7 @@ from drf_yasg import openapi
 
 from .views.document import DocumentUploadView, GetDocumentByGovFileId, DeleteDocumentById, UpdateDocumentById
 from .views.document import DisplayPdfView, ExportExcelDocument
-from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, UpdateGovFileStateById, DeleteGovFileById, GetGovFileByOrganAndPlan
+from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, UpdateGovFileStateById, DeleteGovFileById, GetGovFileByOrganAndPlan, UpdateGovFileStateByPlanNLLSId
 from .views.search import FullTextSearchView
 from .views.organ import OrganListApiView, OrganDetailApiView, OrganByPlanNLLSId
 from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
@@ -70,8 +70,8 @@ urlpatterns = [
     # GovFile APIs
     path('create_gov_file/', CreateGovFile.as_view(), name='create_file'),
     path('update_gov_file_by_id/', UpdateGovFileById.as_view(), name='update_gov_file'),
-    path('update_gov_file_state_by_id/', UpdateGovFileStateById.as_view(),
-         name='update_gov_file_state'),
+    path('update_gov_file_state_by_id/', UpdateGovFileStateById.as_view(), name='update_gov_file_state'),
+    path('update_gov_file_state_by_nlls_plan_id', UpdateGovFileStateByPlanNLLSId.as_view(), name='update_gov_file_state_by_nlls_plan_id'),
     path('delete_gov_file_by_id/', DeleteGovFileById.as_view(), name='delete_gov_file'),
     path('get_gov_file_by_plan_organ/<int:plan_id>/<int:organ_id>', GetGovFileByOrganAndPlan.as_view(), name='get_gov_file_by_plan_organ'),
 
