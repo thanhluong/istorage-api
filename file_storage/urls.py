@@ -28,6 +28,7 @@ from .views.storage_unit import DrawerListView, DrawerDetailView, DrawerByShelfI
 from .views.eoffice import EofficeLoginView, EofficeDocumentListView, EofficeAttachmentListView
 from .views.eoffice import EofficeAttachmentDownloadView
 from .views.khaithac import KhaithacGovFileListView
+from .views.attachment import DownloadAttachment
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -157,4 +158,7 @@ urlpatterns = [
     # KhaiThac APIs
     path('khaithac/get_gov_files/', KhaithacGovFileListView.as_view(), name='khaithac_get_files'),
     path('khaithac/get_doc_by_gov_file_id/', GetDocumentByGovFileId.as_view(), name='khaithac_get_doc_by_gov_file_id'),
+
+    # Attachment APIs
+    path('attachment/download/plan/<str:dir>/<str:file_name>', DownloadAttachment.as_view(), name='attachment_download'),
 ] 

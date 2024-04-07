@@ -231,7 +231,7 @@ class UpdateStateNLLSOrgan(APIView):
         if plan:
             plan.state = request.data['state']
             plan.save()
-        return Response({"message": "Send plan success"}, status=status.HTTP_200_OK)
+        return Response({"message": "update plan success"}, status=status.HTTP_200_OK)
 
 class NLLSInternal(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)
