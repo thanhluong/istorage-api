@@ -1,8 +1,8 @@
 from django.urls import path
 
-from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from rest_framework import permissions
 
 from .views.document import DocumentUploadView, GetDocumentByGovFileId, DeleteDocumentById, UpdateDocumentById
 from .views.document import DisplayPdfView, ExportExcelDocument
@@ -11,14 +11,14 @@ from .views.search import FullTextSearchView
 from .views.organ import OrganListApiView, OrganDetailApiView, OrganByPlanNLLSId
 from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
 from .views.organ import OrganRoleListApiView, OrganRoleDetailApiView, OrganRoleByOrganIdListApiView
-from .views.organ import PhongListApiView, PhongDetailApiView, PhongByOrganIdListApiView
+from .views.organ import PhongListApiView, PhongDetailApiView, PhongByOrganIdListApiView, OrganByCategoryFileYears
 from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView, StorageUserByOrganListView
 from .views.storage_user import StorageUserLoginView, StorageUserLogoutView
 from .views.storage_user import StorageUserInfoView, StorageUserSetPasswordView
 from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailView
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
-from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView
+from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView, CategoryFileYears, CategoryFileByYearAndOrgan
 from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendNLLSInternal, SendNLLSOrgan, NLLSInternal, NLLSOrganByOrganId, NLLSOrgan, SentNLLSInternal, UpdateStateNLLSOrgan
 from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView
 from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
@@ -80,6 +80,7 @@ urlpatterns = [
     path('organ', OrganListApiView.as_view(), name='organ'),
     path('organ/<int:organ_id>', OrganDetailApiView.as_view(), name='organ_detail'),
     path('organ/by_plan_nlls/<int:plan_id>', OrganByPlanNLLSId.as_view(), name='organ_nlls'),
+    path('organ/by_category_file_year/<int:year>', OrganByCategoryFileYears.as_view(), name='organ_category_file'),
     # OrganDepartment APIs
     path('organ_department', OrganDepartmentListApiView.as_view(), name='organ_department'),
     path('organ_department/<int:organ_department_id>', OrganDepartmentDetailApiView.as_view(), name='organ_department_detail'),
@@ -109,7 +110,8 @@ urlpatterns = [
     path('category_file', CategoryFileListView.as_view(), name='category_file'),
     path('category_file/<int:category_file_id>', CategoryFileDetailView.as_view(), name='category_file_detail'),
     path('category_file/by_organ/<int:organ_id>', CategoryFileByOrganListView.as_view(), name='category_file_by_organ'),
-
+    path('category_file_years', CategoryFileYears.as_view(), name='category_file_years'),
+    path('category_file/<int:year>/<int:organ_id>', CategoryFileByYearAndOrgan.as_view(), name='category_file_by_year_organ'),
     # Plan APIs
     path('plan', PlanListView.as_view(), name='plan'),
     path('plan/<int:plan_id>', PlanDetailView.as_view(), name='plan_detail'),
