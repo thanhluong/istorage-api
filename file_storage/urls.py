@@ -19,7 +19,7 @@ from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailV
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView, CategoryFileYears, CategoryFileByYearAndOrgan
-from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendNLLSInternal, SendNLLSOrgan, NLLSInternal, NLLSOrganByOrganId, NLLSOrgan, SentNLLSInternal, UpdateStateNLLSOrgan
+from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendNLLSInternal, SendNLLSOrgan, NLLSInternal, NLLSOrganByOrganId, NLLSOrgan, SentNLLSInternal, UpdateStateNLLSOrgan, PeopleNLLSInternalNotReceivePlan
 from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView
 from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
@@ -54,6 +54,7 @@ urlpatterns = [
     path('user/user_id/<int:user_id>', StorageUserDetailApiView.as_view(), name='user_detail'),
     path('user/by_department/<int:department_id>', StorageUserByDepartmentListView.as_view(), name='user_by_department'),
     path('user/by_organ/<int:organ_id>', StorageUserByOrganListView.as_view(), name='user_by_organ'),
+    path('user_not_receive_nlls_internal_plan/<int:organ_id>/<int:plan_id>', PeopleNLLSInternalNotReceivePlan.as_view(), name='user_not_receive_nlls_internal_plan_by_organ'),
     path('user/login', StorageUserLoginView.as_view(), name='user_login'),
     path('user/logout', StorageUserLogoutView.as_view(), name='user_logout'),
     path('user/info', StorageUserInfoView.as_view(), name='user_info'),
