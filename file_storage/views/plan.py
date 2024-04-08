@@ -254,8 +254,9 @@ class NLLSInternal(APIView):
         plans = []
         for plans_nlls_approver in plans_nlls_approvers:
             plan = Plan.objects.get(id=plans_nlls_approver.plan.id)
-            attachments = Attachment.objects.filter(plan_id=id)
+            attachments = Attachment.objects.filter(plan_id=plan.id)
             plan.attachments = attachments
+            print(plan.attachments)
             plans.append(plan)
         serializer = PlanSerializer(plans, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -288,7 +289,7 @@ class NLLSOrganByOrganId(APIView):
         plans = []
         for plan_nlls_organ in plans_nlls_organ:
             plan = Plan.objects.get(id=plan_nlls_organ.plan.id)
-            attachments = Attachment.objects.filter(plan_id=id)
+            attachments = Attachment.objects.filter(plan_id=plan.id)
             plan.attachments = attachments
             plans.append(plan)
         serializer = PlanSerializer(plans, many=True)
@@ -310,6 +311,7 @@ class NLLSOrgan(APIView):
         for plan_nlls_organ in plans_nlls_organ:
             plan = Plan.objects.get(id=plan_nlls_organ.plan.id)
             attachments = Attachment.objects.filter(plan_id=id)
+            print(attachments)
             plan.attachments = attachments
             plans.append(plan)
         serializer = PlanSerializer(plans, many=True)
