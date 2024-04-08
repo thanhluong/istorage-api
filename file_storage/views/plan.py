@@ -231,6 +231,18 @@ class UpdateStateNLLSOrgan(APIView):
         if plan:
             plan.state = request.data['state']
             plan.save()
+        plans = PlanNLLSOrgan.objects.filter(plan_id=request.data['plan_id'])
+        count = 0
+        
+        for plan in plans:
+            if plan.state == 'Đã nộp':
+                count += 1
+        
+        if count == len(plans):
+            plan = Plan.objects.get(id=request.data['plan_id'])
+            plan.state = 'Đã thu thập'
+            plan.save()
+
         return Response({"message": "update plan success"}, status=status.HTTP_200_OK)
 
 class NLLSInternal(APIView):
@@ -280,6 +292,11 @@ class NLLSOrganByOrganId(APIView):
             plan.attachments = attachments
             plans.append(plan)
         serializer = PlanSerializer(plans, many=True)
+        data = serializer.data
+
+        for i in range(len(data)):
+            if data[i]['state'] == 'Đợi thu thập' and PlanNLLSOrgan.objects.filter(plan_id=data[i]['id'], organ_id=id, state='Đã nộp').exists():
+                data[i]['state'] = 'Đã thu thập'
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class NLLSOrgan(APIView):
