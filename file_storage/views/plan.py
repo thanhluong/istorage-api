@@ -37,6 +37,7 @@ class PlanListView(APIView):
             "name": request.data.get("name"),
             "state": request.data.get("state"),
             "type": request.data.get("type"),
+            "start_date": request.data.get("start_date"),
         })
         if serializer_plan.is_valid():
             plan_instance = serializer_plan.save()  # Save the plan instance
@@ -74,21 +75,31 @@ class PlanDetailView(APIView):
         serializer = PlanSerializer(plan)
         return Response(serializer.data)
 
+    def remove_old_file(self, request, plan_id):
+        attachments = Attachment.objects.filter(plan_id=plan_id)
+        old_files = request.data['old_files']
+
+        for attachment in attachments:
+            exist = False
+            for old_file in old_files:
+                if old_file['uid'] == attachment.id:
+                    exist = True
+            if not exist:
+                attachment.delete()
+
     def put(self, request, plan_id):
         plan = self.get_object(plan_id)
         if plan is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
-        print(request.data['state'])
-        print(plan.state)
         if request.data['state'] == 'Đợi duyệt' and plan.state != 'Mới lập':
             return Response({"error": "Trạng thái không hợp lệ"}, status=status.HTTP_200_OK)
         
         serializer = PlanSerializer(plan, data=request.data)
         if serializer.is_valid():
+            self.remove_old_file(request, plan_id)
             serializer.save()
             return Response(serializer.data)
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, plan_id):
@@ -337,5 +348,6 @@ class NLLSOrgan(APIView):
             plans.append(plan)
         serializer = PlanSerializer(plans, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 

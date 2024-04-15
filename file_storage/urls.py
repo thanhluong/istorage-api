@@ -28,7 +28,7 @@ from .views.storage_unit import DrawerListView, DrawerDetailView, DrawerByShelfI
 from .views.eoffice import EofficeLoginView, EofficeDocumentListView, EofficeAttachmentListView
 from .views.eoffice import EofficeAttachmentDownloadView
 from .views.khaithac import KhaithacGovFileListView
-from .views.attachment import DownloadAttachment
+from .views.attachment import DownloadAttachment, GetAttachmentsByPlanId, AttachmentAPIView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -121,13 +121,14 @@ urlpatterns = [
     path('plan/remove_plan', RemovePlanView.as_view(), name='remove_plan'),
     path('plan/set_plan_tieuhuy', SetPlanTieuHuyView.as_view(), name='set_plan_tieuhuy'), # Tieu Huy
     path('plan/remove_plan_tieuhuy', RemovePlanTieuHuyView.as_view(), name='remove_plan_tieuhuy'),
-   path('plan/send_nlls_internal', SendNLLSInternal.as_view(), name='send_nlls_internal'), # Gửi kế hoạch nộp lưu lịch sử đến người trong cơ quan để duyệt
-   path('plan/send_nlls_organ', SendNLLSOrgan.as_view(), name='send_nlls_organ'), # Gửi kế hoạch nộp lưu lịch sử đến các cơ quan khác
-   path('plan/update_state_nlls_organ', UpdateStateNLLSOrgan.as_view(), name='send_nlls_organ'), # Gửi kế hoạch nộp lưu lịch sử đến các cơ quan khác
-   path('plan/nlls_internal/<int:id>', NLLSInternal.as_view(), name='nlls_internal_by_approver_id'), 
-   path('plan/sent_nlls_internal/by_sender_id/<int:sender_id>', SentNLLSInternal.as_view(), name='nlls_internal_by_approver_id'), 
-   path('plan/nlls_organ', NLLSOrgan.as_view(), name='nlls_organ'),  # Get nlls_organ by organ_id
-   path('plan/nlls_organ/<int:id>', NLLSOrganByOrganId.as_view(), name='nlls_organ_by_id'),  # Get nlls_organ by organ_id
+    path('plan/send_nlls_internal', SendNLLSInternal.as_view(), name='send_nlls_internal'), # Gửi kế hoạch nộp lưu lịch sử đến người trong cơ quan để duyệt
+    path('plan/send_nlls_organ', SendNLLSOrgan.as_view(), name='send_nlls_organ'), # Gửi kế hoạch nộp lưu lịch sử đến các cơ quan khác
+    path('plan/update_state_nlls_organ', UpdateStateNLLSOrgan.as_view(), name='send_nlls_organ'), # Gửi kế hoạch nộp lưu lịch sử đến các cơ quan khác
+    path('plan/nlls_internal/<int:id>', NLLSInternal.as_view(), name='nlls_internal_by_approver_id'),
+    path('plan/sent_nlls_internal/by_sender_id/<int:sender_id>', SentNLLSInternal.as_view(), name='nlls_internal_by_approver_id'),
+    path('plan/nlls_organ', NLLSOrgan.as_view(), name='nlls_organ'),  # Get nlls_organ by organ_id
+    path('plan/nlls_organ/<int:id>', NLLSOrganByOrganId.as_view(), name='nlls_organ_by_id'),  # Get nlls_organ by organ_id
+
     # Warehouse APIs
     path('warehouse', WarehouseListView.as_view(), name='warehouse'),
     path('warehouse/<int:warehouse_id>', WarehouseDetailView.as_view(), name='warehouse_detail'),
@@ -164,4 +165,6 @@ urlpatterns = [
 
     # Attachment APIs
     path('attachment/download/plan/<str:dir>/<str:file_name>', DownloadAttachment.as_view(), name='attachment_download'),
-] 
+    path('attachment/by_plan/<int:plan_id>', GetAttachmentsByPlanId.as_view(), name='attachment_by_plan'),
+    path('attachment/<int:plan_id>',AttachmentAPIView.as_view(), name='attachment'),
+]
