@@ -63,4 +63,4 @@ class AttachmentAPIView(APIView):
         success = self.add_new_file(plan_id, request)
         if not success:
             return Response(data={"message": "Failed to add attachment"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_201_CREATED)
+        return Response(data={"message": "add successful"}, status=status.HTTP_201_CREATED)
