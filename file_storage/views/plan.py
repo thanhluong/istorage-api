@@ -6,7 +6,7 @@ from rest_framework.authentication import SessionAuthentication
 from file_storage.serializers import PlanSerializer, AttachmentSerializer, StorageUserSerializer
 
 from file_storage.models import Plan
-from file_storage.models import GovFile, PlanNLLSApprover, StorageUser, Organ, PlanNLLSOrgan
+from file_storage.models import GovFile, PlanNLLSApprover, StorageUser, Organ, PlanNLLSOrgan, GovFileProfile
 from file_storage.models import Attachment
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -97,7 +97,8 @@ class PlanDetailView(APIView):
         
         serializer = PlanSerializer(plan, data=request.data)
         if serializer.is_valid():
-            self.remove_old_file(request, plan_id)
+            if 'old_files' in request.data:
+                self.remove_old_file(request, plan_id)
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -349,5 +350,27 @@ class NLLSOrgan(APIView):
         serializer = PlanSerializer(plans, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class SoNoiVuDuyetPlan(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+    def get(self, request):
+        plans = Plan.objects.filter(state='Đợi Sở Nội vụ duyệt')
+        serializer = PlanSerializer(plans, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+class DuyetNoiVuPlan(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
 
+    def post(self, request):
+        plan_ids = request.data['plan_ids']
+        for plan_id in plan_ids:
+            plan = Plan.objects.get(id=plan_id)
+            gov_files = GovFile.objects.filter(plan_nopluuls=plan)
+            for gov_file in gov_files:
+                gov_file_profile = GovFileProfile.objects.get(gov_file_id=gov_file.id)
+                gov_file_profile.state = 6
+                gov_file_profile.save()
+            plan.state = "Đã duyệt"
+            plan.save()
+        return Response(data={"ok"}, status=status.HTTP_200_OK)

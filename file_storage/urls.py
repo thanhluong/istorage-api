@@ -20,7 +20,7 @@ from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView, CategoryFileYears, CategoryFileByYearAndOrgan
 from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendNLLSInternal, SendNLLSOrgan, NLLSInternal, NLLSOrganByOrganId, NLLSOrgan, SentNLLSInternal, UpdateStateNLLSOrgan, PeopleNLLSInternalNotReceivePlan
-from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView
+from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView, SoNoiVuDuyetPlan, DuyetNoiVuPlan
 from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
 from .views.storage_unit import ShelfListView, ShelfDetailView, ShelfByWarehouseRoomIdListView
@@ -113,6 +113,7 @@ urlpatterns = [
     path('category_file/by_organ/<int:organ_id>', CategoryFileByOrganListView.as_view(), name='category_file_by_organ'),
     path('category_file_years', CategoryFileYears.as_view(), name='category_file_years'),
     path('category_file/<int:year>/<int:organ_id>', CategoryFileByYearAndOrgan.as_view(), name='category_file_by_year_organ'),
+
     # Plan APIs
     path('plan', PlanListView.as_view(), name='plan'),
     path('plan/<int:plan_id>', PlanDetailView.as_view(), name='plan_detail'),
@@ -128,7 +129,9 @@ urlpatterns = [
     path('plan/sent_nlls_internal/by_sender_id/<int:sender_id>', SentNLLSInternal.as_view(), name='nlls_internal_by_approver_id'),
     path('plan/nlls_organ', NLLSOrgan.as_view(), name='nlls_organ'),  # Get nlls_organ by organ_id
     path('plan/nlls_organ/<int:id>', NLLSOrganByOrganId.as_view(), name='nlls_organ_by_id'),  # Get nlls_organ by organ_id
-
+    path('plan/so_noi_vu_duyet', SoNoiVuDuyetPlan.as_view(), name='plan_so_noi_vu_duyet'),
+    path('plan/duyet_noi_vu_plan', DuyetNoiVuPlan.as_view(), name='plan_duyet_noi_vu_plan'),
+    # Get nlls_organ by organ_id
     # Warehouse APIs
     path('warehouse', WarehouseListView.as_view(), name='warehouse'),
     path('warehouse/<int:warehouse_id>', WarehouseDetailView.as_view(), name='warehouse_detail'),
