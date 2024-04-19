@@ -369,8 +369,17 @@ class DuyetNoiVuPlan(APIView):
             gov_files = GovFile.objects.filter(plan_nopluuls=plan)
             for gov_file in gov_files:
                 gov_file_profile = GovFileProfile.objects.get(gov_file_id=gov_file.id)
-                gov_file_profile.state = 6
+                gov_file_profile.state = 19
                 gov_file_profile.save()
-            plan.state = "Đã duyệt"
+            plan.state = "Chờ xếp kho nộp lưu lịch sử"
             plan.save()
         return Response(data={"ok"}, status=status.HTTP_200_OK)
+
+class PlanChoXepKhoLichSu(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        plans = Plan.objects.filter(state='Đã duyệt kế hoạch nộp lưu lịch sử')
+        serializer = PlanSerializer(plans, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

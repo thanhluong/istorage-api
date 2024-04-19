@@ -293,6 +293,8 @@ class Plan(models.Model):
         ("Đợi thu thập", "Đợi thu thập"),
         ("Đợi thẩm định", "Đợi thẩm định"),
         ("Đã thu thập", "Đã thu thập"),
+        ("Đã duyệt kế hoạch nộp lưu lịch sử", "Đã duyệt kế hoạch nộp lưu lịch sử"),
+        ("Chờ xếp kho nộp lưu lịch sử", "Chờ xếp kho nộp lưu lịch sử"),
     )
 
     name = models.CharField(
@@ -626,6 +628,7 @@ class StateEnum(Enum):
     THHS_DA_TIEU_HUY = 16
     THHS_KHOI_PHUC = 17
     NOP_LUU_LICH_SU_CHO_SO_NOI_VU_DUYET = 18
+    NLLS_CHO_XEP_KHO = 19
 
     @classmethod
     def choices(cls):

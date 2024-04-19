@@ -20,7 +20,7 @@ from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
 from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView, CategoryFileYears, CategoryFileByYearAndOrgan
 from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendNLLSInternal, SendNLLSOrgan, NLLSInternal, NLLSOrganByOrganId, NLLSOrgan, SentNLLSInternal, UpdateStateNLLSOrgan, PeopleNLLSInternalNotReceivePlan
-from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView, SoNoiVuDuyetPlan, DuyetNoiVuPlan
+from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView, SoNoiVuDuyetPlan, DuyetNoiVuPlan, PlanChoXepKhoLichSu
 from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
 from .views.storage_unit import ShelfListView, ShelfDetailView, ShelfByWarehouseRoomIdListView
@@ -131,6 +131,8 @@ urlpatterns = [
     path('plan/nlls_organ/<int:id>', NLLSOrganByOrganId.as_view(), name='nlls_organ_by_id'),  # Get nlls_organ by organ_id
     path('plan/so_noi_vu_duyet', SoNoiVuDuyetPlan.as_view(), name='plan_so_noi_vu_duyet'),
     path('plan/duyet_noi_vu_plan', DuyetNoiVuPlan.as_view(), name='plan_duyet_noi_vu_plan'),
+    path('plan/cho_xep_kho_lich_su', PlanChoXepKhoLichSu.as_view(), name='plan_cho_xep_kho_lich_su'),
+
     # Get nlls_organ by organ_id
     # Warehouse APIs
     path('warehouse', WarehouseListView.as_view(), name='warehouse'),
