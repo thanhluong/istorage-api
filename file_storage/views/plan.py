@@ -306,11 +306,20 @@ class SentNLLSInternal(APIView):
 
         for plan in data:
             organ_ids = PlanNLLSOrgan.objects.filter(sender_id=sender_id, plan=plan['id']).values('organ_id').distinct()
-            state = PlanNLLSOrgan.objects.filter(sender_id=sender_id, plan=plan['id'], organ_id__in=organ_ids).values('state').distinct()
-            if len(state) == 1 and state[0]['state'] == 'Đã duyệt nộp lưu lịch sử từ cơ quan':
-                plan['state'] = 'Đã đầy đủ'
-            else:
-                plan['state'] = 'Chưa đầy đủ'
+            organ_state = PlanNLLSOrgan.objects.filter(sender_id=sender_id, plan=plan['id']).values('state').distinct()
+
+            gov_file_ids = GovFile.objects.filter(plan_nopluuls=plan['id'], organ_id__in=organ_ids)
+            state = GovFileProfile.objects.filter(gov_file_id__in=gov_file_ids).values('state').distinct()
+            if plan['state'] == 'Đợi thu thập':
+                if len(organ_state) != 1 or organ_state[0] != 'Đã nộp':
+                    plan['state'] = 'Chưa đầy đủ'
+                elif len(state) == 0:
+                    plan['state'] = 'Không có hồ sơ'
+                elif len(state) == 1 and state[0]['state'] == 20:
+                    plan['state'] = 'Đã đầy đủ'
+                else:
+                    plan['state'] = 'Chưa đầy đủ'
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class NLLSOrganByOrganId(APIView):
