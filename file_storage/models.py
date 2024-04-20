@@ -568,6 +568,13 @@ class GovFile(models.Model):
         verbose_name='Hộp lưu trữ'
     )
 
+    reject_reason = models.TextField(
+        blank=True,
+        null=True,
+        default=None,
+        verbose_name='Lí do từ chối'
+    )
+
     def __str__(self):
         return 'Hồ sơ: ' + self.title
 
@@ -629,6 +636,7 @@ class StateEnum(Enum):
     THHS_KHOI_PHUC = 17
     NOP_LUU_LICH_SU_CHO_SO_NOI_VU_DUYET = 18
     NLLS_CHO_XEP_KHO = 19
+    CHAP_NHAN_NOP_LUU_LICH_SU_CHO_SO_NOI_VU_DUYET = 20
 
     @classmethod
     def choices(cls):
