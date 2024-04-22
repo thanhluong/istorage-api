@@ -172,3 +172,22 @@ MONGO_HOST = "localhost"
 MONGO_PORT = 27017
 MONGO_DB_NAME = "test"
 MONGO_FTS_COLLECTION_NAME = "docs"
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname}: {name}.{message}",
+            "style": "{",
+        },
+    },
+
+    'handlers': {
+         "console": {'level': 'DEBUG', "class": "logging.StreamHandler", "formatter": "verbose"},
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}

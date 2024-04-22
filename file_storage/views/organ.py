@@ -7,12 +7,13 @@ from file_storage.serializers import OrganSerializer
 from file_storage.serializers import OrganDepartmentSerializer
 from file_storage.serializers import OrganRoleSerializer
 from file_storage.serializers import PhongSerializer
+from file_storage.serializers import CategoryFileSerializer
 from file_storage.models import Organ
 from file_storage.models import OrganDepartment
 from file_storage.models import OrganRole
 from file_storage.models import Phong
-
-
+from file_storage.models import PlanNLLSOrgan
+from file_storage.models import CategoryFile
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return
@@ -89,7 +90,6 @@ class OrganDepartmentListApiView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class OrganDepartmentDetailApiView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -290,3 +290,30 @@ class PhongByOrganIdListApiView(APIView):
             serializer.save(organ_id=organ_id)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class OrganByPlanNLLSId(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    def get(self, request, plan_id):
+        planNLLSOrgans = PlanNLLSOrgan.objects.filter(plan_id=plan_id)
+        organs = Organ.objects.filter(id__in=planNLLSOrgans.values_list('organ_id', flat=True))
+        serializer = OrganSerializer(organs, many=True)
+        data = serializer.data
+        for i in range(len(data)):
+            data[i]['state'] = planNLLSOrgans.filter(organ_id=data[i]['id']).first().state
+            data[i]['plan_id'] = planNLLSOrgans.filter(organ_id=data[i]['id']).first().plan_id
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class OrganByCategoryFileYears(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, year):
+        category_files = CategoryFile.objects.filter(year=year)
+        organ_ids = category_files.values_list('organ_id', flat=True)
+        organs = Organ.objects.filter(id__in=organ_ids)
+        serializer = OrganSerializer(organs, many=True)
+        for i in range(len(serializer.data)):
+            serializer.data[i]['total'] = category_files.filter(organ_id=serializer.data[i]['id']).count()
+        return Response(serializer.data, status=status.HTTP_200_OK)

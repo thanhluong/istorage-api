@@ -198,6 +198,27 @@ class CategoryFileListView(APIView):
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CategoryFileYears(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        category_files = CategoryFile.objects.all()
+        serializer = CategoryFileSerializer(category_files, many=True)
+        years = set()
+        for category_file in serializer.data:
+            years.add(category_file['year'])
+        return Response(list(years), status=status.HTTP_200_OK)
+
+class CategoryFileByYearAndOrgan(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, year, organ_id):
+        category_files = CategoryFile.objects.filter(year=year, organ_id=organ_id)
+        serializer = CategoryFileSerializer(category_files, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 
 class CategoryFileDetailView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication,)

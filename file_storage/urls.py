@@ -1,26 +1,26 @@
 from django.urls import path
 
-from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from rest_framework import permissions
 
 from .views.document import DocumentUploadView, GetDocumentByGovFileId, DeleteDocumentById, UpdateDocumentById
-from .views.document import DisplayPdfView
-from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, UpdateGovFileStateById, DeleteGovFileById
+from .views.document import DisplayPdfView, ExportExcelDocument
+from .views.gov_file import GetGovFiles, CreateGovFile, UpdateGovFileById, UpdateGovFileStateById, DeleteGovFileById, GetGovFileByOrganAndPlan, UpdateGovFileStateByPlanNLLSId
 from .views.search import FullTextSearchView
-from .views.organ import OrganListApiView, OrganDetailApiView
+from .views.organ import OrganListApiView, OrganDetailApiView, OrganByPlanNLLSId
 from .views.organ import OrganDepartmentListApiView, OrganDepartmentDetailApiView, OrganDepartmentByOrganIdListView
 from .views.organ import OrganRoleListApiView, OrganRoleDetailApiView, OrganRoleByOrganIdListApiView
-from .views.organ import PhongListApiView, PhongDetailApiView, PhongByOrganIdListApiView
-from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView
+from .views.organ import PhongListApiView, PhongDetailApiView, PhongByOrganIdListApiView, OrganByCategoryFileYears
+from .views.storage_user import StorageUserListApiView, StorageUserDetailApiView, StorageUserByDepartmentListView, StorageUserByOrganListView
 from .views.storage_user import StorageUserLoginView, StorageUserLogoutView
 from .views.storage_user import StorageUserInfoView, StorageUserSetPasswordView
 from .views.gov_file_attr import StorageDurationListView, StorageDurationDetailView
 from .views.gov_file_attr import PhysicalStateListView, PhysicalStateDetailView
 from .views.gov_file_attr import GovFileLanguageListView, GovFileLanguageDetailView
-from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView
-from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView
-from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView
+from .views.gov_file_attr import CategoryFileListView, CategoryFileDetailView, CategoryFileByOrganListView, CategoryFileYears, CategoryFileByYearAndOrgan
+from .views.plan import PlanListView, PlanDetailView, PlanByTypeListView, SendNLLSInternal, SendNLLSOrgan, NLLSInternal, NLLSOrganByOrganId, NLLSOrgan, SentNLLSInternal, UpdateStateNLLSOrgan, PeopleNLLSInternalNotReceivePlan
+from .views.plan import SetPlanView, RemovePlanView, SetPlanTieuHuyView, RemovePlanTieuHuyView, SoNoiVuDuyetPlan, DuyetNoiVuPlan, PlanChoXepKhoLichSu
 from .views.storage_unit import WarehouseListView, WarehouseDetailView, WarehouseByOrganIdListView
 from .views.storage_unit import WarehouseRoomListView, WarehouseRoomDetailView, WarehouseRoomByWarehouseIdListView
 from .views.storage_unit import ShelfListView, ShelfDetailView, ShelfByWarehouseRoomIdListView
@@ -28,6 +28,7 @@ from .views.storage_unit import DrawerListView, DrawerDetailView, DrawerByShelfI
 from .views.eoffice import EofficeLoginView, EofficeDocumentListView, EofficeAttachmentListView
 from .views.eoffice import EofficeAttachmentDownloadView
 from .views.khaithac import KhaithacGovFileListView
+from .views.attachment import DownloadAttachment, GetAttachmentsByPlanId, AttachmentAPIView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -52,6 +53,8 @@ urlpatterns = [
     path('user', StorageUserListApiView.as_view(), name='user'),
     path('user/user_id/<int:user_id>', StorageUserDetailApiView.as_view(), name='user_detail'),
     path('user/by_department/<int:department_id>', StorageUserByDepartmentListView.as_view(), name='user_by_department'),
+    path('user/by_organ/<int:organ_id>', StorageUserByOrganListView.as_view(), name='user_by_organ'),
+    path('user_not_receive_nlls_internal_plan/<int:organ_id>/<int:plan_id>', PeopleNLLSInternalNotReceivePlan.as_view(), name='user_not_receive_nlls_internal_plan_by_organ'),
     path('user/login', StorageUserLoginView.as_view(), name='user_login'),
     path('user/logout', StorageUserLogoutView.as_view(), name='user_logout'),
     path('user/info', StorageUserInfoView.as_view(), name='user_info'),
@@ -64,17 +67,21 @@ urlpatterns = [
     path('delete_document_by_id/', DeleteDocumentById.as_view(), name='delete_document'),
     path('display_pdf/<int:gov_file_id>/<int:doc_id>', DisplayPdfView.as_view(), name='display_pdf'),
     path('get_gov_files/', GetGovFiles.as_view(), name='get_files'),
+    path('doc/export_excel/<int:gov_file_id>', ExportExcelDocument.as_view(), name='export_excel'),
     
     # GovFile APIs
     path('create_gov_file/', CreateGovFile.as_view(), name='create_file'),
     path('update_gov_file_by_id/', UpdateGovFileById.as_view(), name='update_gov_file'),
-    path('update_gov_file_state_by_id/', UpdateGovFileStateById.as_view(),
-         name='update_gov_file_state'),
+    path('update_gov_file_state_by_id/', UpdateGovFileStateById.as_view(), name='update_gov_file_state'),
+    path('update_gov_file_state_by_nlls_plan_id', UpdateGovFileStateByPlanNLLSId.as_view(), name='update_gov_file_state_by_nlls_plan_id'),
     path('delete_gov_file_by_id/', DeleteGovFileById.as_view(), name='delete_gov_file'),
+    path('get_gov_file_by_plan_organ/<int:plan_id>/<int:organ_id>', GetGovFileByOrganAndPlan.as_view(), name='get_gov_file_by_plan_organ'),
 
     # Organ APIs
     path('organ', OrganListApiView.as_view(), name='organ'),
     path('organ/<int:organ_id>', OrganDetailApiView.as_view(), name='organ_detail'),
+    path('organ/by_plan_nlls/<int:plan_id>', OrganByPlanNLLSId.as_view(), name='organ_nlls'),
+    path('organ/by_category_file_year/<int:year>', OrganByCategoryFileYears.as_view(), name='organ_category_file'),
     # OrganDepartment APIs
     path('organ_department', OrganDepartmentListApiView.as_view(), name='organ_department'),
     path('organ_department/<int:organ_department_id>', OrganDepartmentDetailApiView.as_view(), name='organ_department_detail'),
@@ -104,6 +111,8 @@ urlpatterns = [
     path('category_file', CategoryFileListView.as_view(), name='category_file'),
     path('category_file/<int:category_file_id>', CategoryFileDetailView.as_view(), name='category_file_detail'),
     path('category_file/by_organ/<int:organ_id>', CategoryFileByOrganListView.as_view(), name='category_file_by_organ'),
+    path('category_file_years', CategoryFileYears.as_view(), name='category_file_years'),
+    path('category_file/<int:year>/<int:organ_id>', CategoryFileByYearAndOrgan.as_view(), name='category_file_by_year_organ'),
 
     # Plan APIs
     path('plan', PlanListView.as_view(), name='plan'),
@@ -113,8 +122,18 @@ urlpatterns = [
     path('plan/remove_plan', RemovePlanView.as_view(), name='remove_plan'),
     path('plan/set_plan_tieuhuy', SetPlanTieuHuyView.as_view(), name='set_plan_tieuhuy'), # Tieu Huy
     path('plan/remove_plan_tieuhuy', RemovePlanTieuHuyView.as_view(), name='remove_plan_tieuhuy'),
+    path('plan/send_nlls_internal', SendNLLSInternal.as_view(), name='send_nlls_internal'), # Gửi kế hoạch nộp lưu lịch sử đến người trong cơ quan để duyệt
+    path('plan/send_nlls_organ', SendNLLSOrgan.as_view(), name='send_nlls_organ'), # Gửi kế hoạch nộp lưu lịch sử đến các cơ quan khác
+    path('plan/update_state_nlls_organ', UpdateStateNLLSOrgan.as_view(), name='send_nlls_organ'), # Gửi kế hoạch nộp lưu lịch sử đến các cơ quan khác
+    path('plan/nlls_internal/<int:id>', NLLSInternal.as_view(), name='nlls_internal_by_approver_id'),
+    path('plan/sent_nlls_internal/by_sender_id/<int:sender_id>', SentNLLSInternal.as_view(), name='nlls_internal_by_approver_id'),
+    path('plan/nlls_organ', NLLSOrgan.as_view(), name='nlls_organ'),  # Get nlls_organ by organ_id
+    path('plan/nlls_organ/<int:id>', NLLSOrganByOrganId.as_view(), name='nlls_organ_by_id'),  # Get nlls_organ by organ_id
+    path('plan/so_noi_vu_duyet', SoNoiVuDuyetPlan.as_view(), name='plan_so_noi_vu_duyet'),
+    path('plan/duyet_noi_vu_plan', DuyetNoiVuPlan.as_view(), name='plan_duyet_noi_vu_plan'),
+    path('plan/cho_xep_kho_lich_su', PlanChoXepKhoLichSu.as_view(), name='plan_cho_xep_kho_lich_su'),
 
-
+    # Get nlls_organ by organ_id
     # Warehouse APIs
     path('warehouse', WarehouseListView.as_view(), name='warehouse'),
     path('warehouse/<int:warehouse_id>', WarehouseDetailView.as_view(), name='warehouse_detail'),
@@ -147,4 +166,10 @@ urlpatterns = [
 
     # KhaiThac APIs
     path('khaithac/get_gov_files/', KhaithacGovFileListView.as_view(), name='khaithac_get_files'),
-] 
+    path('khaithac/get_doc_by_gov_file_id/', GetDocumentByGovFileId.as_view(), name='khaithac_get_doc_by_gov_file_id'),
+
+    # Attachment APIs
+    path('attachment/download/plan/<str:dir>/<str:file_name>', DownloadAttachment.as_view(), name='attachment_download'),
+    path('attachment/by_plan/<int:plan_id>', GetAttachmentsByPlanId.as_view(), name='attachment_by_plan'),
+    path('attachment/<int:plan_id>',AttachmentAPIView.as_view(), name='attachment'),
+]

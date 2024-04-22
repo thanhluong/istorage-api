@@ -3,11 +3,11 @@ from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.authentication import SessionAuthentication
 
-from file_storage.serializers import PlanSerializer
+from file_storage.serializers import PlanSerializer, AttachmentSerializer, StorageUserSerializer
 
 from file_storage.models import Plan
-from file_storage.models import GovFile
-
+from file_storage.models import GovFile, PlanNLLSApprover, StorageUser, Organ, PlanNLLSOrgan, GovFileProfile
+from file_storage.models import Attachment
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
@@ -19,23 +19,41 @@ class PlanListView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        plan = Plan.objects.all()
-
+        plans = Plan.objects.all()
         if request.user.is_authenticated:
             if (not request.user.is_superuser) and request.user.department and request.user.department.organ:
                 organ_id = request.user.department.organ.id
-                plan = Plan.objects.filter(organ__id=organ_id)
+                plans = plans.filter(organ__id=organ_id)
 
-        serializer = PlanSerializer(plan, many=True)
+        for plan in plans:
+            attachment = Attachment.objects.filter(plan=plan)
+            plan.attachments = attachment
+        serializer = PlanSerializer(plans, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = PlanSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer_plan = PlanSerializer(data={
+            "organ": request.data.get("organ"),
+            "name": request.data.get("name"),
+            "state": request.data.get("state"),
+            "type": request.data.get("type"),
+            "start_date": request.data.get("start_date"),
+        })
+        if serializer_plan.is_valid():
+            plan_instance = serializer_plan.save()  # Save the plan instance
+            idx = 0
+            while f'attachment{idx}' in request.data:
+                serializer = AttachmentSerializer(data={
+                    "file": request.data[f'attachment{idx}'],
+                    "plan": plan_instance.pk,  # Use the primary key of the plan instance
+                })
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    plan_instance.delete()  # Delete the plan instance if attachment serializer is not valid
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                idx += 1
+        return Response(serializer_plan.errors, status=status.HTTP_200_OK)
 
 
 class PlanDetailView(APIView):
@@ -52,18 +70,37 @@ class PlanDetailView(APIView):
         plan = self.get_object(plan_id)
         if plan is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        attachment = Attachment.objects.filter(plan_id=plan_id)
+        plan.attachments = attachment
         serializer = PlanSerializer(plan)
         return Response(serializer.data)
+
+    def remove_old_file(self, request, plan_id):
+        attachments = Attachment.objects.filter(plan_id=plan_id)
+        old_files = request.data['old_files']
+
+        for attachment in attachments:
+            exist = False
+            for old_file in old_files:
+                if old_file['uid'] == attachment.id:
+                    exist = True
+            if not exist:
+                attachment.delete()
 
     def put(self, request, plan_id):
         plan = self.get_object(plan_id)
         if plan is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        if request.data['state'] == 'Đợi duyệt' and plan.state != 'Mới lập':
+            return Response({"error": "Trạng thái không hợp lệ"}, status=status.HTTP_200_OK)
+        
         serializer = PlanSerializer(plan, data=request.data)
         if serializer.is_valid():
+            if 'old_files' in request.data:
+                self.remove_old_file(request, plan_id)
             serializer.save()
             return Response(serializer.data)
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, plan_id):
@@ -79,14 +116,16 @@ class PlanByTypeListView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, plan_type):
-        plan = Plan.objects.filter(type=plan_type)
-
+        plans = Plan.objects.filter(type=plan_type)
         if request.user.is_authenticated:
             if (not request.user.is_superuser) and request.user.department and request.user.department.organ:
                 organ_id = request.user.department.organ.id
-                plan = plan.filter(organ__id=organ_id)
+                plans = plans.filter(organ__id=organ_id)
 
-        serializer = PlanSerializer(plan, many=True)
+        for plan in plans:
+            attachments = Attachment.objects.filter(plan=plan)
+            plan.attachments = attachments
+        serializer = PlanSerializer(plans, many=True)
         return Response(serializer.data)
 
 
@@ -144,3 +183,212 @@ class RemovePlanTieuHuyView(APIView):
         gov_file.plan_tieuhuy = None
         gov_file.save()
         return Response(status=status.HTTP_200_OK)
+    
+class SendNLLSInternal(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        sender = StorageUser.objects.get(id=request.data['sender_id'])
+        approver_ids = request.data['approver_ids']
+        plan_ids = request.data['plan_ids']
+        
+        for plan_id in plan_ids:
+            plan = Plan.objects.get(id=plan_id)
+            for approver_id in approver_ids:
+                approver = StorageUser.objects.get(id=approver_id)
+                exist_plan = PlanNLLSApprover.objects.filter(
+                    sender=sender,
+                    plan=plan,
+                    approver=approver
+                )
+                if not exist_plan.exists():
+                    PlanNLLSApprover.objects.create(
+                        sender=sender, 
+                        plan=plan,
+                        approver=approver
+                    )
+                
+        return Response({"message": "Send plan success"}, status=status.HTTP_200_OK)
+
+class PeopleNLLSInternalNotReceivePlan(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, organ_id, plan_id):
+        organ_users = StorageUser.objects.filter(department__organ_id=organ_id)
+        got_plan_users = PlanNLLSApprover.objects.filter(plan_id=plan_id).values_list('approver_id', flat=True)
+        not_receive_users = organ_users.exclude(id__in=got_plan_users)
+        serializer = StorageUserSerializer(not_receive_users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+  
+class SendNLLSOrgan(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        sender = StorageUser.objects.get(id=request.data['sender_id'])
+        plan_ids = request.data['plan_ids']
+        organ_ids = request.data['organ_ids']
+        organ_sender = Organ.objects.get(id = request.data['organ_sender_id'])
+        for plan_id in plan_ids:
+            plan = Plan.objects.get(id=plan_id)
+
+            for organ_id in organ_ids:
+                organ = Organ.objects.get(id=organ_id)
+
+                exist_plan = PlanNLLSOrgan.objects.filter(
+                    plan=plan,
+                    sender=sender,
+                    organ=organ,
+                    organ_sender=organ_sender,
+                )
+
+                if exist_plan.exists():
+                    return Response({"message": f"Plan {plan_id} for Organ {organ_id} already exists"}, status=status.HTTP_200_OK)
+
+                PlanNLLSOrgan.objects.create(
+                    sender=sender,
+                    plan=plan,
+                    organ=organ,
+                    organ_sender=organ_sender,
+                )
+
+        return Response({"message": "Send plan success"}, status=status.HTTP_200_OK)
+
+class UpdateStateNLLSOrgan(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        plan = PlanNLLSOrgan.objects.get(plan_id=request.data['plan_id'], organ_id=request.data['organ_id'])
+        if plan:
+            plan.state = request.data['state']
+            plan.save()
+        plans = PlanNLLSOrgan.objects.filter(plan_id=request.data['plan_id'])
+        count = 0
+        
+        for plan in plans:
+            if plan.state == 'Đã nộp':
+                count += 1
+        
+        if count == len(plans):
+            plan = Plan.objects.get(id=request.data['plan_id'])
+            plan.state = 'Đã thu thập'
+            plan.save()
+
+        return Response({"message": "update plan success"}, status=status.HTTP_200_OK)
+
+class NLLSInternal(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, id):
+        plans_nlls_approvers = PlanNLLSApprover.objects.filter(approver_id=id)
+        plans = []
+        for plans_nlls_approver in plans_nlls_approvers:
+            plan = Plan.objects.get(id=plans_nlls_approver.plan.id)
+            attachments = Attachment.objects.filter(plan_id=plan.id)
+            plan.attachments = attachments
+            plans.append(plan)
+        serializer = PlanSerializer(plans, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SentNLLSInternal(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+    def get(self, request, sender_id):
+        plans_nlls_organs = PlanNLLSOrgan.objects.filter(sender_id=sender_id)
+        distinct_plans_ids = plans_nlls_organs.values('plan_id').distinct()
+        plans = Plan.objects.filter(id__in=distinct_plans_ids)
+        serializer = PlanSerializer(plans, many=True)
+        data = serializer.data
+
+        for plan in data:
+            organ_ids = PlanNLLSOrgan.objects.filter(sender_id=sender_id, plan=plan['id']).values('organ_id').distinct()
+            organ_state = PlanNLLSOrgan.objects.filter(sender_id=sender_id, plan=plan['id']).values('state').distinct()
+
+            gov_file_ids = GovFile.objects.filter(plan_nopluuls=plan['id'], organ_id__in=organ_ids)
+            state = GovFileProfile.objects.filter(gov_file_id__in=gov_file_ids).values('state').distinct()
+            if plan['state'] == 'Đợi thu thập':
+                if len(organ_state) != 1 or organ_state[0] != 'Đã nộp':
+                    plan['state'] = 'Chưa đầy đủ'
+                elif len(state) == 0:
+                    plan['state'] = 'Không có hồ sơ'
+                elif len(state) == 1 and state[0]['state'] == 20:
+                    plan['state'] = 'Đã đầy đủ'
+                else:
+                    plan['state'] = 'Chưa đầy đủ'
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class NLLSOrganByOrganId(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, id):
+        plans_nlls_organ = PlanNLLSOrgan.objects.filter(organ_id=id)
+        plans = []
+        for plan_nlls_organ in plans_nlls_organ:
+            plan = Plan.objects.get(id=plan_nlls_organ.plan.id)
+            attachments = Attachment.objects.filter(plan_id=plan.id)
+            plan.attachments = attachments
+            plans.append(plan)
+        serializer = PlanSerializer(plans, many=True)
+        data = serializer.data
+
+        for i in range(len(data)):
+            if data[i]['state'] == 'Đợi thu thập' and PlanNLLSOrgan.objects.filter(plan_id=data[i]['id'], organ_id=id, state='Đã nộp').exists():
+                data[i]['state'] = 'Đã thu thập'
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class NLLSOrgan(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        organ_sender_id = request.GET.get('organ_sender_id')
+        plans_nlls_organ = PlanNLLSOrgan.objects.filter(organ_sender_id=organ_sender_id)
+        plans = []
+        for plan_nlls_organ in plans_nlls_organ:
+            plan = Plan.objects.get(id=plan_nlls_organ.plan.id)
+            attachments = Attachment.objects.filter(plan_id=id)
+            print(attachments)
+            plan.attachments = attachments
+            plans.append(plan)
+        serializer = PlanSerializer(plans, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SoNoiVuDuyetPlan(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+    def get(self, request):
+        plans = Plan.objects.filter(state='Đợi Sở Nội vụ duyệt')
+        serializer = PlanSerializer(plans, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class DuyetNoiVuPlan(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        plan_ids = request.data['plan_ids']
+        for plan_id in plan_ids:
+            plan = Plan.objects.get(id=plan_id)
+            gov_files = GovFile.objects.filter(plan_nopluuls=plan)
+            for gov_file in gov_files:
+                gov_file_profile = GovFileProfile.objects.get(gov_file_id=gov_file.id)
+                gov_file_profile.state = 19
+                gov_file_profile.save()
+            plan.state = "Chờ xếp kho nộp lưu lịch sử"
+            plan.save()
+        return Response(data={"ok"}, status=status.HTTP_200_OK)
+
+class PlanChoXepKhoLichSu(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        plans = Plan.objects.filter(state='Đã duyệt kế hoạch nộp lưu lịch sử')
+        serializer = PlanSerializer(plans, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

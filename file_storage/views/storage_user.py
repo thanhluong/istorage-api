@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import permissions, status
 
 from file_storage.models import StorageUser
+from file_storage.models import OrganDepartment
 from file_storage.serializers import StorageUserSerializer, StorageUserCreationSerializer
 
 import ldap3
@@ -98,7 +99,15 @@ class StorageUserByDepartmentListView(APIView):
         serializer = StorageUserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+class StorageUserByOrganListView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    def get(self, request, organ_id, *args, **kwargs):
+        departments = OrganDepartment.objects.filter(organ_id=organ_id)
+        users = []
+        for department in departments:
+            users += list(StorageUser.objects.filter(department_id=department.id))
+        return Response(data=StorageUserSerializer(users, many=True).data, status=status.HTTP_200_OK)
+    
 class StorageUserLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
     authentication_classes = (CsrfExemptSessionAuthentication,)

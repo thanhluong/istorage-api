@@ -12,6 +12,8 @@ from .models import Organ, OrganDepartment
 from .models import Phong
 from .models import Plan
 from .models import Warehouse, WarehouseRoom, Shelf, Drawer
+from .models import PlanNLLSApprover, PlanNLLSOrgan
+from .models import Attachment
 
 class StorageUserAdmin(UserAdmin):
     list_display = ('full_name', 'username', 'email', 'is_active', 'is_staff')
@@ -62,7 +64,7 @@ class PhongAdmin(admin.ModelAdmin):
 
 
 class CategoryFileAdmin(admin.ModelAdmin):
-    list_display = ('name', 'parent', 'organ')
+    list_display = ('name', 'parent', 'organ', 'year')
 
 
 class GovFileLanguageAdmin(admin.ModelAdmin):
@@ -96,6 +98,14 @@ class ShelfAdmin(admin.ModelAdmin):
 class DrawerAdmin(admin.ModelAdmin):
     list_display = ('name', 'shelf')
 
+class PlanApproverAdmin(admin.ModelAdmin):
+    list_display = ('plan' ,'sender', 'approver')
+
+class PlanOrganAdmin(admin.ModelAdmin):
+    list_display = ('plan' ,'sender', 'organ', 'organ_sender')
+
+class AttachmentAdmin(admin.ModelAdmin):
+    list_display = ('plan', 'file')
 
 admin.site.register(StorageUser, StorageUserAdmin)
 admin.site.register(Document)
@@ -117,3 +127,6 @@ admin.site.register(Warehouse, WarehouseAdmin)
 admin.site.register(WarehouseRoom, WarehouseRoomAdmin)
 admin.site.register(Shelf, ShelfAdmin)
 admin.site.register(Drawer, DrawerAdmin)
+admin.site.register(PlanNLLSApprover, PlanApproverAdmin)
+admin.site.register(PlanNLLSOrgan, PlanOrganAdmin)
+admin.site.register(Attachment, AttachmentAdmin)

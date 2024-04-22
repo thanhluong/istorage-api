@@ -7,7 +7,7 @@ from rest_framework.authentication import SessionAuthentication
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
-from file_storage.models import GovFile, GovFileProfile
+from file_storage.models import GovFile, GovFileProfile, PlanNLLSOrgan
 from file_storage.serializers import GovFileSerializer, GovFileProfileSerializer
 
 import json
@@ -173,7 +173,6 @@ class CreateGovFile(APIView):
         #     return resp_date_error
 
         serializer = GovFileSerializer(data=request.data)
-        print(serializer)
 
         if serializer.is_valid():
             serializer.save()
@@ -219,7 +218,6 @@ class DeleteGovFileById(APIView):
 
     def post(self, request):
         gov_file_id = request.data.get('id')
-        print(type(gov_file_id))
 
         perm_response_msg = {
             "error_code": status.HTTP_401_UNAUTHORIZED,
@@ -382,12 +380,12 @@ class UpdateGovFileStateById(APIView):
 
             # Check if the transfer state process is valid
             new_state = int(json_data['new_state'])
-            # if new_state not in state_machine[current_state]:
-            #     response_msg = {
-            #         "error_code": status.HTTP_406_NOT_ACCEPTABLE,
-            #         "description": "Không cho phép quá trình chuyển trạng thái này của hồ sơ với id " + gov_file_id
-            #     }
-            #     return Response(response_msg, status=status.HTTP_200_OK)
+            reject_reason = json_data['reject_reason'] if 'reject_reason' in json_data else None
+
+            if new_state == 8 and reject_reason is not None:
+                # update reject reason for gov_file
+                gov_file.reject_reason = reject_reason
+                gov_file.save()
 
             # Check when close gov_file, the required fields is not empty
             if current_state == STT_MO and new_state == STT_DONG and not gov_file_data['end_date']:
@@ -403,7 +401,6 @@ class UpdateGovFileStateById(APIView):
 
             if new_serializer.is_valid():
                 serializer_list.append(new_serializer)
-
                 response_data.append({'id': gov_file_id, 'state': json_data['new_state']})
             else:
                 response_msg = {
@@ -416,3 +413,138 @@ class UpdateGovFileStateById(APIView):
             serializer.save()
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+class UpdateGovFileStateByPlanNLLSId(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    def post(self, request):
+        plan_nlls_id = request.data['id']
+
+        gov_files = GovFile.objects.filter(plan_nopluuls_id=plan_nlls_id)
+
+        response_data = []
+        serializer_list = []
+
+        for gov_file in gov_files:
+            gov_file_id = gov_file.id
+            profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
+
+            if not gov_file or not profile:
+                response_msg = {
+                    'error_code': status.HTTP_404_NOT_FOUND,
+                    'description': 'Không tìm thấy hồ sơ'
+                }
+                return Response(response_msg, status=status.HTTP_200_OK)
+
+            profile_serialized = GovFileProfileSerializer(profile)
+            profile_data = json.loads(JSONRenderer().render(profile_serialized.data).decode('utf-8'))
+
+            if not profile_data or not profile_data['state']:
+                response_msg = {
+                    "error_code": status.HTTP_404_NOT_FOUND,
+                    "description": "Không có trạng thái nào cho hồ sơ với id " + gov_file_id
+                }
+                return Response(response_msg, status=status.HTTP_200_OK)
+
+            new_state = 18
+
+            if gov_file.reject_reason is not None:
+                new_state = 8
+
+            new_serializer = GovFileProfileSerializer(profile,
+                                                      data={'state': new_state},
+                                                      partial=True)
+
+            if new_serializer.is_valid():
+                serializer_list.append(new_serializer)
+                response_data.append({'id': gov_file_id, 'state': 18})
+            else:
+                response_msg = {
+                    "error_code": status.HTTP_400_BAD_REQUEST,
+                    "description": new_serializer.errors
+                }
+                return Response(response_msg, status=status.HTTP_200_OK)
+
+        for serializer in serializer_list:
+            serializer.save()
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+
+class UpdateGovFileStateByPlanNLLSOrganId(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    def post(self, request):
+        plan_nlls_id = request.data['plan_id']
+        organ_id = request.data['organ_id']
+
+        gov_files = GovFile.objects.filter(plan_nopluuls_id=plan_nlls_id, organ_id=organ_id)
+
+        response_data = []
+        serializer_list = []
+
+        for gov_file in gov_files:
+            gov_file_id = gov_file.id
+            profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
+
+            if not gov_file or not profile:
+                response_msg = {
+                    'error_code': status.HTTP_404_NOT_FOUND,
+                    'description': 'Không tìm thấy hồ sơ'
+                }
+                return Response(response_msg, status=status.HTTP_200_OK)
+
+            profile_serialized = GovFileProfileSerializer(profile)
+            profile_data = json.loads(JSONRenderer().render(profile_serialized.data).decode('utf-8'))
+
+            if not profile_data or not profile_data['state']:
+                response_msg = {
+                    "error_code": status.HTTP_404_NOT_FOUND,
+                    "description": "Không có trạng thái nào cho hồ sơ với id " + gov_file_id
+                }
+                return Response(response_msg, status=status.HTTP_200_OK)
+
+            new_state = 18
+
+            if gov_file.reject_reason is not None:
+                new_state = 8
+
+            new_serializer = GovFileProfileSerializer(profile,
+                                                      data={'state': new_state},
+                                                      partial=True)
+
+            if new_serializer.is_valid():
+                serializer_list.append(new_serializer)
+                response_data.append({'id': gov_file_id, 'state': 18})
+            else:
+                response_msg = {
+                    "error_code": status.HTTP_400_BAD_REQUEST,
+                    "description": new_serializer.errors
+                }
+                return Response(response_msg, status=status.HTTP_200_OK)
+
+        for serializer in serializer_list:
+            serializer.save()
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+
+class GetGovFileByOrganAndPlan(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+    def get(self, request, plan_id, organ_id, *args, **kwargs):
+        gov_files = GovFile.objects.filter(plan_nopluuls_id=plan_id,organ_id=organ_id)
+        serializer = GovFileSerializer(gov_files, many=True)
+
+        for gov_file in serializer.data:
+            gov_file_id = gov_file['id']
+            profile = GovFileProfile.objects.filter(gov_file_id=gov_file_id).first()
+            profile_serialized = GovFileProfileSerializer(profile)
+            profile_data = json.loads(JSONRenderer().render(profile_serialized.data).decode('utf-8'))
+            if not profile_data or not profile_data['state']:
+                continue
+            gov_file['state'] = profile_data['state']
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -8,7 +8,7 @@ def menu_icon_path(instance, filename):
 
 
 def plan_directory_path(instance, filename):
-    folder_name = abs(hash(instance.name)) + 2023
+    folder_name = abs(hash(instance.plan.name)) + 2023
     return 'plan/{0}/{1}'.format(folder_name, filename)
 
 
@@ -86,7 +86,6 @@ class Organ(models.Model):
     def __str__(self):
         return self.name
 
-
 class OrganDepartment(models.Model):
     organ = models.ForeignKey(
         Organ,
@@ -108,7 +107,6 @@ class OrganDepartment(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class OrganRole(models.Model):
     name = models.CharField(
@@ -134,7 +132,6 @@ class OrganRole(models.Model):
     class Meta:
         verbose_name = 'Chức vụ trong cơ quan'
         verbose_name_plural = 'Chức vụ trong cơ quan'
-
 
 class StorageUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=84, unique=True, verbose_name="Email")
@@ -185,7 +182,6 @@ class StorageUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
 
-
 class Phong(models.Model):
     fond_name = models.CharField(max_length=256, verbose_name='Tên phông')
     fond_history = models.CharField(
@@ -224,6 +220,7 @@ class Phong(models.Model):
 class CategoryFile(models.Model):
     name = models.CharField(max_length=512, verbose_name='Tên danh mục')
     order = models.IntegerField(default=1, verbose_name='Order')
+    year = models.IntegerField(default=2023, verbose_name='Năm')
     organ = models.ForeignKey(
         Organ,
         default=None,
@@ -296,6 +293,8 @@ class Plan(models.Model):
         ("Đợi thu thập", "Đợi thu thập"),
         ("Đợi thẩm định", "Đợi thẩm định"),
         ("Đã thu thập", "Đã thu thập"),
+        ("Đã duyệt kế hoạch nộp lưu lịch sử", "Đã duyệt kế hoạch nộp lưu lịch sử"),
+        ("Chờ xếp kho nộp lưu lịch sử", "Chờ xếp kho nộp lưu lịch sử"),
     )
 
     name = models.CharField(
@@ -336,11 +335,10 @@ class Plan(models.Model):
         default=1,
         verbose_name='Loại kế hoạch'
     )
-    attachment = models.FileField(
+    reject_reason = models.TextField(
         blank=True,
         null=True,
-        default=None,
-        upload_to=plan_directory_path
+        default=None
     )
 
     def __str__(self):
@@ -350,7 +348,107 @@ class Plan(models.Model):
         verbose_name = 'Kế hoạch'
         verbose_name_plural = 'Kế hoạch'
 
+class Attachment(models.Model):
+    plan = models.ForeignKey(
+        Plan, 
+        on_delete=models.CASCADE, 
+        blank=True, 
+        null=True,
+        default=None,
+        related_name = 'attachment_set',
+    )
+    file = models.FileField(
+        blank=True,
+        null=True,
+        default=None,
+        upload_to=plan_directory_path
+    )
 
+    def __str__(self):
+        return self.file.name
+
+    class Meta:
+        verbose_name = 'Văn bản đính kèm'
+        verbose_name_plural = 'Văn bản đính kèm'
+
+class PlanNLLSApprover(models.Model):
+    plan = models.ForeignKey(
+        Plan, 
+        on_delete=models.CASCADE, 
+        verbose_name='Kế hoạch'
+    )
+    approver = models.ForeignKey(
+        StorageUser, 
+        on_delete=models.CASCADE, 
+        verbose_name='Người phê duyệt',
+        related_name='approver_planapprover_set',
+        default=None,
+    )
+    sender = models.ForeignKey(
+        StorageUser, 
+        on_delete=models.CASCADE, 
+        verbose_name='Người gửi',
+        related_name='sender_planapprover_set',
+        default=None,
+    )
+    def __str__(self):
+        return "Kế hoạch: " + self.plan.name
+
+    class Meta:
+        verbose_name = 'Người phê duyệt kế hoạch'
+        verbose_name_plural = 'Người phê duyệt kế hoạch'
+
+class PlanNLLSOrgan(models.Model):
+    STATE_CHOICE = (
+        ("Chưa nộp", "Chưa nộp"),
+        ("Đã nộp", "Đã nộp"),
+        ("Đã duyệt nộp lưu lịch sử từ cơ quan", "Đã duyệt nộp lưu lịch sử từ cơ quan"),
+        ("Từ chối nộp lưu lịch sử từ cơ quan", "Từ chối nộp lưu lịch sử từ cơ quan"),
+    )
+    plan = models.ForeignKey(
+        Plan, 
+        on_delete=models.CASCADE, 
+        verbose_name='Kế hoạch'
+    )
+    organ = models.ForeignKey(
+        Organ, 
+        on_delete=models.CASCADE, 
+        verbose_name='Cơ quan',
+        related_name='organ_plannllsorgan_set',
+        default=None,
+    )
+    sender = models.ForeignKey(
+        StorageUser, 
+        on_delete=models.CASCADE, 
+        verbose_name='Người gửi',
+        related_name='sender_plannllsorgan_set',
+        default=None,
+    )
+    organ_sender = models.ForeignKey(
+        Organ, 
+        on_delete=models.CASCADE, 
+        verbose_name='Cơ quan gửi',
+        related_name='organ_plannllsorgan_send',
+        null=True,
+    )
+    state = models.CharField(
+        max_length=64,
+        choices=STATE_CHOICE,
+        default=STATE_CHOICE[0][0],
+        verbose_name='Trạng thái'
+    )
+    reject_reason = models.TextField(
+        blank=True,
+        null=True,
+        default=None
+    )
+    def __str__(self):
+        return "Kế hoạch: " + self.plan.name
+
+    class Meta:
+        verbose_name = 'Cơ quan nhận kế hoạch'
+        verbose_name_plural = 'Cơ quan nhận kế hoạch'
+    
 class GovFile(models.Model):
     gov_file_code = models.CharField(max_length=100, blank=True, null=True)
     organ_id = models.ForeignKey(
@@ -470,6 +568,13 @@ class GovFile(models.Model):
         verbose_name='Hộp lưu trữ'
     )
 
+    reject_reason = models.TextField(
+        blank=True,
+        null=True,
+        default=None,
+        verbose_name='Lí do từ chối'
+    )
+
     def __str__(self):
         return 'Hồ sơ: ' + self.title
 
@@ -530,6 +635,8 @@ class StateEnum(Enum):
     THHS_DA_TIEU_HUY = 16
     THHS_KHOI_PHUC = 17
     NOP_LUU_LICH_SU_CHO_SO_NOI_VU_DUYET = 18
+    NLLS_CHO_XEP_KHO = 19
+    CHAP_NHAN_NOP_LUU_LICH_SU_CHO_SO_NOI_VU_DUYET = 20
 
     @classmethod
     def choices(cls):

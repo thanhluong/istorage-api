@@ -5,14 +5,14 @@ from file_storage.models import Document, GovFile, GovFileProfile
 from file_storage.models import Organ, OrganDepartment, OrganRole
 from file_storage.models import Phong, CategoryFile
 from file_storage.models import GovFileLanguage, StorageDuration, PhysicalState
-from file_storage.models import Plan
 from file_storage.models import Warehouse, WarehouseRoom, Drawer, Shelf
+from file_storage.models import Plan, PlanNLLSApprover, PlanNLLSOrgan, Attachment
 
 
 class StorageUserSerializer(serializers.ModelSerializer):
     organ_id = serializers.SerializerMethodField()
     organ_name = serializers.SerializerMethodField()
-
+    department_name = serializers.SerializerMethodField()
     class Meta:
         model = StorageUser
         exclude = ('password',)
@@ -31,6 +31,10 @@ class StorageUserSerializer(serializers.ModelSerializer):
             return ""
         return ""
 
+    def get_department_name(self, obj):
+        if obj.department:
+            return obj.department.name
+        return ""
 
 class StorageUserCreationSerializer(serializers.ModelSerializer):
     def save(self, **kwargs):
@@ -49,7 +53,6 @@ class StorageUserCreationSerializer(serializers.ModelSerializer):
             first_name="",
             last_name=""
         )
-        print(self.data)
         password = self.validated_data['password']
         user.set_password(password)
         user.save()
@@ -143,10 +146,10 @@ class GovFileProfileSerializer(serializers.ModelSerializer):
 
 
 class OrganSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Organ
         fields = '__all__'
-
 
 class OrganDepartmentSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
@@ -184,19 +187,33 @@ class PhysicalStateSerializer(serializers.ModelSerializer):
 
 class PlanSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
-    attachment = serializers.FileField(required=False, allow_null=True)
-
+    attachments = serializers.SerializerMethodField(required=False, allow_null=True)
     organ_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Plan
         fields = '__all__'
 
+    def get_attachments(self, obj):
+        file_name = []
+        if hasattr(obj, 'attachments') and obj.attachments:
+            for attachment in obj.attachments:
+                file_name.append(attachment.file.name)
+            return file_name
+        return None
+    
     def get_organ_name(self, obj):
         if obj.organ:
             return obj.organ.name
         return ""
 
+class AttachmentSerializer(serializers.ModelSerializer):
+    file = serializers.FileField()
+    plan = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+
+    class Meta:
+        model = Attachment
+        fields = '__all__'
 
 class WarehouseSerializer(serializers.ModelSerializer):
     organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
@@ -234,4 +251,19 @@ class DrawerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Drawer
+        fields = '__all__'
+
+class PlanNLLSOrganSerializer(serializers.ModelSerializer):
+    organ = serializers.PrimaryKeyRelatedField(queryset=Organ.objects.all())
+    plan = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+
+    class Meta:
+        model = PlanNLLSOrgan
+        fields = '__all__'
+
+class PlanNLLSApproverSerializer(serializers.ModelSerializer):
+    plan = serializers.PrimaryKeyRelatedField(queryset=Plan.objects.all())
+    approver = serializers.PrimaryKeyRelatedField(queryset=OrganRole.objects.all())
+    class Meta:
+        model = PlanNLLSApprover
         fields = '__all__'
